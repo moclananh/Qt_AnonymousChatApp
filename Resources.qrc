@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/comments_16903656.gif</file>
+        <file>images/audio_11781833.gif</file>
+        <file>images/send_9068805.png</file>
+        <file>images/menu_op.png</file>
+        <file>images/menu_set.png</file>
+        <file>images/attach_file.png</file>
+    </qresource>
+</RCC>
