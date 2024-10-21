@@ -21,6 +21,13 @@ qt_add_qml_module(appProject_AnonymousChat
         QML_FILES MyIcon.qml
         QML_FILES ImageRounded.qml
         RESOURCES Resources.qrc
+        QML_FILES CustomDrawer.qml
+        QML_FILES LandingChat.qml
+        QML_FILES CreateChatRoom.qml
+        QML_FILES MyButton.qml
+        QML_FILES JoinChatRoom.qml
+        QML_FILES LoadingPage.qml
+        QML_FILES HomeScreen.qml
 
 
 )
