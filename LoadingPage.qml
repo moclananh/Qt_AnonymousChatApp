@@ -5,10 +5,10 @@ import QtQuick.Controls.Material
 
 ApplicationWindow {
     visible: true
-    width: 900
-    height: 600
+    width: 500
+    height: 300
     title: "Waiting"
-
+    color: "white"
     Column {
         anchors.centerIn: parent
         spacing: 10
@@ -17,14 +17,14 @@ ApplicationWindow {
             id: imgId
             source: "qrc:/images/waiting.gif"
             anchors.horizontalCenter: parent.horizontalCenter
-            width: 300
-            height: 300
+            width: 200
+            height: 200
         }
 
         Text {
             text: "Request sended, please wait a second "
             font.bold: true
-            font.pixelSize: 35
+            font.pixelSize: 20
             color: "#761f84"
             horizontalAlignment: Text.AlignHCenter
             width: parent.width

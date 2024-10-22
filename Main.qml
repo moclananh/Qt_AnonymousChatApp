@@ -339,9 +339,10 @@ ApplicationWindow {
                         // Chat Header
                         Rectangle {
                             id: chatContentHeader
-                            width: parent.width
+                            width: parent.width - 20
+                            anchors.horizontalCenter: parent.horizontalCenter
                             height: 60
-                            color: "white"
+                            color: "transparent"
                             Layout.alignment: Qt.AlignTop
                             Layout.fillWidth: true
 
@@ -385,16 +386,18 @@ ApplicationWindow {
                             // Button group setting
                             Button {
                                 id: btnGroupSetting
-                                width: 50
-                                height: 50
+                                width: 40
+                                height: 40
                                 anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
                                 background: Rectangle {
                                     id: btnBackgroundGroupSetting
                                     color: "white" // Default background color
                                     anchors.fill: parent
+
                                     radius: 5
                                     Image {
-                                        source: "qrc:/images/menu_op.png"
+                                        source: "qrc:/images/sequence.png"
                                         width: 30
                                         height: 30
                                         smooth: true
@@ -478,55 +481,97 @@ ApplicationWindow {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         Row {
 
-                                            spacing: 10
-                                            anchors.horizontalCenter: parent.horizontalCenter
-
+                                            spacing: 30
+                                            anchors.centerIn: parent
+                                            //btn notice
                                             Rectangle {
-                                                width: 50
-                                                height: 50
-                                                color: "transparent"
-
+                                                width: 40
+                                                height: 40
+                                                color: hovered ? "#E0E0E0" : "transparent"
+                                                property bool hovered: false
+                                                radius: 5
+                                                //  anchors.verticalCenter: parent.verticalCenter
                                                 Image {
                                                     anchors.centerIn: parent
-                                                    source: "https://placehold.co/50x50"
+                                                    source: "qrc:/images/notice.png"
                                                     width: 24
                                                     height: 24
                                                 }
-                                            }
-                                            Rectangle {
-                                                width: 50
-                                                height: 50
-                                                color: "transparent"
 
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true // Enable hover detection
+                                                    onEntered: parent.hovered = true
+                                                    onExited: parent.hovered = false
+                                                }
+                                            }
+
+                                            //btn pin
+                                            Rectangle {
+                                                width: 40
+                                                height: 40
+                                                color: hovered ? "#E0E0E0" : "transparent"
+                                                property bool hovered: false
+                                                radius: 5
+                                                anchors.verticalCenter: parent.verticalCenter
                                                 Image {
                                                     anchors.centerIn: parent
-                                                    source: "https://placehold.co/50x50"
+                                                    source: "qrc:/images/pin.png"
                                                     width: 24
                                                     height: 24
                                                 }
-                                            }
-                                            Rectangle {
-                                                width: 50
-                                                height: 50
-                                                color: "transparent"
 
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true // Enable hover detection
+                                                    onEntered: parent.hovered = true
+                                                    onExited: parent.hovered = false
+                                                }
+                                            }
+
+                                            //btn search
+                                            Rectangle {
+                                                width: 40
+                                                height: 40
+                                                color: hovered ? "#E0E0E0" : "transparent"
+                                                property bool hovered: false
+                                                radius: 5
+                                                anchors.verticalCenter: parent.verticalCenter
                                                 Image {
                                                     anchors.centerIn: parent
-                                                    source: "https://placehold.co/50x50"
+                                                    source: "qrc:/images/search.png"
                                                     width: 24
                                                     height: 24
                                                 }
-                                            }
-                                            Rectangle {
-                                                width: 50
-                                                height: 50
-                                                color: "transparent"
 
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true // Enable hover detection
+                                                    onEntered: parent.hovered = true
+                                                    onExited: parent.hovered = false
+                                                }
+                                            }
+
+                                            //btn setting
+                                            Rectangle {
+                                                width: 40
+                                                height: 40
+                                                color: hovered ? "#E0E0E0" : "transparent"
+                                                property bool hovered: false
+                                                radius: 5
+                                                anchors.verticalCenter: parent.verticalCenter
                                                 Image {
                                                     anchors.centerIn: parent
-                                                    source: "https://placehold.co/50x50"
+                                                    source: "qrc:/images/setting.png"
                                                     width: 24
                                                     height: 24
+                                                }
+
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true // Enable hover detection
+                                                    onEntered: parent.hovered = true
+                                                    onExited: parent.hovered = false
                                                 }
                                             }
                                         }
@@ -598,8 +643,8 @@ ApplicationWindow {
                                                     Image {
                                                         anchors.verticalCenter: parent.verticalCenter
                                                         source: "qrc:/images/friend_4309056.png"
-                                                        width: 15
-                                                        height: 15
+                                                        width: 20
+                                                        height: 20
                                                     }
 
                                                     Rectangle {
@@ -681,9 +726,9 @@ ApplicationWindow {
 
                                                     Image {
                                                         anchors.verticalCenter: parent.verticalCenter
-                                                        source: "qrc:/images/friend_4309056.png"
-                                                        width: 15
-                                                        height: 15
+                                                        source: "qrc:/images/addmem.png"
+                                                        width: 20
+                                                        height: 20
                                                     }
 
                                                     Rectangle {
@@ -766,9 +811,9 @@ ApplicationWindow {
 
                                                     Image {
                                                         anchors.verticalCenter: parent.verticalCenter
-                                                        source: "qrc:/images/friend_4309056.png"
-                                                        width: 15
-                                                        height: 15
+                                                        source: "qrc:/images/exit.png"
+                                                        width: 20
+                                                        height: 20
                                                     }
 
                                                     Rectangle {
@@ -822,8 +867,7 @@ ApplicationWindow {
 
                         // Messages List
                         ListView {
-                            // Layout.fillWidth: true
-                            // Layout.fillHeight: true
+                            id: lsViewId
                             width: parent.width
                             height: parent.height - messRectId.height
                                     - chatContentHeader.height - 10
@@ -930,6 +974,15 @@ ApplicationWindow {
                             }
                         }
 
+                        //File attached
+                        Text {
+                            id: txtId
+                            width: parent.width
+                            height: 20
+                            visible: false
+                            text: "User haven't choose any file"
+                            wrapMode: Text.Wrap
+                        }
                         // Enter new message
                         Rectangle {
                             id: messRectId
@@ -1038,9 +1091,29 @@ ApplicationWindow {
                                         }
                                     }
 
-                                    onClicked: {
+                                    onClicked: function () {
+                                        fileDialogId.open()
+                                    }
 
-                                        // handle send click
+                                    FileDialog {
+                                        id: fileDialogId
+                                        title: "Choose file"
+                                        nameFilters: ["Text files (*.txt)", "HTML Files (*.html *.htm)", "Image files (*.jpg *.png)"]
+                                        fileMode: FileDialog.OpenFile
+                                        onAccepted: function () {
+                                            txtId.text = currentFile
+                                            if (!txtId.visible) {
+                                                txtId.visible = true
+                                                lsViewId.height -= txtId.height
+                                            }
+                                        }
+
+                                        onRejected: function () {
+                                            if (txtId.visible) {
+                                                txtId.visible = false
+                                                lsViewId.height += txtId.height
+                                            }
+                                        }
                                     }
                                 }
 
@@ -1076,7 +1149,7 @@ ApplicationWindow {
 
                                     onClicked: {
 
-                                        // handle send click
+                                        messageTextArena.text = ""
                                     }
                                 }
                             }

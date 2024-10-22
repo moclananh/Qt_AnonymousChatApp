@@ -12,7 +12,10 @@ Rectangle {
     width: parent.width
     height: parent.height
     color: "white"
-
+    Loader {
+        id: pageLoader
+        anchors.fill: parent
+    }
     ColumnLayout {
         anchors.fill: parent
         width: parent.width
@@ -32,7 +35,7 @@ Rectangle {
                 height: parent.height
                 visible: parent.width > 800
                 AnimatedImage {
-                    source: "qrc:/images/landing2.gif"
+                    source: "qrc:/images/landing4.gif"
                     width: parent.width * 0.95
                     height: parent.height * 0.75
                     anchors.centerIn: parent
@@ -55,7 +58,7 @@ Rectangle {
 
                     color: "transparent"
                     Column {
-
+                        id: containter
                         spacing: 10
 
                         Text {
@@ -100,21 +103,20 @@ Rectangle {
                             width: parent.width
                             height: 40
                         }
+                    }
 
-                        //btn join room
-                        MyButton {
-
-                            id: btnCreateRoom
-                            height: 40
-                            width: 100
-                            text: "Join"
-
-                            MouseArea {
-                                anchors.fill: btnCreateRoom
-                                onClicked: {
-
-                                    //do st here
-                                }
+                    //btn join room
+                    MyButton {
+                        id: btnJoinRoom
+                        height: 40
+                        width: 100
+                        text: "Join"
+                        anchors.top: containter.bottom
+                        anchors.topMargin: 20
+                        MouseArea {
+                            anchors.fill: btnJoinRoom
+                            onClicked: {
+                                pageLoader.source = "LoadingPage.qml"
                             }
                         }
                     }

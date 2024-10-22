@@ -99,7 +99,7 @@ Drawer {
 
                         Image {
                             visible: control_handle === "accept" ? true : false
-                            source: "qrc:/images/delete_15194236.png"
+                            source: "qrc:/images/checked.png"
                             smooth: true
                             anchors.verticalCenter: parent.verticalCenter
                             height: 20

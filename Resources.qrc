@@ -3,7 +3,6 @@
         <file>images/comments_16903656.gif</file>
         <file>images/audio_11781833.gif</file>
         <file>images/send_9068805.png</file>
-        <file>images/menu_op.png</file>
         <file>images/attach_file.png</file>
         <file>images/friend_4309056.png</file>
         <file>images/delete_15194236.png</file>
@@ -11,5 +10,14 @@
         <file>images/landing2.gif</file>
         <file>images/waiting.gif</file>
         <file>images/landing1.gif</file>
+        <file>images/exit.png</file>
+        <file>images/checked.png</file>
+        <file>images/sequence.png</file>
+        <file>images/addmem.png</file>
+        <file>images/search.png</file>
+        <file>images/setting.png</file>
+        <file>images/pin.png</file>
+        <file>images/notice.png</file>
+        <file>images/landing4.gif</file>
     </qresource>
 </RCC>
