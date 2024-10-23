@@ -8,14 +8,14 @@ import "ChatServices.js" as ChatServices
 
 // Chat Section
 Rectangle {
+    property QtObject settings
     id: chatSection
     // Layout.preferredWidth: 300
     Layout.minimumWidth: 0
     Layout.fillHeight: true
-    color: "white"
+    color: settings.bg_chatsession_color
     width: 300
     height: parent.height
-
     visible: parent.width > 800
 
     ColumnLayout {
@@ -31,7 +31,7 @@ Rectangle {
             Layout.fillWidth: true
 
             // Search field
-            TextField {
+            TextArea {
                 id: chatField
                 width: parent.width - 20
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -39,8 +39,14 @@ Rectangle {
                 height: 30
 
                 placeholderText: "Search..."
-                background: TextArea {
-                    color: "#f5f5f5"
+
+                background: Rectangle {
+                    width: parent.width
+                    height: parent.height
+                    color: settings.message_input
+                    radius: 15
+                    border.color: settings.border_color
+                    border.width: 1
                 }
             }
         }
@@ -66,7 +72,7 @@ Rectangle {
                     width: parent.width - 20
                     height: 70
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: isSelected ? "#f8e8ff" : (isHovered ? "#e5e7eb" : "transparent") // Change color when selected or hovered
+                    color: isSelected ? settings.choose_color : (isHovered ? settings.hover_color : "transparent") // Change color when selected or hovered
                     border.color: "transparent"
 
                     RowLayout {
@@ -100,17 +106,18 @@ Rectangle {
                                 Text {
                                     text: model.name
                                     font.bold: true
+                                    color: settings.txt_color
                                 }
 
                                 Text {
                                     text: model.message
-                                    color: "#6b7280"
+                                    color: settings.txt_color
                                     elide: Text.ElideRight
                                 }
 
                                 Text {
                                     text: model.time
-                                    color: "#9ca3af"
+                                    color: settings.txt_color
                                 }
                             }
                         }

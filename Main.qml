@@ -11,6 +11,8 @@ ApplicationWindow {
     height: 800
     title: "Chat Application"
 
+    property QtObject sharedSettings: Settings {}
+
     // Material.theme: Material.Light
     Drawer {
         id: sidebar
@@ -19,7 +21,7 @@ ApplicationWindow {
         edge: Qt.LeftEdge
         modal: false
         background: Rectangle {
-            color: "#271932"
+            color: sharedSettings.user_drawer
         }
 
         Column {
@@ -30,7 +32,7 @@ ApplicationWindow {
             Rectangle {
                 width: parent.width
                 height: 150
-                color: "#271932"
+                color: "transparent"
 
                 ImageRounded {
                     x: parent.width / 2 - r_width / 2
@@ -45,7 +47,7 @@ ApplicationWindow {
                 id: chatButton
                 width: parent.width
                 height: 50
-                color: "#271932" // Same as the parent by default
+                color: "transparent" // Same as the parent by default
 
                 radius: 10
                 Row {
@@ -70,8 +72,8 @@ ApplicationWindow {
                         Text {
                             id: txtChatColor
                             text: "Chat"
-                            color: "white"
-                            font.pixelSize: 22
+                            color: sharedSettings.txt_color
+                            font.pixelSize: 18
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
@@ -81,13 +83,13 @@ ApplicationWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: {
-                        chatButton.color = "white"
-                        txtChatColor.color = "#271932"
+                        chatButton.color = sharedSettings.hover_color
+                        txtChatColor.color = sharedSettings.txt_color
                     }
                     onExited: {
 
-                        chatButton.color = "#271932"
-                        txtChatColor.color = "white"
+                        chatButton.color = "transparent"
+                        txtChatColor.color = sharedSettings.txt_color
                     }
                     onClicked: {
 
@@ -101,7 +103,7 @@ ApplicationWindow {
                 id: anotherButton
                 width: parent.width
                 height: 50
-                color: "#271932" // Same as the parent by default
+                color: "transparent" // Same as the parent by default
                 radius: 10
 
                 Row {
@@ -125,9 +127,9 @@ ApplicationWindow {
                         width: parent.width * 0.8
                         Text {
                             id: txtAnotherBtn
-                            text: "Another button"
-                            color: "white"
-                            font.pixelSize: 22
+                            text: "Dark Mode"
+                            color: sharedSettings.txt_color
+                            font.pixelSize: 18
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
@@ -137,17 +139,17 @@ ApplicationWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: {
-                        anotherButton.color = "white"
-                        txtAnotherBtn.color = "#271932"
+                        anotherButton.color = sharedSettings.hover_color
+                        txtAnotherBtn.color = sharedSettings.txt_color
                     }
                     onExited: {
 
-                        anotherButton.color = "#271932"
-                        txtAnotherBtn.color = "white"
+                        anotherButton.color = "transparent"
+                        txtAnotherBtn.color = sharedSettings.txt_color
                     }
                     onClicked: {
-
-                        // Handle click
+                        console.log("Dark mode: " + sharedSettings.darkMode)
+                        sharedSettings.darkMode = !sharedSettings.darkMode
                     }
                 }
             }
@@ -158,7 +160,7 @@ ApplicationWindow {
     Rectangle {
         width: parent.width
         height: parent.height
-        color: "#f5f7fb"
+        color: sharedSettings.mainbg
 
         ColumnLayout {
             anchors.fill: parent
@@ -170,10 +172,14 @@ ApplicationWindow {
                 height: parent.height
 
                 // Chat Session
-                ChatSession {}
+                ChatSession {
+                    settings: sharedSettings
+                }
 
                 // ChatContent
-                ChatContent {}
+                ChatContent {
+                    settings: sharedSettings
+                }
             }
         }
     }

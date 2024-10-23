@@ -31,6 +31,8 @@ qt_add_qml_module(appProject_AnonymousChat
         QML_FILES ChatSession.qml
         QML_FILES ChatContent.qml
         QML_FILES ChatServices.js
+        RESOURCES
+        QML_FILES Settings.qml
 
 
 )

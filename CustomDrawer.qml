@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 
 Drawer {
+    property QtObject d_settings
     id: drawerRoot
     width: 350
     height: parent.height
@@ -10,7 +11,7 @@ Drawer {
     property string lableText
     background: Rectangle {
         anchors.fill: parent
-        color: "#f1f5f9"
+        color: d_settings.drawer_color
         radius: 5
     }
 
@@ -25,17 +26,26 @@ Drawer {
         Text {
             text: drawerRoot.lableText
             font.pixelSize: 20
+            color: d_settings.txt_color
         }
 
-        //search field
+        // Search field
         TextField {
             id: searchField
-            placeholderText: "Search"
+            placeholderText: "Search..."
             height: 30
             width: parent.width - 20
+            background: Rectangle {
+                width: parent.width
+                height: parent.height
+                color: d_settings.message_input
+                radius: 15
+                border.color: d_settings.border_color
+                border.width: 1
+            }
         }
 
-        //member list
+        // Member list
         ListView {
             spacing: 2
             id: memberListView
@@ -69,53 +79,70 @@ Drawer {
                 width: memberListView.width
                 height: 40
 
-                Row {
-                    width: parent.width
+                Rectangle {
+                    id: itemBackground
+                    width: parent.width - 20
                     height: parent.height
-                    anchors.fill: parent
+                    color: "transparent"
 
                     Rectangle {
-
-                        width: parent.width - 20
+                        width: parent.width - 10
                         height: parent.height
                         color: "transparent"
+                        anchors.horizontalCenter: parent.horizontalCenter
 
-                        Image {
-                            id: img
-                            source: model.image
-                            width: 30
-                            height: 30
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
-                        }
+                        Row {
+                            width: parent.width
+                            height: parent.height
+                            anchors.fill: parent
 
-                        Text {
-                            text: model.username
-                            font.pixelSize: 16
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: img.right
-                            anchors.leftMargin: 5
-                        }
+                            Image {
+                                id: img
+                                source: model.image
+                                width: 30
+                                height: 30
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: parent.left
+                            }
 
-                        Image {
-                            visible: control_handle === "accept" ? true : false
-                            source: "qrc:/images/checked.png"
-                            smooth: true
-                            anchors.verticalCenter: parent.verticalCenter
-                            height: 20
-                            width: 20
-                            anchors.right: btnDelete.left
-                        }
+                            Text {
+                                text: model.username
+                                font.pixelSize: 16
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: img.right
+                                anchors.leftMargin: 5
+                                color: d_settings.txt_color
+                            }
 
-                        Image {
-                            id: btnDelete
-                            source: "qrc:/images/delete_15194236.png"
-                            smooth: true
-                            anchors.verticalCenter: parent.verticalCenter
-                            height: 20
-                            width: 20
-                            anchors.right: parent.right
+                            Image {
+                                visible: control_handle === "accept" ? true : false
+                                source: "qrc:/images/checked.png"
+                                smooth: true
+                                anchors.verticalCenter: parent.verticalCenter
+                                height: 20
+                                width: 20
+                                anchors.right: btnDelete.left
+                            }
+
+                            Image {
+                                id: btnDelete
+                                source: "qrc:/images/delete_15194236.png"
+                                smooth: true
+                                anchors.verticalCenter: parent.verticalCenter
+                                height: 20
+                                width: 20
+                                anchors.right: parent.right
+                            }
                         }
+                    }
+
+                    // Hover effect
+                    MouseArea {
+                        id: hoverArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onEntered: itemBackground.color = d_settings.hover_color
+                        onExited: itemBackground.color = "transparent"
                     }
                 }
             }

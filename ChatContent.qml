@@ -7,11 +7,12 @@ import QtQuick.Dialogs
 
 // Chat Content
 Rectangle {
+    property QtObject settings
+
     id: chatContent
     Layout.fillWidth: true
     Layout.fillHeight: true
-
-    color: "transparent"
+    color: settings.bg_chatcontent_color
 
     //radius: 20
     Column {
@@ -55,12 +56,14 @@ Rectangle {
                         text: "Group Chat 01"
                         font.pixelSize: 20
                         font.bold: true
+                        color: settings.txt_color
                         verticalAlignment: Text.AlignVCenter
                     }
                     Text {
                         text: "Members: 30"
                         font.pixelSize: 10
                         opacity: 0.8
+                        color: settings.txt_color
                         verticalAlignment: Text.AlignVCenter
                     }
                 }
@@ -75,7 +78,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 background: Rectangle {
                     id: btnBackgroundGroupSetting
-                    color: "white" // Default background color
+                    color: "transparent" // Default background color
                     anchors.fill: parent
 
                     radius: 5
@@ -91,10 +94,8 @@ Rectangle {
                         anchors.fill: parent
                         hoverEnabled: true
 
-                        onEntered: btnBackgroundGroupSetting.color
-                                   = "#d4b8e9" // Change to blue when hovered
-                        onExited: btnBackgroundGroupSetting.color
-                                  = "transparent" // Revert to default when not hovered
+                        onEntered: btnBackgroundGroupSetting.color = settings.hover_color
+                        onExited: btnBackgroundGroupSetting.color = "transparent"
                     }
                 }
 
@@ -110,7 +111,7 @@ Rectangle {
             edge: Qt.RightEdge
             background: Rectangle {
                 anchors.fill: parent
-                color: "#f1f5f9"
+                color: settings.drawer_color
                 radius: 5
             }
 
@@ -118,17 +119,17 @@ Rectangle {
                 width: parent.width
                 height: parent.height
                 color: "transparent"
-
+                border.color: settings.border_color
+                border.width: 1
                 Column {
                     width: parent.width
-                    padding: 20
 
                     //chat detail header
                     Rectangle {
                         width: parent.width
-                        height: 100
+                        height: 150
                         color: "transparent"
-                        border.color: "#e0e0e0"
+                        border.color: settings.border_color
 
                         anchors.horizontalCenter: parent.horizontalCenter
                         Column {
@@ -148,8 +149,8 @@ Rectangle {
                                 text: "Group Chat 01"
                                 font.pixelSize: 16
                                 font.bold: true
-                                color: "#333333"
                                 horizontalAlignment: Text.AlignHCenter
+                                color: settings.txt_color
                             }
                         }
                     }
@@ -159,7 +160,7 @@ Rectangle {
                         width: parent.width
                         height: 50
                         color: "transparent"
-                        border.color: "#e0e0e0"
+                        border.color: settings.border_color
                         border.width: 1
                         anchors.horizontalCenter: parent.horizontalCenter
                         Row {
@@ -170,7 +171,7 @@ Rectangle {
                             Rectangle {
                                 width: 40
                                 height: 40
-                                color: hovered ? "#E0E0E0" : "transparent"
+                                color: hovered ? settings.hover_color : "transparent"
                                 property bool hovered: false
                                 radius: 5
                                 //  anchors.verticalCenter: parent.verticalCenter
@@ -193,7 +194,7 @@ Rectangle {
                             Rectangle {
                                 width: 40
                                 height: 40
-                                color: hovered ? "#E0E0E0" : "transparent"
+                                color: hovered ? settings.hover_color : "transparent"
                                 property bool hovered: false
                                 radius: 5
                                 anchors.verticalCenter: parent.verticalCenter
@@ -216,7 +217,7 @@ Rectangle {
                             Rectangle {
                                 width: 40
                                 height: 40
-                                color: hovered ? "#E0E0E0" : "transparent"
+                                color: hovered ? settings.hover_color : "transparent"
                                 property bool hovered: false
                                 radius: 5
                                 anchors.verticalCenter: parent.verticalCenter
@@ -239,7 +240,7 @@ Rectangle {
                             Rectangle {
                                 width: 40
                                 height: 40
-                                color: hovered ? "#E0E0E0" : "transparent"
+                                color: hovered ? settings.hover_color : "transparent"
                                 property bool hovered: false
                                 radius: 5
                                 anchors.verticalCenter: parent.verticalCenter
@@ -264,7 +265,7 @@ Rectangle {
                     Rectangle {
                         id: rectMemberList
                         width: parent.width
-                        border.color: "#e0e0e0"
+                        border.color: settings.border_color
                         height: children[0].height + children.length * 15
                         color: "transparent"
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -286,7 +287,7 @@ Rectangle {
                                     anchors.topMargin: 10
                                     text: "Group Members"
                                     font.pixelSize: 12
-                                    color: "#333333"
+                                    color: settings.txt_color
                                     font.bold: true
 
                                     Layout.fillWidth: true
@@ -299,7 +300,7 @@ Rectangle {
                                 height: 35
                                 border.color: "transparent"
                                 border.width: 1
-                                color: hovered ? "#e5e7eb" : "transparent"
+                                color: hovered ? settings.hover_color : "transparent"
 
                                 MouseArea {
                                     id: mouseArea
@@ -337,6 +338,7 @@ Rectangle {
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             text: "30 members"
+                                            color: settings.txt_color
                                         }
                                     }
                                 }
@@ -348,7 +350,7 @@ Rectangle {
                     Rectangle {
                         id: rectMemberRequest
                         width: parent.width
-                        border.color: "#e0e0e0"
+                        border.color: settings.border_color
                         height: children[0].height + children.length * 15
                         color: "transparent"
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -370,7 +372,7 @@ Rectangle {
                                     anchors.topMargin: 10
                                     text: "Group Request"
                                     font.pixelSize: 12
-                                    color: "#333333"
+                                    color: settings.txt_color
                                     font.bold: true
 
                                     Layout.fillWidth: true
@@ -383,7 +385,7 @@ Rectangle {
                                 height: 35
                                 border.color: "transparent"
                                 border.width: 1
-                                color: hovered ? "#e5e7eb" : "transparent"
+                                color: hovered ? settings.hover_color : "transparent"
 
                                 MouseArea {
 
@@ -421,6 +423,7 @@ Rectangle {
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             text: "Request (5)"
+                                            color: settings.txt_color
                                         }
                                     }
                                 }
@@ -432,7 +435,7 @@ Rectangle {
                     Rectangle {
                         id: rectOutGroup
                         width: parent.width
-                        border.color: "#e0e0e0"
+                        border.color: settings.border_color
                         height: children[0].height + children.length * 15
                         color: "transparent"
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -454,20 +457,20 @@ Rectangle {
                                     anchors.topMargin: 10
                                     text: "Group Option"
                                     font.pixelSize: 12
-                                    color: "#333333"
+                                    color: settings.txt_color
                                     font.bold: true
 
                                     Layout.fillWidth: true
                                 }
                             }
 
-                            //member management
+                            // group option
                             Rectangle {
                                 width: parent.width
                                 height: 35
                                 border.color: "transparent"
                                 border.width: 1
-                                color: hovered ? "#e5e7eb" : "transparent"
+                                color: hovered ? settings.hover_color : "transparent"
 
                                 MouseArea {
 
@@ -519,6 +522,7 @@ Rectangle {
                         id: drawerManageMember
                         control_handle: ""
                         lableText: "Member (30)"
+                        d_settings: settings
                     }
 
                     // Drawer for member request
@@ -526,6 +530,7 @@ Rectangle {
                         id: drawerMemberRequest
                         control_handle: "accept"
                         lableText: "Request (5)"
+                        d_settings: settings
                     }
 
                     //Message dialog
@@ -631,13 +636,13 @@ Rectangle {
                         width: messageId.width + 50
                         height: 35
                         radius: 20
-                        color: model.sender === "User" ? "#9b4ad5" : "#e5e7eb"
+                        color: model.sender === "User" ? settings.messsagebox_chat_sender : settings.messsagebox_chat_receiver
                         anchors.verticalCenter: parent.verticalCenter
 
                         Text {
                             id: messageId
                             text: model.message
-                            color: model.sender === "User" ? "white" : "#4d226b"
+                            color: model.sender === "User" ? "white" : settings.message_txt_sender
                             anchors.centerIn: parent
                             wrapMode: Text.WordWrap
                         }
@@ -663,12 +668,12 @@ Rectangle {
             text: "User haven't choose any file"
             wrapMode: Text.Wrap
         }
-        // Enter new message
+        // Message Input
         Rectangle {
             id: messRectId
             height: sendMessageId.height
             property int line_height: 30
-            color: "white"
+            color: "transparent"
             width: parent.width
             Layout.fillWidth: true
 
@@ -692,6 +697,16 @@ Rectangle {
                         TextArea {
                             id: messageTextArena
                             textMargin: 0
+                            background: Rectangle {
+                                width: parent.width
+                                height: parent.height
+                                color: settings.message_input
+                                radius: 15
+                                border.color: settings.border_color
+                                border.width: 1
+                            }
+                            color: settings.txt_color
+
                             width: parent.width
                             height: font.pixelSize + padding * 2
                             placeholderText: "Type a message..."
@@ -747,7 +762,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     background: Rectangle {
                         id: btnBackgroundOpenFile
-                        color: "#f1f5f9" // Default background color
+                        color: "transparent"
                         anchors.fill: parent
                         anchors.centerIn: parent
                         radius: 5
@@ -764,10 +779,9 @@ Rectangle {
                             anchors.fill: parent
                             hoverEnabled: true
 
-                            onEntered: btnBackgroundOpenFile.color
-                                       = "#d4b8e9" // Change to blue when hovered
+                            onEntered: btnBackgroundOpenFile.color = settings.hover_color
                             onExited: btnBackgroundOpenFile.color
-                                      = "#f1f5f9" // Revert to default when not hovered
+                                      = "transparent" // Revert to default when not hovered
                         }
                     }
 
@@ -805,7 +819,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     background: Rectangle {
                         id: btnBackground
-                        color: "#f1f5f9" // Default background color
+                        color: "transparent" // Default background color
                         anchors.fill: parent
                         radius: 5
                         Image {
@@ -821,10 +835,9 @@ Rectangle {
                             anchors.fill: parent
                             hoverEnabled: true
 
-                            onEntered: btnBackground.color
-                                       = "#d4b8e9" // Change to blue when hovered
+                            onEntered: btnBackground.color = settings.hover_color
                             onExited: btnBackground.color
-                                      = "#f1f5f9" // Revert to default when not hovered
+                                      = "transparent" // Revert to default when not hovered
                         }
                     }
 
