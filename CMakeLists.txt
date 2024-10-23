@@ -28,6 +28,9 @@ qt_add_qml_module(appProject_AnonymousChat
         QML_FILES JoinChatRoom.qml
         QML_FILES LoadingPage.qml
         QML_FILES HomeScreen.qml
+        QML_FILES ChatSession.qml
+        QML_FILES ChatContent.qml
+        QML_FILES ChatServices.js
 
 
 )
