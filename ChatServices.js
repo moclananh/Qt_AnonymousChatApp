@@ -6,7 +6,7 @@ function fetchData(url, callback) {
         } else if (xhr.readyState === XMLHttpRequest.DONE) {
             print('DONE')
             if (xhr.status == 200) {
-                console.log("resource found" + xhr.responseText.toString())
+                //console.log("resource found" + xhr.responseText.toString())
                 callback(xhr.responseText.toString())
             } else {
                 callback(null)

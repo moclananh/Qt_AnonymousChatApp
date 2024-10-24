@@ -83,7 +83,7 @@ Rectangle {
 
                     radius: 5
                     Image {
-                        source: "qrc:/images/sequence.png"
+                        source: settings.darkMode ? "qrc:/images/sequence2.png" : "qrc:/images/sequence.png"
                         width: 30
                         height: 30
                         smooth: true
@@ -177,7 +177,7 @@ Rectangle {
                                 //  anchors.verticalCenter: parent.verticalCenter
                                 Image {
                                     anchors.centerIn: parent
-                                    source: "qrc:/images/notice.png"
+                                    source: settings.darkMode ? "qrc:/images/notify2.png" : "qrc:/images/notice.png"
                                     width: 24
                                     height: 24
                                 }
@@ -200,7 +200,7 @@ Rectangle {
                                 anchors.verticalCenter: parent.verticalCenter
                                 Image {
                                     anchors.centerIn: parent
-                                    source: "qrc:/images/pin.png"
+                                    source: settings.darkMode ? "qrc:/images/pin2.png" : "qrc:/images/pin.png"
                                     width: 24
                                     height: 24
                                 }
@@ -223,7 +223,7 @@ Rectangle {
                                 anchors.verticalCenter: parent.verticalCenter
                                 Image {
                                     anchors.centerIn: parent
-                                    source: "qrc:/images/search.png"
+                                    source: settings.darkMode ? "qrc:/images/search2.png" : "qrc:/images/search.png"
                                     width: 24
                                     height: 24
                                 }
@@ -246,7 +246,7 @@ Rectangle {
                                 anchors.verticalCenter: parent.verticalCenter
                                 Image {
                                     anchors.centerIn: parent
-                                    source: "qrc:/images/setting.png"
+                                    source: settings.darkMode ? "qrc:/images/setting2.png" : "qrc:/images/setting.png"
                                     width: 24
                                     height: 24
                                 }
@@ -325,7 +325,7 @@ Rectangle {
 
                                     Image {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        source: "qrc:/images/friend_4309056.png"
+                                        source: settings.darkMode ? "qrc:/images/friend2.png" : "qrc:/images/friend_4309056.png"
                                         width: 20
                                         height: 20
                                     }
@@ -410,7 +410,7 @@ Rectangle {
 
                                     Image {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        source: "qrc:/images/addmem.png"
+                                        source: settings.darkMode ? "qrc:/images/add2.png" : "qrc:/images/addmem.png"
                                         width: 20
                                         height: 20
                                     }
@@ -496,7 +496,7 @@ Rectangle {
 
                                     Image {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        source: "qrc:/images/exit.png"
+                                        source: settings.darkMode ? "qrc:/images/exit2.png" : "qrc:/images/exit.png"
                                         width: 20
                                         height: 20
                                     }
@@ -520,7 +520,7 @@ Rectangle {
                     // Drawer for member management
                     CustomDrawer {
                         id: drawerManageMember
-                        control_handle: ""
+                        control_handle: false
                         lableText: "Member (30)"
                         d_settings: settings
                     }
@@ -528,7 +528,7 @@ Rectangle {
                     // Drawer for member request
                     CustomDrawer {
                         id: drawerMemberRequest
-                        control_handle: "accept"
+                        control_handle: true
                         lableText: "Request (5)"
                         d_settings: settings
                     }
@@ -659,12 +659,13 @@ Rectangle {
             }
         }
 
-        //File attached
+        //File attached display
         Text {
             id: txtId
             width: parent.width
             height: 20
             visible: false
+            color: settings.txt_color
             text: "User haven't choose any file"
             wrapMode: Text.Wrap
         }
@@ -768,7 +769,7 @@ Rectangle {
                         radius: 5
                         Image {
 
-                            source: "qrc:/images/attach_file.png"
+                            source: settings.darkMode ? "qrc:/images/attach_file_2.png" : "qrc:/images/attach_file.png"
                             width: 35
                             height: 35
                             anchors.centerIn: parent
@@ -842,8 +843,10 @@ Rectangle {
                     }
 
                     onClicked: {
-
                         messageTextArena.text = ""
+                        txtId.text = ""
+                        txtId.visible = false
+                        lsViewId.height += txtId.height
                     }
                 }
             }

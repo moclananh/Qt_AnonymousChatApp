@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Basic
 
 Drawer {
     property QtObject d_settings
@@ -7,7 +8,7 @@ Drawer {
     width: 350
     height: parent.height
     edge: Qt.RightEdge
-    property string control_handle: ""
+    property bool control_handle: false
     property string lableText
     background: Rectangle {
         anchors.fill: parent
@@ -33,6 +34,7 @@ Drawer {
         TextField {
             id: searchField
             placeholderText: "Search..."
+            color: d_settings.txt_color
             height: 30
             width: parent.width - 20
             background: Rectangle {
@@ -84,66 +86,99 @@ Drawer {
                     width: parent.width - 20
                     height: parent.height
                     color: "transparent"
-
+                    border.color: d_settings.border_color
                     Rectangle {
                         width: parent.width - 10
                         height: parent.height
                         color: "transparent"
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        Row {
-                            width: parent.width
-                            height: parent.height
-                            anchors.fill: parent
+                        Image {
+                            id: img
+                            source: model.image
+                            width: 30
+                            height: 30
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                        }
+
+                        Text {
+                            text: model.username
+                            font.pixelSize: 16
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: img.right
+                            anchors.leftMargin: 5
+                            color: d_settings.txt_color
+                        }
+
+                        // btn accept
+                        Rectangle {
+                            id: rectAcceptId
+                            width: 30
+                            height: 30
+                            color: "transparent"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: rectRejectId.left
+                            visible: control_handle ? true : false
 
                             Image {
-                                id: img
-                                source: model.image
-                                width: 30
-                                height: 30
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: parent.left
-                            }
-
-                            Text {
-                                text: model.username
-                                font.pixelSize: 16
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: img.right
-                                anchors.leftMargin: 5
-                                color: d_settings.txt_color
-                            }
-
-                            Image {
-                                visible: control_handle === "accept" ? true : false
-                                source: "qrc:/images/checked.png"
+                                source: d_settings.darkMode ? "qrc:/images/accept2.png" : "qrc:/images/checked.png"
                                 smooth: true
-                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.centerIn: parent
                                 height: 20
                                 width: 20
-                                anchors.right: btnDelete.left
                             }
 
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: rectAcceptId.color = d_settings.hover_color
+                                onExited: rectAcceptId.color = "transparent"
+                                onClicked: {
+                                    console.log("Accept button clicked")
+                                }
+                            }
+                        }
+
+                        //btn reject
+                        Rectangle {
+                            id: rectRejectId
+                            width: 30
+                            height: 30
+                            color: "transparent"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: parent.right
+
+                            // anchors.rightMargin: 5
                             Image {
                                 id: btnDelete
-                                source: "qrc:/images/delete_15194236.png"
+                                source: d_settings.darkMode ? "qrc:/images/trash2.png" : "qrc:/images/delete_15194236.png"
+                                anchors.centerIn: parent
                                 smooth: true
-                                anchors.verticalCenter: parent.verticalCenter
                                 height: 20
                                 width: 20
-                                anchors.right: parent.right
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: rectRejectId.color = d_settings.hover_color
+                                onExited: rectRejectId.color = "transparent"
+                                onClicked: {
+                                    console.log("Reject button clicked")
+                                }
                             }
                         }
                     }
 
-                    // Hover effect
-                    MouseArea {
-                        id: hoverArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onEntered: itemBackground.color = d_settings.hover_color
-                        onExited: itemBackground.color = "transparent"
-                    }
+                    //MouseArea for background hover effect (cannot using this b/c inside have rectangle with MouseArea -> conflict logic)
+                    // MouseArea {
+                    //     id: hoverArea
+                    //     anchors.fill: parent
+                    //     hoverEnabled: true
+                    //     onEntered: itemBackground.color = d_settings.hover_color
+                    //     onExited: itemBackground.color = "transparent"
+                    // }
                 }
             }
         }

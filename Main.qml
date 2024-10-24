@@ -127,7 +127,7 @@ ApplicationWindow {
                         width: parent.width * 0.8
                         Text {
                             id: txtAnotherBtn
-                            text: "Dark Mode"
+                            text: "Another button"
                             color: sharedSettings.txt_color
                             font.pixelSize: 18
                             anchors.verticalCenter: parent.verticalCenter
@@ -148,9 +148,37 @@ ApplicationWindow {
                         txtAnotherBtn.color = sharedSettings.txt_color
                     }
                     onClicked: {
-                        console.log("Dark mode: " + sharedSettings.darkMode)
-                        sharedSettings.darkMode = !sharedSettings.darkMode
+
                     }
+                }
+            }
+        }
+
+        // Switch button
+        Rectangle {
+            width: parent.width - 40
+            height: 50
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "transparent"
+            Row {
+                width: parent.width
+                height: parent.height
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 10
+                Switch {
+                    id: mySwitch
+
+                    // text: "Dark Mode"
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 50
+                    height: 30
+                    onToggled: sharedSettings.darkMode = !sharedSettings.darkMode
+                }
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "Dark Mode"
+                    color: sharedSettings.txt_color
                 }
             }
         }

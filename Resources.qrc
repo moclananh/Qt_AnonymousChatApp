@@ -19,5 +19,16 @@
         <file>images/pin.png</file>
         <file>images/notice.png</file>
         <file>images/landing4.gif</file>
+        <file>images/sequence2.png</file>
+        <file>images/exit2.png</file>
+        <file>images/friend2.png</file>
+        <file>images/accept2.png</file>
+        <file>images/notify2.png</file>
+        <file>images/add2.png</file>
+        <file>images/pin2.png</file>
+        <file>images/setting2.png</file>
+        <file>images/search2.png</file>
+        <file>images/trash2.png</file>
+        <file>images/attach_file_2.png</file>
     </qresource>
 </RCC>

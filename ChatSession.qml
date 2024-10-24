@@ -39,7 +39,7 @@ Rectangle {
                 height: 30
 
                 placeholderText: "Search..."
-
+                color: settings.txt_color
                 background: Rectangle {
                     width: parent.width
                     height: parent.height
