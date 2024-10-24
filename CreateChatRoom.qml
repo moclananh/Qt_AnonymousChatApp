@@ -136,7 +136,17 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: btnCreateRoom
                                 onClicked: {
-                                    pageLoader.source = "Main.qml"
+                                    // Validation logic
+                                    if (txtName.text.trim() === "") {
+                                        txtName.focus = true
+                                        txtName.placeholderText = "Name is required!"
+                                    } else if (txtRoomCode.text.trim() === "") {
+                                        txtRoomCode.focus = true
+                                        txtRoomCode.placeholderText = "Room code is required!"
+                                    } else {
+                                        // Validation successful, proceed
+                                        pageLoader.source = "Main.qml"
+                                    }
                                 }
                             }
                         }
