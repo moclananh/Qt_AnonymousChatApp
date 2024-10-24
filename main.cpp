@@ -4,7 +4,10 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-
+    //App information
+    app.setOrganizationName("AnonymousChat");
+    app.setOrganizationDomain("learnqt.guide");
+    app.setApplicationName("Project_AnonymousChat");
     QQmlApplicationEngine engine;
     QObject::connect(
         &engine,

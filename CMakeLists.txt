@@ -32,7 +32,7 @@ qt_add_qml_module(appProject_AnonymousChat
         QML_FILES ChatContent.qml
         QML_FILES ChatServices.js
         RESOURCES
-        QML_FILES Settings.qml
+        QML_FILES ThemeSettings.qml
 
 
 )

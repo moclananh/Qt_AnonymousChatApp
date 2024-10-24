@@ -4,14 +4,18 @@ import QtQuick.Layouts
 import QtQuick.Controls.Universal
 import QtQuick.Effects
 import QtQuick.Dialogs
+import QtCore
 
 ApplicationWindow {
+    id: rootId
     visible: true
     width: 1200
     height: 800
     title: "Chat Application"
 
-    property QtObject sharedSettings: Settings {}
+    property QtObject sharedSettings: ThemeSettings {
+        id: darkModeId
+    }
 
     // Material.theme: Material.Light
     Drawer {
@@ -169,10 +173,10 @@ ApplicationWindow {
                 Switch {
                     id: mySwitch
 
-                    // text: "Dark Mode"
                     anchors.verticalCenter: parent.verticalCenter
                     width: 50
                     height: 30
+                    checked: sharedSettings.darkMode ? true : false
                     onToggled: sharedSettings.darkMode = !sharedSettings.darkMode
                 }
                 Text {
@@ -210,5 +214,21 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    // Settings saved
+    Settings {
+        category: "window"
+        property alias x: rootId.x
+        property alias y: rootId.y
+        property alias width: rootId.width
+        property alias height: rootId.height
+    }
+
+    // Save darkmode option
+    Settings {
+        id: themeSettingsSaver
+        category: "theme"
+        property alias darkMode: darkModeId.darkMode
     }
 }
