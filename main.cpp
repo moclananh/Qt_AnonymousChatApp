@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    engine.loadFromModule("Project_AnonymousChat", "HomeScreen");
+    engine.loadFromModule("Project_AnonymousChat", "Main");
 
     return app.exec();
 }

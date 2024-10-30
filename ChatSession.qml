@@ -9,6 +9,7 @@ import "ChatServices.js" as ChatServices
 // Chat Section
 Rectangle {
     property QtObject settings
+    property QtObject drawer_settings
     id: chatSection
     // Layout.preferredWidth: 300
     Layout.minimumWidth: 0
@@ -24,17 +25,46 @@ Rectangle {
         height: parent.height
         // Search Header
         Rectangle {
+
             width: parent.width
             height: 40
             color: "transparent"
             Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
+            Rectangle {
+                id: btnMenu
+                width: 40
+                height: 40
+                color: "transparent"
+                radius: 5
+                anchors.left: parent.left
+                anchors.leftMargin: 5
+
+                Image {
+                    source: settings.darkMode ? "qrc:/images/menu_2.png" : "qrc:/images/menu_1.png"
+                    width: 30
+                    height: 30
+                    anchors.centerIn: parent
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onEntered: btnMenu.color = settings.hover_color
+                    onExited: btnMenu.color = "transparent"
+                    onClicked: {
+                        drawer_settings.open()
+                        //handle here
+                    }
+                }
+            }
 
             // Search field
             TextArea {
                 id: chatField
-                width: parent.width - 20
-                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width - 60
+                anchors.left: btnMenu.right
+                anchors.leftMargin: 5
+                anchors.verticalCenter: parent.verticalCenter
                 y: 10
                 height: 30
 

@@ -30,5 +30,7 @@
         <file>images/search2.png</file>
         <file>images/trash2.png</file>
         <file>images/attach_file_2.png</file>
+        <file>images/menu_2.png</file>
+        <file>images/menu_1.png</file>
     </qresource>
 </RCC>

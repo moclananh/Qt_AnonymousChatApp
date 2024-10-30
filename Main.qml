@@ -16,7 +16,7 @@ ApplicationWindow {
     property QtObject sharedSettings: ThemeSettings {
         id: darkModeId
     }
-
+    property QtObject drawerRef: sidebar
     // Material.theme: Material.Light
     Drawer {
         id: sidebar
@@ -205,12 +205,19 @@ ApplicationWindow {
 
                 // Chat Session
                 ChatSession {
-                    settings: sharedSettings
+                    settings: {
+                        sharedSettings
+                    }
+                    drawer_settings: {
+                        drawerRef
+                    }
                 }
 
                 // ChatContent
                 ChatContent {
-                    settings: sharedSettings
+                    settings: {
+                        sharedSettings
+                    }
                 }
             }
         }
