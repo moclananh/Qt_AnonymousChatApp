@@ -16,4 +16,5 @@ QtObject {
     property color choose_color: darkMode ? "#472948" : "#f8e8ff"
     property color border_color: darkMode ? "#3e4042" : "#e0e0e0"
     property color message_input: darkMode ? "#6d666f" : "#ffffff"
+    property color user_name: darkMode ? "#a69ba8" : "#5a006d"
 }
