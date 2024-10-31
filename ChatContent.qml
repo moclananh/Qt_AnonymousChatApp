@@ -553,161 +553,183 @@ Rectangle {
         }
 
         // Messages List
-        ListView {
-            id: lsViewId
+        ScrollView {
             width: parent.width
             height: parent.height - messRectId.height - chatContentHeader.height - 10
-
-            //spacing: 10
             clip: true
-            model: ListModel {
-                ListElement {
-                    sender: "Kris"
-                    message: "Similar to the West Lake and Thousand Island Lake"
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    sender: "User"
-                    message: "What is that?"
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    sender: "Cozier"
-                    message: "I want to see some other ways to explain the scenic spots."
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    sender: "User"
-                    message: "I do not know!"
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    sender: "Janice"
-                    message: "I want to see some other ways to explain the scenic spots."
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
-                }
 
-                ListElement {
-                    sender: "User"
-                    message: "I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much.
-I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. "
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    sender: "Janice"
-                    message: "I want to see some other ways to explain the scenic spots.I don't use this kind of class very much. I don't use this kind of class very much.
-I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. "
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    sender: "Janice"
-                    message: "I want to see some other ways to explain the scenic spots."
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    sender: "User"
-                    message: "I do not know!"
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
-                }
+            ListView {
+                id: lsViewId
+                width: parent.width
+                height: parent.height
+                //spacing: 10
+                clip: true
+                model: ListModel {
+                    ListElement {
+                        sender: "Kris"
+                        message: "Similar to the West Lake and Thousand Island Lake"
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
+                    ListElement {
+                        sender: "User"
+                        message: "What is that?"
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
+                    ListElement {
+                        sender: "Cozier"
+                        message: "I want to see some other ways to explain the scenic spots."
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
+                    ListElement {
+                        sender: "User"
+                        message: "I do not know!"
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
+                    ListElement {
+                        sender: "Janice"
+                        message: "I want to see some other ways to explain the scenic spots."
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
 
-                ListElement {
-                    sender: "Janice"
-                    message: "Who are these three?"
-                    time: "9:31am"
-                    image: "https://placehold.co/50x50"
+                    ListElement {
+                        sender: "User"
+                        message: "I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much.
+I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. "
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
+                    ListElement {
+                        sender: "Janice"
+                        message: "I want to see some other ways to explain the scenic spots.I don't use this kind of class very much. I don't use this kind of class very much.
+I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. "
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
+                    ListElement {
+                        sender: "Janice"
+                        message: "I want to see some other ways to explain the scenic spots."
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
+                    ListElement {
+                        sender: "User"
+                        message: "I do not know!"
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
+
+                    ListElement {
+                        sender: "Janice"
+                        message: "Who are these three?"
+                        time: "9:31am"
+                        image: "https://placehold.co/50x50"
+                    }
+                }
+                delegate: Rectangle {
+                    color: "transparent"
+                    width: parent ? parent.width - 30 : 0
+
+                    Component.onCompleted: {
+                        if (parent)
+                            anchors.horizontalCenter = parent.horizontalCenter
+                    }
+
+                    height: positionId.height
+
+                    Row {
+                        id: positionId
+                        spacing: 10
+                        Component.onCompleted: {
+                            if (model.sender === "User") {
+                                positionId.anchors.right = parent.right
+                            }
+                        }
+                        height: Math.max(avatarContent.height,
+                                         msgContent.height) + 20
+
+                        layoutDirection: model.sender === "User" ? "RightToLeft" : "LeftToRight"
+
+                        // Avatar
+                        Rectangle {
+                            width: 35
+                            height: username.height + rectMessage.height
+                            color: "transparent"
+                            visible: model.sender === "User" ? false : true
+                            Rectangle {
+                                id: avatarContent
+                                width: 35
+                                height: 35
+                                radius: 1
+                                color: "transparent"
+                                border.color: "transparent"
+                                visible: model.sender === "User" ? false : true
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 2
+                                ImageRounded {
+                                    x: parent.width / 2 - r_width / 2
+                                    source: model.image
+                                    r_width: parent.width
+                                    r_height: parent.height
+                                }
+                            }
+                        }
+                        Column {
+                            id: msgContent
+                            height: username.height + rectMessage.height
+                            // Username
+                            Rectangle {
+                                id: username
+                                width: rectMessage.width
+                                height: 20
+                                color: "transparent"
+                                visible: model.sender === "User" ? false : true
+                                //anchors.bottom: rectMessage.top
+                                Text {
+                                    text: model.sender
+                                    color: settings.txt_color
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 5
+                                }
+                            }
+
+                            // Message Box
+                            Rectangle {
+                                id: rectMessage
+                                width: Math.min(messageId.implicitWidth + 40,
+                                                500)
+                                height: messageId.implicitHeight + 20
+                                radius: 20
+                                color: model.sender === "User" ? settings.messsagebox_chat_sender : settings.messsagebox_chat_receiver
+
+                                Text {
+                                    id: messageId
+                                    text: model.message
+                                    color: model.sender
+                                           === "User" ? "white" : settings.message_txt_sender
+                                    anchors.centerIn: rectMessage
+                                    wrapMode: Text.WordWrap
+                                    width: parent.width - 40
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            delegate: Rectangle {
-                color: "transparent"
-                width: parent.width - 20
-                anchors.horizontalCenter: parent.horizontalCenter
-                height: positionId.height
 
-                Row {
-                    id: positionId
-                    spacing: 10
-                    Component.onCompleted: {
-                        if (model.sender === "User") {
-                            positionId.anchors.right = parent.right
-                        }
-                    }
-                    height: Math.max(avatarContent.height,
-                                     msgContent.height) + 20
+            // Customized scroll bar
+            ScrollBar.vertical: ScrollBar {
+                id: customScrollBar
+                width: 5
+                height: parent.height
+                policy: ScrollBar.AsNeeded
 
-                    layoutDirection: model.sender === "User" ? "RightToLeft" : "LeftToRight"
-
-                    // Avatar
-                    Rectangle {
-                        width: 35
-                        height: username.height + rectMessage.height
-                        color: "transparent"
-                        visible: model.sender === "User" ? false : true
-                        Rectangle {
-                            id: avatarContent
-                            width: 35
-                            height: 35
-                            radius: 1
-                            color: "transparent"
-                            border.color: "transparent"
-                            visible: model.sender === "User" ? false : true
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: 2
-                            ImageRounded {
-                                x: parent.width / 2 - r_width / 2
-                                source: model.image
-                                r_width: parent.width
-                                r_height: parent.height
-                            }
-                        }
-                    }
-                    Column {
-                        id: msgContent
-                        height: username.height + rectMessage.height
-                        // Username
-                        Rectangle {
-                            id: username
-                            width: rectMessage.width
-                            height: 20
-                            color: "transparent"
-                            visible: model.sender === "User" ? false : true
-                            //anchors.bottom: rectMessage.top
-                            Text {
-                                text: model.sender
-                                color: settings.txt_color
-                                anchors.left: parent.left
-                                anchors.leftMargin: 5
-                            }
-                        }
-
-                        // Message Box
-                        Rectangle {
-                            id: rectMessage
-                            width: Math.min(messageId.implicitWidth + 40, 500)
-                            height: messageId.implicitHeight + 20
-                            radius: 20
-                            color: model.sender === "User" ? settings.messsagebox_chat_sender : settings.messsagebox_chat_receiver
-
-                            Text {
-                                id: messageId
-                                text: model.message
-                                color: model.sender
-                                       === "User" ? "white" : settings.message_txt_sender
-                                anchors.centerIn: rectMessage
-                                wrapMode: Text.WordWrap
-                                width: parent.width - 40
-                            }
-                        }
-                    }
-                }
+                anchors.right: parent.right
+                anchors.margins: 5
             }
         }
 
