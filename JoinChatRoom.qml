@@ -76,7 +76,7 @@ Rectangle {
                         TextField {
                             id: txtName
                             placeholderText: "Enter your name..."
-                            width: parent.width
+                            width: chatContent.width * 0.6
                             height: 40
                         }
 
@@ -88,7 +88,7 @@ Rectangle {
                         TextField {
                             id: txtRoomCode
                             placeholderText: "Enter room code..."
-                            width: parent.width
+                            width: chatContent.width * 0.6
                             height: 40
                         }
 
@@ -100,7 +100,7 @@ Rectangle {
                         TextField {
                             id: txtMessage
                             placeholderText: "Enter a message..."
-                            width: parent.width
+                            width: chatContent.width * 0.6
                             height: 40
                         }
                     }

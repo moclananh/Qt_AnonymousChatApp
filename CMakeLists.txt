@@ -33,6 +33,8 @@ qt_add_qml_module(appProject_AnonymousChat
         QML_FILES ChatServices.js
         RESOURCES
         QML_FILES ThemeSettings.qml
+        QML_FILES JoinNewRoom.qml
+        QML_FILES CreateNewRoom.qml
 
 
 )

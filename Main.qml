@@ -23,7 +23,7 @@ ApplicationWindow {
         width: 300
         height: parent.height
         edge: Qt.LeftEdge
-        modal: false
+        // modal: false
         background: Rectangle {
             color: sharedSettings.user_drawer
         }
@@ -46,9 +46,9 @@ ApplicationWindow {
                 }
             }
 
-            // Chat Button
+            // Create new room button
             Rectangle {
-                id: chatButton
+                id: createNewRoom
                 width: parent.width
                 height: 50
                 color: "transparent" // Same as the parent by default
@@ -74,8 +74,8 @@ ApplicationWindow {
                         color: "transparent"
                         width: parent.width * 0.8
                         Text {
-                            id: txtChatColor
-                            text: "Chat"
+                            id: txtCreateNewRoom
+                            text: "Create Room"
                             color: sharedSettings.txt_color
                             font.pixelSize: 18
                             anchors.verticalCenter: parent.verticalCenter
@@ -87,24 +87,23 @@ ApplicationWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: {
-                        chatButton.color = sharedSettings.hover_color
-                        txtChatColor.color = sharedSettings.txt_color
+                        createNewRoom.color = sharedSettings.hover_color
+                        txtCreateNewRoom.color = sharedSettings.txt_color
                     }
                     onExited: {
 
-                        chatButton.color = "transparent"
-                        txtChatColor.color = sharedSettings.txt_color
+                        createNewRoom.color = "transparent"
+                        txtCreateNewRoom.color = sharedSettings.txt_color
                     }
                     onClicked: {
-
-                        // Handle click
+                        createNewRoomId.open()
                     }
                 }
             }
 
-            // Another Button
+            // Join new room button
             Rectangle {
-                id: anotherButton
+                id: joinNewRoomButton
                 width: parent.width
                 height: 50
                 color: "transparent" // Same as the parent by default
@@ -130,8 +129,8 @@ ApplicationWindow {
                         color: "transparent"
                         width: parent.width * 0.8
                         Text {
-                            id: txtAnotherBtn
-                            text: "Another button"
+                            id: txtJoinNewRoomBtn
+                            text: "Join Room"
                             color: sharedSettings.txt_color
                             font.pixelSize: 18
                             anchors.verticalCenter: parent.verticalCenter
@@ -143,16 +142,16 @@ ApplicationWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: {
-                        anotherButton.color = sharedSettings.hover_color
-                        txtAnotherBtn.color = sharedSettings.txt_color
+                        joinNewRoomButton.color = sharedSettings.hover_color
+                        txtJoinNewRoomBtn.color = sharedSettings.txt_color
                     }
                     onExited: {
 
-                        anotherButton.color = "transparent"
-                        txtAnotherBtn.color = sharedSettings.txt_color
+                        joinNewRoomButton.color = "transparent"
+                        txtJoinNewRoomBtn.color = sharedSettings.txt_color
                     }
                     onClicked: {
-
+                        joinNewRoomId.open()
                     }
                 }
             }
@@ -218,6 +217,18 @@ ApplicationWindow {
                     settings: {
                         sharedSettings
                     }
+                }
+
+                //drawer for join new room
+                JoinNewRoom {
+                    id: joinNewRoomId
+                    settings: sharedSettings
+                }
+
+                //drawer for create new room
+                CreateNewRoom {
+                    id: createNewRoomId
+                    settings: sharedSettings
                 }
             }
         }

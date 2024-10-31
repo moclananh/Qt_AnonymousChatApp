@@ -154,9 +154,10 @@ Rectangle {
                             hoverEnabled: true
 
                             onClicked: {
-                                listView.currentIndex = index
-                                for (var i = 0; i < listView.count; i++) {
-                                    listView.itemAtIndex(i).isSelected = false
+                                listViewSessionId.currentIndex = index
+                                for (var i = 0; i < listViewSessionId.count; i++) {
+                                    listViewSessionId.itemAtIndex(
+                                                i).isSelected = false
                                 }
                                 isSelected = true
                             }
