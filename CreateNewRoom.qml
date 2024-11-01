@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Universal
+import cookie.service 1.0
+import "ChatServices.js" as ChatServices
 
 Drawer {
 
@@ -32,18 +34,6 @@ Drawer {
                 color: settings.txt_color
             }
 
-            //user name
-            Text {
-                text: "User Name"
-                color: settings.txt_color
-            }
-            TextField {
-                id: txtName
-                placeholderText: "Enter your name..."
-                width: rectChatHeader.width
-                height: 40
-            }
-
             //room code
             Text {
                 text: "Room Name"
@@ -51,7 +41,7 @@ Drawer {
             }
             TextField {
                 id: txtRoomCode
-                placeholderText: "Enter room code..."
+                placeholderText: "Enter room name ..."
                 width: rectChatHeader.width
                 height: 40
             }
@@ -65,7 +55,7 @@ Drawer {
                 id: cbDuration
                 height: 35
                 width: rectChatHeader.width * 0.5
-                model: ["15 minutes", "30 minutes", "60 minutes", "Unlimited"]
+                model: ["15 minutes", "30 minutes", "60 minutes"]
             }
 
             // Maximum member
@@ -77,7 +67,7 @@ Drawer {
                 id: cbLimitMember
                 height: 35
                 width: rectChatHeader.width * 0.5
-                model: ["10 members", "20 members", "30 members", "Unlimited"]
+                model: ["10 members", "20 members", "30 members"]
             }
 
             //Check box
@@ -115,7 +105,35 @@ Drawer {
                             txtRoomCode.focus = true
                             txtRoomCode.placeholderText = "Room code is required!"
                         } else {
-                            console.log("Create new room")
+
+                            // Validation successful, proceed
+
+                            // var user_id = cookieId.loadCookie("user_id")
+                            var requestData = {
+                                "approval_require": optinalId.checked,
+                                "duration": cbDuration.currentIndex
+                                            === 3 ? 0 : parseInt(
+                                                        cbDuration.currentText),
+                                "group_name": txtRoomCode.text,
+                                "maximum_members": cbLimitMember.currentIndex
+                                                   === 3 ? 0 : parseInt(
+                                                               cbLimitMember.currentText),
+                                "username": "" //LinhNH handle here
+                            }
+
+                            // API call using ChatServices.fetchData
+                            ChatServices.fetchData(
+                                        "http://127.0.0.1:8080/add-user-group",
+                                        "POST", function (response) {
+                                            if (response) {
+                                                let resObject = JSON.parse(
+                                                        response)
+                                                console.log("Room created successfully:",
+                                                            resObject)
+                                            } else {
+                                                console.log("Failed to create room")
+                                            }
+                                        }, requestData)
                         }
                     }
                 }

@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Material
+import cookie.service 1.0
+import "ChatServices.js" as ChatServices
 
 // ApplicationWindow {
 //     visible: true
@@ -12,10 +14,18 @@ Rectangle {
     width: parent.width
     height: parent.height
     color: "white"
+
+    //PageLoader
     Loader {
         id: pageLoader
         anchors.fill: parent
     }
+
+    //Service
+    Cookie {
+        id: cookieId
+    }
+
     ColumnLayout {
         anchors.fill: parent
         width: parent.width
@@ -102,7 +112,7 @@ Rectangle {
                             id: cbDuration
                             height: 35
                             width: parent.width * 0.5
-                            model: ["15 minutes", "30 minutes", "60 minutes", "Unlimited"]
+                            model: ["15 minutes", "30 minutes", "60 minutes"]
                         }
 
                         // Maximum member
@@ -114,7 +124,7 @@ Rectangle {
                             id: cbLimitMember
                             height: 35
                             width: parent.width * 0.5
-                            model: ["10 members", "20 members", "30 members", "Unlimited"]
+                            model: ["10 members", "20 members", "30 members"]
                         }
 
                         //Check box
@@ -130,9 +140,6 @@ Rectangle {
                             height: 40
                             width: 100
                             text: "Create"
-                            // anchors.top: optinalId.bottom
-                            // width: 100
-                            // height: 40
                             MouseArea {
                                 anchors.fill: btnCreateRoom
                                 onClicked: {
@@ -145,7 +152,35 @@ Rectangle {
                                         txtRoomCode.placeholderText = "Room code is required!"
                                     } else {
                                         // Validation successful, proceed
-                                        pageLoader.source = "Main.qml"
+                                        var requestData = {
+                                            "approval_require": optinalId.checked,
+                                            "duration": cbDuration.currentIndex
+                                                        === 3 ? 0 : parseInt(
+                                                                    cbDuration.currentText),
+                                            "group_name": txtRoomCode.text,
+                                            "maximum_members": cbLimitMember.currentIndex === 3 ? 0 : parseInt(cbLimitMember.currentText),
+                                            "username": txtName.text
+                                        }
+
+                                        // API call using ChatServices.fetchData
+                                        ChatServices.fetchData(
+                                                    "http://127.0.0.1:8080/add-user-group",
+                                                    "POST",
+                                                    function (response) {
+                                                        if (response) {
+                                                            let resObject = JSON.parse(
+                                                                    response)
+                                                            console.log("Room created successfully:",
+                                                                        resObject)
+                                                            cookieId.saveCookie(
+                                                                        "user_id",
+                                                                        resObject.user_id,
+                                                                        3600000)
+                                                            pageLoader.source = "Main.qml"
+                                                        } else {
+                                                            console.log("Failed to create room")
+                                                        }
+                                                    }, requestData)
                                     }
                                 }
                             }

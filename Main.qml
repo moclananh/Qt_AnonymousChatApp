@@ -5,6 +5,7 @@ import QtQuick.Controls.Universal
 import QtQuick.Effects
 import QtQuick.Dialogs
 import QtCore
+import cookie.service 1.0
 
 ApplicationWindow {
     id: rootId
@@ -12,6 +13,11 @@ ApplicationWindow {
     width: 1200
     height: 800
     title: "Chat Application"
+
+    // Service
+    Cookie {
+        id: cookieId
+    }
 
     property QtObject sharedSettings: ThemeSettings {
         id: darkModeId
@@ -152,6 +158,65 @@ ApplicationWindow {
                     }
                     onClicked: {
                         joinNewRoomId.open()
+                    }
+                }
+            }
+
+            //logout button
+            // Join new room button
+            Rectangle {
+                id: logoutBtn
+                width: parent.width
+                height: 50
+                color: "transparent" // Same as the parent by default
+                radius: 10
+
+                Row {
+                    anchors.fill: parent
+                    spacing: 10
+                    Rectangle {
+                        width: 20
+                        color: "transparent"
+                        height: parent.height
+                    }
+
+                    MyIcon {
+                        m_source: "qrc:/images/comments_16903656.gif"
+                        m_height: 32
+                        m_width: 32
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        height: parent.height
+                        color: "transparent"
+                        width: parent.width * 0.8
+                        Text {
+                            id: txtLogout
+                            text: "Logout"
+                            color: sharedSettings.txt_color
+                            font.pixelSize: 18
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onEntered: {
+                        logoutBtn.color = sharedSettings.hover_color
+                        txtLogout.color = sharedSettings.txt_color
+                    }
+                    onExited: {
+
+                        logoutBtn.color = "transparent"
+                        txtLogout.color = sharedSettings.txt_color
+                    }
+                    onClicked: {
+
+                        // handle logout
+                        cookieId.removeCookie()
+                        Qt.quit()
                     }
                 }
             }

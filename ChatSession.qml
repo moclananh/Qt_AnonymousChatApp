@@ -5,8 +5,8 @@ import QtQuick.Controls.Universal
 import QtQuick.Effects
 import QtQuick.Dialogs
 import "ChatServices.js" as ChatServices
+import cookie.service 1.0
 
-// Chat Section
 // Chat Section
 Rectangle {
     property QtObject settings
@@ -18,6 +18,11 @@ Rectangle {
     width: 300
     height: parent.height
     visible: parent.width > 800
+
+    //Service
+    Cookie {
+        id: cookieId
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -117,7 +122,7 @@ Rectangle {
                                 height: 60
                                 radius: width
                                 ImageRounded {
-                                    source: model.image
+                                    source: "https://placehold.co/50x50"
                                     r_width: parent.width
                                     r_height: parent.height
                                 }
@@ -131,17 +136,17 @@ Rectangle {
                                 ColumnLayout {
                                     spacing: 3
                                     Text {
-                                        text: model.name
+                                        text: model.group_name
                                         font.bold: true
                                         color: settings.txt_color
                                     }
                                     Text {
-                                        text: model.message
+                                        text: model.latest_ms_content
                                         color: settings.txt_color
                                         elide: Text.ElideRight
                                     }
                                     Text {
-                                        text: model.time
+                                        text: model.latest_ms_time
                                         color: settings.txt_color
                                     }
                                 }
@@ -182,50 +187,78 @@ Rectangle {
         }
 
         Component.onCompleted: {
-            ChatServices.fetchData(
-                        "https://2fd5986c-7c90-408a-8ea4-9a43f049c5c7.mock.pstmn.io/groups-ok",
-                        function (response) {
-                            if (response) {
-                                var object = JSON.parse(response)
-                                object.listGroup.forEach(function (data) {
-                                    var fetchedTime = new Date(Date.parse(
-                                                                   data.groupLastestMessageTime))
-                                    var currentTime = new Date()
-                                    var timeDifference = Math.floor(
-                                                (currentTime - fetchedTime) / 1000)
-                                    var timeString
+            var user_id = cookieId.loadCookie("user_id")
+            ChatServices.fetchData(`http://127.0.0.1:8080/gr/list/${user_id}`,
+                                   "GET", function (response) {
+                                       if (response) {
+                                           var object = JSON.parse(response)
+                                           object.list_gr.forEach(
+                                                       function (data) {
+                                                           var fetchedTime
+                                                           var timeString
 
-                                    if (timeDifference < 60) {
-                                        timeString = timeDifference + " seconds ago"
-                                    } else if (timeDifference < 3600) {
-                                        timeString = Math.floor(
-                                                    timeDifference / 60) + " minutes ago"
-                                    } else if (timeDifference < 86400) {
-                                        timeString = Math.floor(
-                                                    timeDifference / 3600) + " hours ago"
-                                    } else {
-                                        timeString = Math.floor(
-                                                    timeDifference / 86400) + " days ago"
-                                    }
+                                                           if (data.latest_ms_content === "") {
+                                                               data.latest_ms_content
+                                                                       = "Group just created"
+                                                               // Adjust for local time zone (GMT+7)
+                                                               fetchedTime = new Date(new Date(data.created_at).getTime() + 7 * 60 * 60 * 1000)
+                                                               console.log("Create group time: " + fetchedTime)
+                                                           } else {
+                                                               latest_ms_content
+                                                                       = data.latest_ms_content
+                                                               // Adjust for local time zone (GMT+7)
+                                                               fetchedTime = new Date(new Date(data.latest_ms_time).getTime() + 7 * 60 * 60 * 1000)
+                                                               console.log("Latest message time: " + fetchedTime)
+                                                           }
 
-                                    groupListModel.append({
-                                                              "name": data.groupName,
-                                                              "message": data.groupLastestMessage,
-                                                              "time": timeString,
-                                                              "image": data.groupAvatar
-                                                          })
-                                })
-                                // Scroll to the bottom after adding new data
-                                if (groupListModel.count > 0) {
-                                    listViewSessionId.currentIndex = groupListModel.count - 1
-                                    listViewSessionId.positionViewAtIndex(
-                                                listViewSessionId.currentIndex,
-                                                ListView.End) // Optionally set scroll position
-                                }
-                            } else {
-                                console.log("Failed to fetch data")
-                            }
-                        })
+                                                           var currentTime = new Date()
+                                                           console.log("Current time: "
+                                                                       + currentTime)
+
+                                                           var timeDifference = Math.floor(
+                                                                       (currentTime - fetchedTime)
+                                                                       / 1000)
+
+                                                           // Calculate timeString based on the fetchedTime
+                                                           if (timeDifference < 60) {
+                                                               timeString = timeDifference
+                                                                       + " seconds ago"
+                                                           } else if (timeDifference < 3600) {
+                                                               timeString = Math.floor(
+                                                                           timeDifference / 60)
+                                                                       + " minutes ago"
+                                                           } else if (timeDifference < 86400) {
+                                                               timeString = Math.floor(
+                                                                           timeDifference / 3600)
+                                                                       + " hours ago"
+                                                           } else {
+                                                               timeString = Math.floor(
+                                                                           timeDifference / 86400)
+                                                                       + " days ago"
+                                                           }
+
+                                                           groupListModel.append({
+                                                                                     "group_name": data.group_name,
+                                                                                     "group_id": data.group_id,
+                                                                                     "group_code": data.group_code,
+                                                                                     "expired_at": data.expired_at,
+                                                                                     "latest_ms_content": data.latest_ms_content,
+                                                                                     "latest_ms_time": timeString
+                                                                                 })
+                                                       })
+
+                                           // Scroll to the bottom after adding new data
+                                           if (groupListModel.count > 0) {
+                                               listViewSessionId.currentIndex
+                                                       = groupListModel.count - 1
+                                               listViewSessionId.positionViewAtIndex(
+                                                           listViewSessionId.currentIndex,
+                                                           ListView.End)
+                                           }
+                                       } else {
+                                           console.log("Failed to fetch data")
+                                       }
+                                   })
         }
     }
 }
