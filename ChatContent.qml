@@ -51,7 +51,6 @@ Rectangle {
                     width: 50
                     height: 50
                     radius: 25
-                    color: "transparent"
                     border.color: "transparent"
 
                     ImageRounded {
