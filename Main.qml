@@ -23,6 +23,10 @@ ApplicationWindow {
         id: darkModeId
     }
     property QtObject drawerRef: sidebar
+
+    function handleChatSessionSelected(groupId) {
+        chatContent.groupId = groupId
+    }
     // Material.theme: Material.Light
     Drawer {
         id: sidebar
@@ -269,16 +273,21 @@ ApplicationWindow {
 
                 // Chat Session
                 ChatSession {
-                    settings: {
-                        sharedSettings
-                    }
-                    drawer_settings: {
-                        drawerRef
+                    id: chatSession
+                    settings: sharedSettings
+                    drawer_settings: drawerRef
+                    onChatSessionSelected: function (groupId) {
+                        handleChatSessionSelected(groupId)
                     }
                 }
 
                 // ChatContent
                 ChatContent {
+                    id: chatContent
+                    onGroupIdChanged: {
+                        chatContent.loadGroupDataLayout()
+                    }
+
                     settings: {
                         sharedSettings
                     }

@@ -161,26 +161,34 @@ Rectangle {
                                             "maximum_members": cbLimitMember.currentIndex === 3 ? 0 : parseInt(cbLimitMember.currentText),
                                             "username": txtName.text
                                         }
-
+                                        var handler = function (response) {
+                                            if (response) {
+                                                let resObject = JSON.parse(
+                                                        response)
+                                                console.log("Room created successfully:",
+                                                            resObject)
+                                                cookieId.saveCookie(
+                                                            "user_id",
+                                                            resObject.user_id,
+                                                            3600000)
+                                                cookieId.saveCookie(
+                                                            "user_name",
+                                                            resObject.user_name,
+                                                            3600000)
+                                                cookieId.saveCookie(
+                                                            "user_code",
+                                                            resObject.user_code,
+                                                            3600000)
+                                                pageLoader.source = "Main.qml"
+                                            } else {
+                                                console.log("Failed to create room")
+                                            }
+                                        }
                                         // API call using ChatServices.fetchData
                                         ChatServices.fetchData(
                                                     "http://127.0.0.1:8080/add-user-group",
-                                                    "POST",
-                                                    function (response) {
-                                                        if (response) {
-                                                            let resObject = JSON.parse(
-                                                                    response)
-                                                            console.log("Room created successfully:",
-                                                                        resObject)
-                                                            cookieId.saveCookie(
-                                                                        "user_id",
-                                                                        resObject.user_id,
-                                                                        3600000)
-                                                            pageLoader.source = "Main.qml"
-                                                        } else {
-                                                            console.log("Failed to create room")
-                                                        }
-                                                    }, requestData)
+                                                    "POST", null, handler,
+                                                    requestData)
                                     }
                                 }
                             }

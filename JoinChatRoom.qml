@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Material
+import cookie.service 1.0
+import "ChatServices.js" as ChatServices
 
 // ApplicationWindow {
 //     visible: true
@@ -16,6 +18,12 @@ Rectangle {
         id: pageLoader
         anchors.fill: parent
     }
+
+    //Cookie
+    Cookie {
+        id: cookieId
+    }
+
     ColumnLayout {
         anchors.fill: parent
         width: parent.width
@@ -125,8 +133,34 @@ Rectangle {
                                     txtRoomCode.focus = true
                                     txtRoomCode.placeholderText = "Room code is required!"
                                 } else {
+
                                     // Validation successful, proceed
-                                    pageLoader.source = "LoadingPage.qml"
+                                    var data = {
+                                        "group_code": txtRoomCode.text.trim(),
+                                        "message": txtMessage.text.trim(),
+                                        "username": txtName.text.trim()
+                                    }
+
+                                    // API call using ChatServices.fetchData
+                                    ChatServices.fetchData(
+                                                "http://127.0.0.1:8080/join-group",
+                                                "POST", function (response) {
+                                                    if (response) {
+                                                        let resObject = JSON.parse(
+                                                                response)
+                                                        console.log("Join group success:",
+                                                                    resObject)
+                                                        cookieId.saveCookie(
+                                                                    "user_id",
+                                                                    resObject.user_id,
+                                                                    3600000)
+
+                                                        pageLoader.source = "Main.qml"
+                                                    } else {
+                                                        console.error(
+                                                                    "Failed to join group")
+                                                    }
+                                                }, data)
                                 }
                             }
                         }

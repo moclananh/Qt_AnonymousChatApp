@@ -11,7 +11,9 @@ import cookie.service 1.0
 Rectangle {
     property QtObject settings
     property QtObject drawer_settings
+
     id: chatSection
+    signal chatSessionSelected(int groupId)
     Layout.minimumWidth: 0
     Layout.fillHeight: true
     color: settings.bg_chatsession_color
@@ -105,7 +107,7 @@ Rectangle {
 
                     Rectangle {
                         id: itemRect
-                        width: parent.width - 20
+                        width: parent.width
                         height: 70
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: isSelected ? settings.choose_color : (isHovered ? settings.hover_color : "transparent")
@@ -129,25 +131,42 @@ Rectangle {
                             }
 
                             Rectangle {
+                                id: rectMsg
                                 width: parent.width - rectImg.width - 20
                                 height: 60
                                 color: "transparent"
-
                                 ColumnLayout {
-                                    spacing: 3
-                                    Text {
-                                        text: model.group_name
-                                        font.bold: true
-                                        color: settings.txt_color
+                                    Rectangle {
+                                        width: rectMsg.width
+                                        height: 15
+                                        color: "transparent"
+                                        Text {
+                                            text: model.group_name
+                                            font.bold: true
+                                            color: settings.txt_color
+                                            elide: Text.ElideRight
+                                            width: parent.width
+                                        }
                                     }
-                                    Text {
-                                        text: model.latest_ms_content
-                                        color: settings.txt_color
-                                        elide: Text.ElideRight
+                                    Rectangle {
+                                        width: rectMsg.width
+                                        height: 15
+                                        color: "transparent"
+                                        Text {
+                                            text: model.latest_ms_content
+                                            color: settings.txt_color
+                                            elide: Text.ElideRight
+                                            width: parent.width
+                                        }
                                     }
-                                    Text {
-                                        text: model.latest_ms_time
-                                        color: settings.txt_color
+                                    Rectangle {
+                                        color: "transparent"
+                                        width: rectMsg.width
+                                        height: 15
+                                        Text {
+                                            text: model.latest_ms_time
+                                            color: settings.txt_color
+                                        }
                                     }
                                 }
                             }
@@ -165,6 +184,7 @@ Rectangle {
                                                 i).isSelected = false
                                 }
                                 isSelected = true
+                                chatSection.chatSessionSelected(model.group_id)
                             }
 
                             onEntered: isHovered = true
@@ -189,7 +209,7 @@ Rectangle {
         Component.onCompleted: {
             var user_id = cookieId.loadCookie("user_id")
             ChatServices.fetchData(`http://127.0.0.1:8080/gr/list/${user_id}`,
-                                   "GET", function (response) {
+                                   "GET", null, function (response) {
                                        if (response) {
                                            var object = JSON.parse(response)
                                            object.list_gr.forEach(
@@ -202,18 +222,14 @@ Rectangle {
                                                                        = "Group just created"
                                                                // Adjust for local time zone (GMT+7)
                                                                fetchedTime = new Date(new Date(data.created_at).getTime() + 7 * 60 * 60 * 1000)
-                                                               console.log("Create group time: " + fetchedTime)
                                                            } else {
-                                                               latest_ms_content
+                                                               data.latest_ms_content
                                                                        = data.latest_ms_content
                                                                // Adjust for local time zone (GMT+7)
                                                                fetchedTime = new Date(new Date(data.latest_ms_time).getTime() + 7 * 60 * 60 * 1000)
-                                                               console.log("Latest message time: " + fetchedTime)
                                                            }
 
                                                            var currentTime = new Date()
-                                                           console.log("Current time: "
-                                                                       + currentTime)
 
                                                            var timeDifference = Math.floor(
                                                                        (currentTime - fetchedTime)
@@ -238,6 +254,7 @@ Rectangle {
                                                            }
 
                                                            groupListModel.append({
+                                                                                     "group_id": data.group_id,
                                                                                      "group_name": data.group_name,
                                                                                      "group_id": data.group_id,
                                                                                      "group_code": data.group_code,

@@ -4,18 +4,31 @@ import QtQuick.Layouts
 import QtQuick.Controls.Universal
 import QtQuick.Effects
 import QtQuick.Dialogs
+import "ChatServices.js" as ChatServices
+import cookie.service 1.0
 
 // Chat Content
 Rectangle {
+
+    property int c_user_id: cookieId.loadCookie("user_id")
+    property int groupId: 0
     property QtObject settings
 
     id: chatContent
     Layout.fillWidth: true
     Layout.fillHeight: true
     color: settings.bg_chatcontent_color
+    function loadGroupDataLayout() {
+        chatContentLayout.loadGroupData()
+    }
+
+    Cookie {
+        id: cookieId
+    }
 
     //radius: 20
     Column {
+        id: chatContentLayout
         anchors.fill: parent
         width: parent.width
         height: parent.height
@@ -53,14 +66,16 @@ Rectangle {
                 Column {
 
                     Text {
-                        text: "Group Chat 01"
+                        id: chatGroupName
+                        text: "Group Name"
                         font.pixelSize: 20
                         font.bold: true
                         color: settings.txt_color
                         verticalAlignment: Text.AlignVCenter
                     }
                     Text {
-                        text: "Duration: 15 minutes"
+                        id: chatDuration
+                        text: "Duration"
                         font.pixelSize: 10
                         opacity: 0.8
                         color: settings.txt_color
@@ -146,7 +161,7 @@ Rectangle {
 
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                text: "Group Chat 01"
+                                text: "Group Name"
                                 font.pixelSize: 16
                                 font.bold: true
                                 horizontalAlignment: Text.AlignHCenter
@@ -554,6 +569,7 @@ Rectangle {
 
         // Messages List
         ScrollView {
+
             width: parent.width
             height: parent.height - messRectId.height - chatContentHeader.height - 10
             clip: true
@@ -565,70 +581,7 @@ Rectangle {
                 //spacing: 10
                 clip: true
                 model: ListModel {
-                    ListElement {
-                        sender: "Kris"
-                        message: "Similar to the West Lake and Thousand Island Lake"
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
-                    ListElement {
-                        sender: "User"
-                        message: "What is that?"
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
-                    ListElement {
-                        sender: "Cozier"
-                        message: "I want to see some other ways to explain the scenic spots."
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
-                    ListElement {
-                        sender: "User"
-                        message: "I do not know!"
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
-                    ListElement {
-                        sender: "Janice"
-                        message: "I want to see some other ways to explain the scenic spots."
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
-
-                    ListElement {
-                        sender: "User"
-                        message: "I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much.
-I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. "
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
-                    ListElement {
-                        sender: "Janice"
-                        message: "I want to see some other ways to explain the scenic spots.I don't use this kind of class very much. I don't use this kind of class very much.
-I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. I don't use this kind of class very much. "
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
-                    ListElement {
-                        sender: "Janice"
-                        message: "I want to see some other ways to explain the scenic spots."
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
-                    ListElement {
-                        sender: "User"
-                        message: "I do not know!"
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
-
-                    ListElement {
-                        sender: "Janice"
-                        message: "Who are these three?"
-                        time: "9:31am"
-                        image: "https://placehold.co/50x50"
-                    }
+                    id: chatContentModel
                 }
                 delegate: Rectangle {
                     color: "transparent"
@@ -645,21 +598,21 @@ I don't use this kind of class very much. I don't use this kind of class very mu
                         id: positionId
                         spacing: 10
                         Component.onCompleted: {
-                            if (model.sender === "User") {
+                            if (model.user_id === c_user_id) {
                                 positionId.anchors.right = parent.right
                             }
                         }
                         height: Math.max(avatarContent.height,
                                          msgContent.height) + 20
 
-                        layoutDirection: model.sender === "User" ? "RightToLeft" : "LeftToRight"
+                        layoutDirection: model.user_id === c_user_id ? "RightToLeft" : "LeftToRight"
 
                         // Avatar
                         Rectangle {
                             width: 35
                             height: username.height + rectMessage.height
                             color: "transparent"
-                            visible: model.sender === "User" ? false : true
+                            visible: model.user_id === c_user_id ? false : true
                             Rectangle {
                                 id: avatarContent
                                 width: 35
@@ -667,7 +620,7 @@ I don't use this kind of class very much. I don't use this kind of class very mu
                                 radius: 1
                                 color: "transparent"
                                 border.color: "transparent"
-                                visible: model.sender === "User" ? false : true
+                                visible: model.user_id === c_user_id ? false : true
                                 anchors.bottom: parent.bottom
                                 anchors.bottomMargin: 2
                                 ImageRounded {
@@ -687,7 +640,7 @@ I don't use this kind of class very much. I don't use this kind of class very mu
                                 width: rectMessage.width
                                 height: 20
                                 color: "transparent"
-                                visible: model.sender === "User" ? false : true
+                                visible: model.user_id === c_user_id ? false : true
                                 //anchors.bottom: rectMessage.top
                                 Text {
                                     text: model.sender
@@ -704,13 +657,13 @@ I don't use this kind of class very much. I don't use this kind of class very mu
                                                 500)
                                 height: messageId.implicitHeight + 20
                                 radius: 20
-                                color: model.sender === "User" ? settings.messsagebox_chat_sender : settings.messsagebox_chat_receiver
+                                color: model.user_id === c_user_id ? settings.messsagebox_chat_sender : settings.messsagebox_chat_receiver
 
                                 Text {
                                     id: messageId
                                     text: model.message
-                                    color: model.sender
-                                           === "User" ? "white" : settings.message_txt_sender
+                                    color: model.user_id
+                                           === c_user_id ? "white" : settings.message_txt_sender
                                     anchors.centerIn: rectMessage
                                     wrapMode: Text.WordWrap
                                     width: parent.width - 40
@@ -917,13 +870,79 @@ I don't use this kind of class very much. I don't use this kind of class very mu
                     }
 
                     onClicked: {
-                        messageTextArena.text = ""
-                        txtId.text = ""
-                        txtId.visible = false
-                        lsViewId.height += txtId.height
+
+                        // messageTextArena.text = ""
+                        // txtId.text = ""
+                        // txtId.visible = false
+                        // lsViewId.height += txtId.height
+                        if (messageTextArena.text.trim().length > 0) {
+                            // Prepare the data to be sent
+                            var requestData = {
+                                "user_id": c_user_id,
+                                "group_id": chatContent.groupId,
+                                "content": messageTextArena.text,
+                                "message_type": "string"
+                            }
+
+                            var handler = function (response) {
+                                if (response) {
+                                    let resObject = JSON.parse(response)
+                                    console.log("Send message sucess!",
+                                                resObject)
+                                    messageTextArena.text = ""
+                                } else {
+                                    console.log("Failed to send message")
+                                }
+                            }
+
+                            ChatServices.fetchData(
+                                        "http://localhost:8080/send-msg",
+                                        "POST", null, handler, requestData)
+                        }
                     }
                 }
             }
+        }
+
+        //fetch api
+        Component.onCompleted: {
+            loadGroupData()
+        }
+        function loadGroupData() {
+            ChatServices.fetchData(
+                        `http://localhost:8080/group-detail/${chatContent.groupId}`,
+                        "GET", null, function (response) {
+                            if (response) {
+                                var data = JSON.parse(response)
+                                chatGroupName.text = data.group_name
+                                chatDuration.text = ChatServices.calculateDuration(
+                                            data.expired_at)
+
+                                // Populate message list
+                                lsViewId.model.clear()
+                                for (var i = 0; i < data.messages.length; i++) {
+                                    lsViewId.model.append({
+                                                              "ms_id": data.messages[i].id,
+                                                              "sender": data.messages[i].user_name,
+                                                              "message": data.messages[i].content,
+                                                              "time": data.messages[i].created_at,
+                                                              "image": "https://placehold.co/50x50",
+                                                              "message_type": data.messages[i].message_type,
+                                                              "user_id": data.messages[i].user_id
+                                                          })
+                                }
+                                // Scroll to the bottom after adding new data
+                                if (chatContentModel.count > 0) {
+                                    lsViewId.currentIndex = chatContentModel.count - 1
+                                    lsViewId.positionViewAtIndex(
+                                                lsViewId.currentIndex,
+                                                ListView.End)
+                                }
+                            } else {
+                                console.error(
+                                            "Failed to fetch data from the API")
+                            }
+                        })
         }
     }
 }
