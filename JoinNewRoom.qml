@@ -84,27 +84,32 @@ Drawer {
                         txtNewRoomCode.placeholderText = "Room code is required!"
                     } else {
                         var user_name = cookieId.loadCookie("user_name")
-                        var data = {
-                            "group_code": txtNewRoomCode.text.trim(),
-                            "message": txtNewMessage.text.trim(),
-                            "username": user_name
+                        var user_code = cookieId.loadCookie("user_code")
+                        let headers = null
+                        if (user_code) {
+                            headers = {
+                                "x-user-code": `${user_code}`
+                            }
                         }
 
-                        // API call using ChatServices.fetchData
+                        var requestData = {
+                            "group_code": txtNewRoomCode.text.trim(),
+                            "message": txtNewMessage.text.trim(),
+                            "username": user_name ? user_name : ""
+                        }
+
                         ChatServices.fetchData(
                                     "http://127.0.0.1:8080/join-group", "POST",
-                                    function (response) {
+                                    headers, function (response) {
                                         if (response) {
                                             let resObject = JSON.parse(response)
-                                            console.log("Join group success:",
-                                                        resObject)
-
+                                            console.log("Room joined successfully: "
+                                                        + resObject.group_id)
                                             root.close()
                                         } else {
-                                            console.error(
-                                                        "Failed to join group")
+                                            console.log("Failed to join room")
                                         }
-                                    }, data)
+                                    }, requestData)
                     }
                 }
             }

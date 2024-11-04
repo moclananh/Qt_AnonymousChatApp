@@ -114,7 +114,7 @@ Drawer {
                             let headers = null
                             if (user_code) {
                                 headers = {
-                                    "Cookie": `user_code=${user_code}`
+                                    "x-user-code": `${user_code}`
                                 }
                             }
 
@@ -127,7 +127,7 @@ Drawer {
                                 "maximum_members": cbLimitMember.currentIndex
                                                    === 3 ? 0 : parseInt(
                                                                cbLimitMember.currentText),
-                                "username": user_name
+                                "username": user_name ? user_name : ""
                             }
 
                             // API call using ChatServices.fetchData
@@ -139,7 +139,6 @@ Drawer {
                                                         response)
                                                 console.log("Room created successfully:",
                                                             resObject)
-                                                txtRoomCode = ""
                                                 root.close()
                                             } else {
                                                 console.log("Failed to create room")

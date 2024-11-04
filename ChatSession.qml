@@ -153,7 +153,17 @@ Rectangle {
                                         height: 15
                                         color: "transparent"
                                         Text {
-                                            text: model.latest_ms_content
+                                            text: {
+                                                var indexOfNewLine = model.latest_ms_content.indexOf(
+                                                            "\n")
+                                                if (indexOfNewLine > 0) {
+                                                    return model.latest_ms_content.substr(
+                                                                0,
+                                                                indexOfNewLine)
+                                                } else {
+                                                    return model.latest_ms_content
+                                                }
+                                            }
                                             color: settings.txt_color
                                             elide: Text.ElideRight
                                             width: parent.width

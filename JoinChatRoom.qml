@@ -135,32 +135,36 @@ Rectangle {
                                 } else {
 
                                     // Validation successful, proceed
-                                    var data = {
+                                    var requestData = {
                                         "group_code": txtRoomCode.text.trim(),
                                         "message": txtMessage.text.trim(),
                                         "username": txtName.text.trim()
                                     }
-
-                                    // API call using ChatServices.fetchData
                                     ChatServices.fetchData(
                                                 "http://127.0.0.1:8080/join-group",
-                                                "POST", function (response) {
+                                                "POST", null,
+                                                function (response) {
                                                     if (response) {
                                                         let resObject = JSON.parse(
                                                                 response)
-                                                        console.log("Join group success:",
-                                                                    resObject)
                                                         cookieId.saveCookie(
                                                                     "user_id",
                                                                     resObject.user_id,
                                                                     3600000)
-
-                                                        pageLoader.source = "Main.qml"
+                                                        cookieId.saveCookie(
+                                                                    "user_code",
+                                                                    resObject.user_code,
+                                                                    3600000)
+                                                        console.log("Join group success")
+                                                        if (resObject.is_waiting === true) {
+                                                            pageLoader.source = "LoadingPage.qml"
+                                                        } else {
+                                                            pageLoader.source = "Main.qml"
+                                                        }
                                                     } else {
-                                                        console.error(
-                                                                    "Failed to join group")
+                                                        console.log("Failed to create room")
                                                     }
-                                                }, data)
+                                                }, requestData)
                                 }
                             }
                         }
