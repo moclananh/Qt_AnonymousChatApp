@@ -11,12 +11,10 @@ Drawer {
     width: 300
     height: parent.height
     edge: Qt.LeftEdge
-    //  modal: false
     background: Rectangle {
         color: settings.user_drawer
     }
 
-    //Service
     Cookie {
         id: cookieId
     }
@@ -39,11 +37,12 @@ Drawer {
                 color: settings.txt_color
             }
 
-            //room code
+            // room name
             Text {
                 text: "Room Name"
                 color: settings.txt_color
             }
+
             TextField {
                 id: txtRoomCode
                 placeholderText: "Enter room name ..."
@@ -56,6 +55,7 @@ Drawer {
                 text: "Duration"
                 color: settings.txt_color
             }
+
             ComboBox {
                 id: cbDuration
                 height: 35
@@ -63,11 +63,12 @@ Drawer {
                 model: ["15 minutes", "30 minutes", "60 minutes"]
             }
 
-            // Maximum member
+            // maximum member
             Text {
                 text: "Maximum Member"
                 color: settings.txt_color
             }
+
             ComboBox {
                 id: cbLimitMember
                 height: 35
@@ -75,7 +76,7 @@ Drawer {
                 model: ["10 members", "20 members", "30 members"]
             }
 
-            //Check box
+            // group approve checking
             CheckBox {
                 id: optinalId
                 background: Rectangle {
@@ -102,15 +103,14 @@ Drawer {
                 MouseArea {
                     anchors.fill: btnCreateRoom
                     onClicked: {
-                        // Validation logic
+
                         if (txtRoomCode.text.trim() === "") {
                             txtRoomCode.focus = true
                             txtRoomCode.placeholderText = "Room code is required!"
                         } else {
-
-                            // Validation successful, proceed
                             var user_name = cookieId.loadCookie("user_name")
                             var user_code = cookieId.loadCookie("user_code")
+
                             let headers = null
                             if (user_code) {
                                 headers = {
@@ -130,7 +130,6 @@ Drawer {
                                 "username": user_name ? user_name : ""
                             }
 
-                            // API call using ChatServices.fetchData
                             ChatServices.fetchData(
                                         "http://127.0.0.1:8080/add-user-group",
                                         "POST", headers, function (response) {

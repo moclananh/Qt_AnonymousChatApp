@@ -11,7 +11,6 @@ Drawer {
     width: 300
     height: parent.height
     edge: Qt.LeftEdge
-    //  modal: false
     background: Rectangle {
         color: settings.user_drawer
     }

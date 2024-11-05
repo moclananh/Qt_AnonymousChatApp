@@ -3,11 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Imagine
 
-// ApplicationWindow {
-//     visible: true
-//     width: 900
-//     height: 500
-//     title: "Welcome to Anonymous Chatting"
 Rectangle {
     width: parent.width
     height: parent.height
@@ -19,7 +14,6 @@ Rectangle {
         height: parent.height
 
         RowLayout {
-
             width: parent.width
             height: parent.height
 
@@ -44,19 +38,15 @@ Rectangle {
                 id: chatContent
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-
                 color: "#f9edf9"
-                // anchors.verticalCenter: parent.verticalCenter
+
                 Rectangle {
                     id: rectChatHeader
                     width: parent.width * 0.8
                     height: parent.height * 0.4
-                    // anchors.fill: parent
                     anchors.centerIn: parent
-
                     color: "transparent"
                     Column {
-
                         spacing: 30
 
                         Text {
@@ -88,7 +78,6 @@ Rectangle {
                             }
 
                             onClicked: {
-
                                 Qt.openUrlExternally("https://example.com/")
                             }
                         }

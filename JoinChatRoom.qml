@@ -5,21 +5,17 @@ import QtQuick.Controls.Material
 import cookie.service 1.0
 import "ChatServices.js" as ChatServices
 
-// ApplicationWindow {
-//     visible: true
-//     width: 900
-//     height: 500
-//     title: "Join Room"
 Rectangle {
     id: joinChatRoomId
+
+    //signal init
+    signal roomJoined
+    signal roomWaiting
+
     width: parent.width
     height: parent.height
     color: "white"
 
-    signal roomJoined
-    signal roomWaiting
-
-    //Cookie
     Cookie {
         id: cookieId
     }
@@ -57,7 +53,6 @@ Rectangle {
                 Layout.fillHeight: true
 
                 color: "#f9edf9"
-                // anchors.verticalCenter: parent.verticalCenter
                 Rectangle {
                     id: rectChatHeader
                     width: parent.width * 0.8

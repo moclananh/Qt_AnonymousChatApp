@@ -3,8 +3,6 @@ import QtQuick.Controls
 import QtQuick.Controls.Imagine
 
 Button {
-    id: btn
-
     background: Rectangle {
         height: parent.height
         width: parent.width

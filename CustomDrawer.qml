@@ -170,15 +170,6 @@ Drawer {
                             }
                         }
                     }
-
-                    //MouseArea for background hover effect (cannot using this b/c inside have rectangle with MouseArea -> conflict logic)
-                    // MouseArea {
-                    //     id: hoverArea
-                    //     anchors.fill: parent
-                    //     hoverEnabled: true
-                    //     onEntered: itemBackground.color = d_settings.hover_color
-                    //     onExited: itemBackground.color = "transparent"
-                    // }
                 }
             }
         }

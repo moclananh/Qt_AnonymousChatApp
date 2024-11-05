@@ -9,17 +9,19 @@ import cookie.service 1.0
 
 // Chat Content
 Rectangle {
+    id: chatContent
 
+    //property init
     property int c_user_id: cookieId.loadCookie("user_id")
     property int groupId: 0
     property int maximum_mem: 0
     property int gr_owner_id: 0
     property QtObject settings
 
-    id: chatContent
     Layout.fillWidth: true
     Layout.fillHeight: true
     color: settings.bg_chatcontent_color
+
     function loadGroupDataLayout() {
         chatContentLayout.loadGroupData()
     }
@@ -28,13 +30,13 @@ Rectangle {
         id: cookieId
     }
 
-    //radius: 20
+    //containner
     Column {
         id: chatContentLayout
         anchors.fill: parent
         width: parent.width
         height: parent.height
-        spacing: 0
+
         // Chat Header
         Rectangle {
             id: chatContentHeader
@@ -49,6 +51,7 @@ Rectangle {
                 spacing: 15
                 anchors.verticalCenter: parent.verticalCenter
 
+                //Group Avatar
                 Rectangle {
                     width: 50
                     height: 50
@@ -65,7 +68,6 @@ Rectangle {
 
                 //Group name and memmer
                 Column {
-
                     Text {
                         id: chatGroupName
                         text: "Group Name"
@@ -172,7 +174,7 @@ Rectangle {
                         }
                     }
 
-                    // button option
+                    //btn option
                     Rectangle {
                         width: parent.width
                         height: 50
@@ -181,17 +183,16 @@ Rectangle {
                         border.width: 1
                         anchors.horizontalCenter: parent.horizontalCenter
                         Row {
-
                             spacing: 30
                             anchors.centerIn: parent
-                            //btn notice
+
+                            //btn notify
                             Rectangle {
                                 width: 40
                                 height: 40
                                 color: hovered ? settings.hover_color : "transparent"
                                 property bool hovered: false
                                 radius: 5
-                                //  anchors.verticalCenter: parent.verticalCenter
                                 Image {
                                     anchors.centerIn: parent
                                     source: settings.darkMode ? "qrc:/images/notify2.png" : "qrc:/images/notice.png"
@@ -224,7 +225,7 @@ Rectangle {
 
                                 MouseArea {
                                     anchors.fill: parent
-                                    hoverEnabled: true // Enable hover detection
+                                    hoverEnabled: true
                                     onEntered: parent.hovered = true
                                     onExited: parent.hovered = false
                                 }
@@ -247,7 +248,7 @@ Rectangle {
 
                                 MouseArea {
                                     anchors.fill: parent
-                                    hoverEnabled: true // Enable hover detection
+                                    hoverEnabled: true
                                     onEntered: parent.hovered = true
                                     onExited: parent.hovered = false
                                 }
@@ -270,7 +271,7 @@ Rectangle {
 
                                 MouseArea {
                                     anchors.fill: parent
-                                    hoverEnabled: true // Enable hover detection
+                                    hoverEnabled: true
                                     onEntered: parent.hovered = true
                                     onExited: parent.hovered = false
                                 }
@@ -605,7 +606,7 @@ Rectangle {
                         }
                     }
 
-                    // RemoveGroupConfirm
+                    // Remove group confirm dialog
                     MessageDialog {
                         id: removeGroupConfirm
                         title: "Notice"
@@ -657,7 +658,7 @@ Rectangle {
                         d_settings: settings
                     }
 
-                    // LeaveGroupConfirm
+                    // Leave group confirm dialog
                     MessageDialog {
                         id: leaveGroupConfirm
                         title: "Notice"
@@ -678,7 +679,7 @@ Rectangle {
 
         // Messages List
         ScrollView {
-
+            id: scrollViewMessage
             width: parent.width
             height: parent.height - messRectId.height - chatContentHeader.height - 10
             clip: true
@@ -687,11 +688,12 @@ Rectangle {
                 id: lsViewId
                 width: parent.width
                 height: parent.height
-                //spacing: 10
                 clip: true
+
                 model: ListModel {
                     id: chatContentModel
                 }
+
                 delegate: Rectangle {
                     color: "transparent"
                     width: parent ? parent.width - 30 : 0
@@ -740,9 +742,12 @@ Rectangle {
                                 }
                             }
                         }
+
+                        // Message contents
                         Column {
                             id: msgContent
                             height: username.height + rectMessage.height
+
                             // Username
                             Rectangle {
                                 id: username
@@ -750,7 +755,7 @@ Rectangle {
                                 height: 20
                                 color: "transparent"
                                 visible: model.user_id === c_user_id ? false : true
-                                //anchors.bottom: rectMessage.top
+
                                 Text {
                                     text: model.sender
                                     color: settings.txt_color
@@ -795,7 +800,7 @@ Rectangle {
             }
         }
 
-        //File attached display
+        // File attached display
         Text {
             id: txtId
             width: parent.width
@@ -805,6 +810,7 @@ Rectangle {
             text: "User haven't choose any file"
             wrapMode: Text.Wrap
         }
+
         // Message Input
         Rectangle {
             id: messRectId
@@ -824,13 +830,11 @@ Rectangle {
                 Rectangle {
                     id: editMessageContainer
                     color: "transparent"
-                    width: messRectId.width - btnOpenFile.width - btnSend.width
-                           - 10 // Adjusted for better fit with button
+                    width: messRectId.width - btnOpenFile.width - btnSend.width - 10
                     height: messageTextArena.height
                     ScrollView {
                         id: scrollText
                         width: parent.width
-                        // anchors.fill: parent
                         TextArea {
                             id: messageTextArena
                             textMargin: 0
@@ -863,6 +867,7 @@ Rectangle {
                                     sendMessageId.height = messageTextArena.height
                                     return
                                 }
+
                                 var count = 1
                                 for (var i = 0; i < content.length; i++) {
                                     if (content[i] === "\n") {
@@ -895,7 +900,6 @@ Rectangle {
                     width: 40
                     height: 40
 
-                    // anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     background: Rectangle {
                         id: btnBackgroundOpenFile
@@ -917,8 +921,7 @@ Rectangle {
                             hoverEnabled: true
 
                             onEntered: btnBackgroundOpenFile.color = settings.hover_color
-                            onExited: btnBackgroundOpenFile.color
-                                      = "transparent" // Revert to default when not hovered
+                            onExited: btnBackgroundOpenFile.color = "transparent"
                         }
                     }
 
@@ -956,7 +959,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     background: Rectangle {
                         id: btnBackground
-                        color: "transparent" // Default background color
+                        color: "transparent"
                         anchors.fill: parent
                         radius: 5
                         Image {
@@ -973,19 +976,12 @@ Rectangle {
                             hoverEnabled: true
 
                             onEntered: btnBackground.color = settings.hover_color
-                            onExited: btnBackground.color
-                                      = "transparent" // Revert to default when not hovered
+                            onExited: btnBackground.color = "transparent"
                         }
                     }
 
                     onClicked: {
-
-                        // messageTextArena.text = ""
-                        // txtId.text = ""
-                        // txtId.visible = false
-                        // lsViewId.height += txtId.height
                         if (messageTextArena.text.trim().length > 0) {
-                            // Prepare the data to be sent
                             var requestData = {
                                 "user_id": c_user_id,
                                 "group_id": chatContent.groupId,
@@ -1043,6 +1039,7 @@ Rectangle {
                                                               "user_id": data.messages[i].user_id
                                                           })
                                 }
+
                                 // Scroll to the bottom after adding new data
                                 if (chatContentModel.count > 0) {
                                     lsViewId.currentIndex = chatContentModel.count - 1

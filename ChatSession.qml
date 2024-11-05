@@ -9,11 +9,13 @@ import cookie.service 1.0
 
 // Chat Section
 Rectangle {
+    id: chatSection
+
+    //property init
     property QtObject settings
     property QtObject drawer_settings
-
-    id: chatSection
     signal chatSessionSelected(int groupId)
+
     Layout.minimumWidth: 0
     Layout.fillHeight: true
     color: settings.bg_chatsession_color
@@ -21,7 +23,6 @@ Rectangle {
     height: parent.height
     visible: parent.width > 800
 
-    //Service
     Cookie {
         id: cookieId
     }
@@ -90,7 +91,7 @@ Rectangle {
         ScrollView {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            clip: true // Ensure scrolling happens within bounds
+            clip: true
 
             ListView {
                 id: listViewSessionId
@@ -118,6 +119,7 @@ Rectangle {
                             anchors.fill: parent
                             anchors.margins: 5
 
+                            // avatar
                             Rectangle {
                                 id: rectImg
                                 width: 60
@@ -130,6 +132,7 @@ Rectangle {
                                 }
                             }
 
+                            //group content
                             Rectangle {
                                 id: rectMsg
                                 width: parent.width - rectImg.width - 20
@@ -216,6 +219,7 @@ Rectangle {
             }
         }
 
+        //fetch data
         Component.onCompleted: {
             var user_id = cookieId.loadCookie("user_id")
             ChatServices.fetchData(`http://127.0.0.1:8080/gr/list/${user_id}`,
@@ -230,12 +234,10 @@ Rectangle {
                                                            if (data.latest_ms_content === "") {
                                                                data.latest_ms_content
                                                                        = "Group just created"
-                                                               // Adjust for local time zone (GMT+7)
                                                                fetchedTime = new Date(new Date(data.created_at).getTime() + 7 * 60 * 60 * 1000)
                                                            } else {
                                                                data.latest_ms_content
                                                                        = data.latest_ms_content
-                                                               // Adjust for local time zone (GMT+7)
                                                                fetchedTime = new Date(new Date(data.latest_ms_time).getTime() + 7 * 60 * 60 * 1000)
                                                            }
 
@@ -245,7 +247,6 @@ Rectangle {
                                                                        (currentTime - fetchedTime)
                                                                        / 1000)
 
-                                                           // Calculate timeString based on the fetchedTime
                                                            if (timeDifference < 60) {
                                                                timeString = timeDifference
                                                                        + " seconds ago"

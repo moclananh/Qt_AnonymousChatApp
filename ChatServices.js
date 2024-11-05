@@ -1,3 +1,4 @@
+//fn fetch data
 function fetchData(url, method, headers, callback, data = null) {
     var xhr = new XMLHttpRequest()
     xhr.onreadystatechange = function () {
@@ -32,6 +33,7 @@ function fetchData(url, method, headers, callback, data = null) {
     }
 }
 
+//fn caculate duration
 function calculateDuration(durationInMinutes) {
     var now = new Date()
     console.log("Date time now: " + now)

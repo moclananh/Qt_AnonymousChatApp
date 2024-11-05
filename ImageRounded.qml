@@ -20,7 +20,6 @@ Item {
     }
 
     Item {
-
         id: mask
         width: sourceItem.width
         height: sourceItem.height

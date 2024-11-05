@@ -18,7 +18,7 @@ qt_add_qml_module(appProject_AnonymousChat
     VERSION 1.0
     QML_FILES
         Main.qml
-        QML_FILES MyIcon.qml
+        QML_FILES
         QML_FILES ImageRounded.qml
         RESOURCES Resources.qrc
         QML_FILES CustomDrawer.qml

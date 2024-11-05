@@ -13,7 +13,7 @@ ApplicationWindow {
     ColumnLayout {
         anchors.fill: parent
 
-        // Breadcrumb Navigation
+        // Breadcrumb navigation
         RowLayout {
             id: breadcrumb
             Layout.fillWidth: true

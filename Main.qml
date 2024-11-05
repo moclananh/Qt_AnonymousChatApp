@@ -14,26 +14,26 @@ ApplicationWindow {
     height: 800
     title: "Chat Application"
 
-    // Service
     Cookie {
         id: cookieId
     }
 
+    //properties init
     property QtObject sharedSettings: ThemeSettings {
         id: darkModeId
     }
+
     property QtObject drawerRef: sidebar
 
     function handleChatSessionSelected(groupId) {
         chatContent.groupId = groupId
     }
-    // Material.theme: Material.Light
+
     Drawer {
         id: sidebar
         width: 300
         height: parent.height
         edge: Qt.LeftEdge
-        // modal: false
         background: Rectangle {
             color: sharedSettings.user_drawer
         }
@@ -61,7 +61,7 @@ ApplicationWindow {
                 id: createNewRoom
                 width: parent.width
                 height: 50
-                color: "transparent" // Same as the parent by default
+                color: "transparent"
 
                 radius: 10
                 Row {
@@ -73,10 +73,10 @@ ApplicationWindow {
                         height: parent.height
                     }
 
-                    MyIcon {
-                        m_source: "qrc:/images/audio_11781833.gif"
-                        m_height: 32
-                        m_width: 32
+                    Image {
+                        source: "qrc:/images/audio_11781833.gif"
+                        height: 32
+                        width: 32
                         anchors.verticalCenter: parent.verticalCenter
                     }
                     Rectangle {
@@ -116,7 +116,7 @@ ApplicationWindow {
                 id: joinNewRoomButton
                 width: parent.width
                 height: 50
-                color: "transparent" // Same as the parent by default
+                color: "transparent"
                 radius: 10
 
                 Row {
@@ -128,12 +128,13 @@ ApplicationWindow {
                         height: parent.height
                     }
 
-                    MyIcon {
-                        m_source: "qrc:/images/comments_16903656.gif"
-                        m_height: 32
-                        m_width: 32
+                    Image {
+                        source: "qrc:/images/comments_16903656.gif"
+                        height: 32
+                        width: 32
                         anchors.verticalCenter: parent.verticalCenter
                     }
+
                     Rectangle {
                         height: parent.height
                         color: "transparent"
@@ -167,12 +168,11 @@ ApplicationWindow {
             }
 
             //logout button
-            // Join new room button
             Rectangle {
                 id: logoutBtn
                 width: parent.width
                 height: 50
-                color: "transparent" // Same as the parent by default
+                color: "transparent"
                 radius: 10
 
                 Row {
@@ -184,10 +184,10 @@ ApplicationWindow {
                         height: parent.height
                     }
 
-                    MyIcon {
-                        m_source: "qrc:/images/comments_16903656.gif"
-                        m_height: 32
-                        m_width: 32
+                    Image {
+                        source: "qrc:/images/comments_16903656.gif"
+                        height: 32
+                        width: 32
                         anchors.verticalCenter: parent.verticalCenter
                     }
                     Rectangle {
@@ -308,7 +308,7 @@ ApplicationWindow {
         }
     }
 
-    // Settings saved
+    // Save setting
     Settings {
         category: "window"
         property alias x: rootId.x
