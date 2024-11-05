@@ -476,7 +476,6 @@ Rectangle {
                             }
                         }
 
-                        // Leave Group
                         Rectangle {
                             id: rectLeaveGroup
                             width: parent.width
@@ -492,7 +491,7 @@ Rectangle {
                                 onExited: parent.hovered = false
                                 onClicked: {
 
-                                    messageDialogId.open()
+                                    leaveGroupConfirm.open()
                                 }
                             }
 
@@ -658,9 +657,9 @@ Rectangle {
                         d_settings: settings
                     }
 
-                    //Message dialog
+                    // LeaveGroupConfirm
                     MessageDialog {
-                        id: messageDialogId
+                        id: leaveGroupConfirm
                         title: "Notice"
                         text: "Are you sure to leave this group?"
                         buttons: MessageDialog.Ok | MessageDialog.Cancel
