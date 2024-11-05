@@ -36,6 +36,7 @@ qt_add_qml_module(appProject_AnonymousChat
         QML_FILES JoinNewRoom.qml
         QML_FILES CreateNewRoom.qml
         SOURCES cookieservice.h cookieservice.cpp
+        QML_FILES
 
 
 

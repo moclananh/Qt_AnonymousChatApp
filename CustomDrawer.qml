@@ -3,13 +3,16 @@ import QtQuick.Controls
 import QtQuick.Controls.Basic
 
 Drawer {
-    property QtObject d_settings
     id: drawerRoot
     width: 350
     height: parent.height
     edge: Qt.RightEdge
+
     property bool control_handle: false
     property string lableText
+    property QtObject d_settings
+    property ListModel membersModel
+
     background: Rectangle {
         anchors.fill: parent
         color: d_settings.drawer_color
@@ -52,30 +55,8 @@ Drawer {
             spacing: 2
             id: memberListView
             width: parent.width
-            height: parent.height * 0.8 // Adjust height as needed
-            model: ListModel {
-                // Example data; replace with real data
-                ListElement {
-                    username: "John Doe"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    username: "Jane Smith"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    username: "John Cena"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    username: "Halley Queen"
-                    image: "https://placehold.co/50x50"
-                }
-                ListElement {
-                    username: "Justin Biber"
-                    image: "https://placehold.co/50x50"
-                }
-            }
+            height: parent.height * 0.8
+            model: drawerRoot.membersModel
             clip: true
             delegate: Item {
                 width: memberListView.width

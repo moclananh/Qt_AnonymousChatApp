@@ -16,6 +16,8 @@ Rectangle {
     property int groupId: 0
     property int maximum_mem: 0
     property int gr_owner_id: 0
+    property int total_waiting_member: 0
+    property int total_joined_member: 0
     property QtObject settings
 
     Layout.fillWidth: true
@@ -117,7 +119,10 @@ Rectangle {
                     }
                 }
 
-                onClicked: drawerGroupSetting.open()
+                onClicked: {
+                    drawerGroupSetting.loadGroupSetting()
+                    drawerGroupSetting.open()
+                }
             }
         }
 
@@ -139,6 +144,7 @@ Rectangle {
                 color: "transparent"
                 border.color: settings.border_color
                 border.width: 1
+
                 Column {
                     width: parent.width
 
@@ -355,7 +361,8 @@ Rectangle {
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
-                                            text: "Member (5/" + maximum_mem + ")"
+                                            text: "Member (" + total_joined_member
+                                                  + "/" + maximum_mem + ")"
                                             color: settings.txt_color
                                         }
                                     }
@@ -440,7 +447,7 @@ Rectangle {
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
-                                            text: "Request (5)"
+                                            text: "Request (" + total_waiting_member + ")"
                                             color: settings.txt_color
                                         }
                                     }
@@ -646,16 +653,18 @@ Rectangle {
                     CustomDrawer {
                         id: drawerManageMember
                         control_handle: false
-                        lableText: "Member (5/" + maximum_mem + ")"
+                        lableText: "Member (" + total_joined_member + "/" + maximum_mem + ")"
                         d_settings: settings
+                        membersModel: ListModel {}
                     }
 
                     // Drawer for member request
                     CustomDrawer {
                         id: drawerMemberRequest
                         control_handle: true
-                        lableText: "Request (5)"
+                        lableText: "Request (" + total_waiting_member + ")"
                         d_settings: settings
+                        membersModel: ListModel {}
                     }
 
                     // Leave group confirm dialog
@@ -674,6 +683,44 @@ Rectangle {
                         }
                     }
                 }
+            }
+
+            function loadGroupSetting() {
+                ChatServices.fetchData(
+                            `http://localhost:8080/group-detail/setting/${chatContent.groupId}/${chatContent.gr_owner_id}`,
+                            "GET", null, function (response) {
+                                console.debug("loadGroupSetting: ", response)
+                                if (response) {
+                                    var respObject = JSON.parse(response)
+                                    var groupSettingRes = respObject.data
+                                    groupNameInSetting.text = groupSettingRes.group_name
+                                    maximum_mem = groupSettingRes.maximum_members
+                                    total_joined_member = groupSettingRes.total_joined_member
+                                    total_waiting_member = groupSettingRes.total_waiting_member
+
+                                    drawerMemberRequest.membersModel.clear()
+                                    for (var i = 0; i
+                                         < groupSettingRes.list_waiting_member.length; i++) {
+                                        drawerMemberRequest.membersModel.append(
+                                                    {
+                                                        "username": groupSettingRes.list_waiting_member[i].username,
+                                                        "image": "https://placehold.co/50x50"
+                                                    })
+                                    }
+
+                                    drawerManageMember.membersModel.clear()
+                                    for (var j = 0; j
+                                         < groupSettingRes.list_joined_member.length; j++) {
+                                        drawerManageMember.membersModel.append({
+                                                                                   "username": groupSettingRes.list_joined_member[j].username,
+                                                                                   "image": "https://placehold.co/50x50"
+                                                                               })
+                                    }
+                                } else {
+                                    console.error(
+                                                "Failed to fetch data from the API")
+                                }
+                            })
             }
         }
 
@@ -1020,11 +1067,9 @@ Rectangle {
                             if (response) {
                                 var data = JSON.parse(response)
                                 chatGroupName.text = data.group_name
-                                groupNameInSetting.text = data.group_name
-                                maximum_mem = data.max_member
-                                gr_owner_id = data.user_id
                                 chatDuration.text = ChatServices.calculateDuration(
                                             data.expired_at)
+                                gr_owner_id = data.user_id
 
                                 // Populate message list
                                 lsViewId.model.clear()
