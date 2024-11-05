@@ -12,6 +12,8 @@ Rectangle {
 
     property int c_user_id: cookieId.loadCookie("user_id")
     property int groupId: 0
+    property int maximum_mem: 0
+    property int gr_owner_id: 0
     property QtObject settings
 
     id: chatContent
@@ -159,6 +161,7 @@ Rectangle {
                             }
 
                             Text {
+                                id: groupNameInSetting
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text: "Group Name"
                                 font.pixelSize: 16
@@ -351,7 +354,7 @@ Rectangle {
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
-                                            text: "30 members"
+                                            text: "Member (5/" + maximum_mem + ")"
                                             color: settings.txt_color
                                         }
                                     }
@@ -445,89 +448,197 @@ Rectangle {
                         }
                     }
 
-                    //Out group
+                    // Group option
                     Rectangle {
                         id: rectOutGroup
                         width: parent.width
                         border.color: settings.border_color
-                        height: children[0].height + children.length * 15
+                        height: rectGroupOpLable.height + rectLeaveGroup.height
                         color: "transparent"
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        Column {
+                        Rectangle {
+                            id: rectGroupOpLable
                             width: parent.width
-                            height: children[0].height + children[1].height
-                            spacing: 15
+                            height: 35
+                            color: "transparent"
+                            Text {
+                                anchors.left: parent.left
+                                anchors.top: parent.top
+                                anchors.leftMargin: 10
+                                anchors.topMargin: 10
+                                text: "Group Option"
+                                font.pixelSize: 12
+                                color: settings.txt_color
+                                font.bold: true
 
-                            //member lable
-                            Rectangle {
-                                width: parent.width
-                                height: 20
-                                color: "transparent"
-                                Text {
-                                    anchors.left: parent.left
-                                    anchors.top: parent.top
-                                    anchors.leftMargin: 10
-                                    anchors.topMargin: 10
-                                    text: "Group Option"
-                                    font.pixelSize: 12
-                                    color: settings.txt_color
-                                    font.bold: true
+                                Layout.fillWidth: true
+                            }
+                        }
 
-                                    Layout.fillWidth: true
+                        // Leave Group
+                        Rectangle {
+                            id: rectLeaveGroup
+                            width: parent.width
+                            height: 35
+
+                            color: hovered ? settings.hover_color : "transparent"
+                            anchors.top: rectGroupOpLable.bottom
+                            MouseArea {
+
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: parent.hovered = true
+                                onExited: parent.hovered = false
+                                onClicked: {
+
+                                    messageDialogId.open()
                                 }
                             }
 
-                            // group option
-                            Rectangle {
+                            property bool hovered: false
+
+                            Row {
                                 width: parent.width
-                                height: 35
-                                border.color: "transparent"
-                                border.width: 1
-                                color: hovered ? settings.hover_color : "transparent"
+                                height: parent.height
+                                anchors.fill: parent
 
-                                MouseArea {
+                                spacing: 5
+                                anchors.leftMargin: 10
 
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    onEntered: parent.hovered = true
-                                    onExited: parent.hovered = false
-                                    onClicked: {
-
-                                        messageDialogId.open()
-                                    }
+                                Image {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    source: settings.darkMode ? "qrc:/images/exit2.png" : "qrc:/images/exit.png"
+                                    width: 20
+                                    height: 20
                                 }
 
-                                property bool hovered: false
-
-                                Row {
-                                    width: parent.width
+                                Rectangle {
+                                    color: "transparent"
+                                    width: rectOutGroup.width - 60
                                     height: parent.height
-                                    anchors.fill: parent
 
-                                    spacing: 5
-                                    anchors.leftMargin: 10
-
-                                    Image {
+                                    Text {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        source: settings.darkMode ? "qrc:/images/exit2.png" : "qrc:/images/exit.png"
-                                        width: 20
-                                        height: 20
-                                    }
-
-                                    Rectangle {
-                                        color: "transparent"
-                                        width: rectOutGroup.width - 60
-                                        height: parent.height
-
-                                        Text {
-                                            anchors.verticalCenter: parent.verticalCenter
-                                            text: "Leave Group"
-                                            color: "red"
-                                        }
+                                        text: "Leave Group"
+                                        color: "red"
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    // Owner option
+                    Rectangle {
+                        id: rectOwnerOption
+                        width: parent.width
+                        border.color: settings.border_color
+                        height: rectOwnerOpLable.height + rectRemoveGroup.height
+                        color: "transparent"
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        visible: gr_owner_id === c_user_id ? true : false
+                        Rectangle {
+                            id: rectOwnerOpLable
+                            width: parent.width
+                            height: 35
+                            color: "transparent"
+                            Text {
+                                anchors.left: parent.left
+                                anchors.top: parent.top
+                                anchors.leftMargin: 10
+                                anchors.topMargin: 10
+                                text: "Owner Option"
+                                font.pixelSize: 12
+                                color: settings.txt_color
+                                font.bold: true
+
+                                Layout.fillWidth: true
+                            }
+                        }
+
+                        Rectangle {
+                            id: rectRemoveGroup
+                            width: parent.width
+                            height: 35
+                            color: hovered ? settings.hover_color : "transparent"
+                            anchors.top: rectOwnerOpLable.bottom
+                            MouseArea {
+
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: parent.hovered = true
+                                onExited: parent.hovered = false
+                                onClicked: {
+
+                                    removeGroupConfirm.open()
+                                }
+                            }
+
+                            property bool hovered: false
+
+                            Row {
+                                width: parent.width
+                                height: parent.height
+                                anchors.fill: parent
+
+                                spacing: 5
+                                anchors.leftMargin: 10
+
+                                Image {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    source: settings.darkMode ? "qrc:/images/exit2.png" : "qrc:/images/exit.png"
+                                    width: 20
+                                    height: 20
+                                }
+
+                                Rectangle {
+                                    color: "transparent"
+                                    width: rectOwnerOption.width - 60
+                                    height: parent.height
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: "Remove Group"
+                                        color: "red"
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // RemoveGroupConfirm
+                    MessageDialog {
+                        id: removeGroupConfirm
+                        title: "Notice"
+                        text: "Are you sure to remove this group?"
+                        buttons: MessageDialog.Ok | MessageDialog.Cancel
+
+                        onAccepted: function () {
+                            var url = "http://localhost:8080/del-gr"
+                            var method = "POST"
+                            var data = {
+                                "gr_id": groupId,
+                                "u_id": gr_owner_id
+                            }
+
+                            ChatServices.fetchData(url, method, null,
+                                                   function (responseText) {
+                                                       if (responseText) {
+                                                           var response = JSON.parse(
+                                                                       responseText)
+                                                           if (response.code === 0) {
+                                                               console.log("Group Deleted")
+                                                           } else {
+                                                               console.log("Failed to delete group")
+                                                           }
+                                                       } else {
+                                                           console.log("Failed to delete group due to an error.")
+                                                       }
+                                                   }, data)
+                        }
+
+                        onRejected: function () {
+                            console.log("Cancelled")
                         }
                     }
 
@@ -535,7 +646,7 @@ Rectangle {
                     CustomDrawer {
                         id: drawerManageMember
                         control_handle: false
-                        lableText: "Member (30)"
+                        lableText: "Member (5/" + maximum_mem + ")"
                         d_settings: settings
                     }
 
@@ -914,6 +1025,9 @@ Rectangle {
                             if (response) {
                                 var data = JSON.parse(response)
                                 chatGroupName.text = data.group_name
+                                groupNameInSetting.text = data.group_name
+                                maximum_mem = data.max_member
+                                gr_owner_id = data.user_id
                                 chatDuration.text = ChatServices.calculateDuration(
                                             data.expired_at)
 

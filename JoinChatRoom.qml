@@ -11,13 +11,13 @@ import "ChatServices.js" as ChatServices
 //     height: 500
 //     title: "Join Room"
 Rectangle {
+    id: joinChatRoomId
     width: parent.width
     height: parent.height
     color: "white"
-    Loader {
-        id: pageLoader
-        anchors.fill: parent
-    }
+
+    signal roomJoined
+    signal roomWaiting
 
     //Cookie
     Cookie {
@@ -155,11 +155,16 @@ Rectangle {
                                                                     "user_code",
                                                                     resObject.user_code,
                                                                     3600000)
+                                                        cookieId.saveCookie(
+                                                                    "user_name",
+                                                                    resObject.user_name,
+                                                                    3600000)
                                                         console.log("Join group success")
                                                         if (resObject.is_waiting === true) {
-                                                            pageLoader.source = "LoadingPage.qml"
+                                                            joinChatRoomId.roomWaiting()
                                                         } else {
-                                                            pageLoader.source = "Main.qml"
+
+                                                            joinChatRoomId.roomJoined()
                                                         }
                                                     } else {
                                                         console.log("Failed to create room")

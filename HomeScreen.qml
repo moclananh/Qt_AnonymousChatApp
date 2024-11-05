@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 ApplicationWindow {
+    id: homePage
     width: 900
     height: 600
     visible: true
@@ -19,8 +20,6 @@ ApplicationWindow {
             Layout.preferredHeight: 50
             spacing: 10
             Layout.alignment: Layout.Center
-            // anchors.horizontalCenter: parent.horizontalCenter
-            // Breadcrumbs with clickable links
             Text {
                 text: "Landing Page"
                 color: stackLayout.currentIndex === 0 ? "#761f84" : "gray"
@@ -79,9 +78,24 @@ ApplicationWindow {
             }
             CreateChatRoom {
                 id: item2
+                onRoomCreated: {
+                    var component = Qt.createComponent("Main.qml")
+                    var window = component.createObject()
+                    homePage.close()
+                }
             }
+
             JoinChatRoom {
                 id: item3
+                onRoomJoined: {
+                    var component = Qt.createComponent("Main.qml")
+                    var window = component.createObject()
+                    homePage.close()
+                }
+                onRoomWaiting: {
+                    var component = Qt.createComponent("LoadingPage.qml")
+                    var window = component.createObject()
+                }
             }
         }
     }

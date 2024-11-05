@@ -11,15 +11,12 @@ import "ChatServices.js" as ChatServices
 //     height: 500
 //     title: "Create Chat Room"
 Rectangle {
+    id: createChatRoomId
     width: parent.width
     height: parent.height
     color: "white"
+    signal roomCreated
 
-    //PageLoader
-    Loader {
-        id: pageLoader
-        anchors.fill: parent
-    }
 
     //Service
     Cookie {
@@ -179,7 +176,7 @@ Rectangle {
                                                             "user_code",
                                                             resObject.user_code,
                                                             3600000)
-                                                pageLoader.source = "Main.qml"
+                                                createChatRoomId.roomCreated()
                                             } else {
                                                 console.log("Failed to create room")
                                             }
