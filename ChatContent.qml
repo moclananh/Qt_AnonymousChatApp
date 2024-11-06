@@ -689,7 +689,7 @@ Rectangle {
                 ChatServices.fetchData(
                             `http://localhost:8080/group-detail/setting/${chatContent.groupId}/${chatContent.gr_owner_id}`,
                             "GET", null, function (response) {
-                                console.debug("loadGroupSetting: ", response)
+                                // console.debug("loadGroupSetting: ", response)
                                 if (response) {
                                     var respObject = JSON.parse(response)
                                     var groupSettingRes = respObject.data
@@ -742,92 +742,115 @@ Rectangle {
                 }
 
                 delegate: Rectangle {
-                    color: "transparent"
-                    width: parent ? parent.width - 30 : 0
-
-                    Component.onCompleted: {
-                        if (parent)
-                            anchors.horizontalCenter = parent.horizontalCenter
-                    }
-
+                    color: settings.chat_theme
+                    width: parent ? parent.width : 0
                     height: positionId.height
+                    Rectangle {
 
-                    Row {
-                        id: positionId
-                        spacing: 10
+                        color: "transparent"
+                        width: parent ? parent.width - 30 : 0
+
                         Component.onCompleted: {
-                            if (model.user_id === c_user_id) {
-                                positionId.anchors.right = parent.right
-                            }
+                            if (parent)
+                                anchors.horizontalCenter = parent.horizontalCenter
                         }
-                        height: Math.max(avatarContent.height,
-                                         msgContent.height) + 20
 
-                        layoutDirection: model.user_id === c_user_id ? "RightToLeft" : "LeftToRight"
+                        height: positionId.height
 
-                        // Avatar
-                        Rectangle {
-                            width: 35
-                            height: username.height + rectMessage.height
-                            color: "transparent"
-                            visible: model.user_id === c_user_id ? false : true
+                        Row {
+                            id: positionId
+                            spacing: 10
+                            Component.onCompleted: {
+                                if (model.user_id === c_user_id) {
+                                    positionId.anchors.right = parent.right
+                                }
+                            }
+                            height: Math.max(avatarContent.height,
+                                             msgContent.height) + 20
+
+                            layoutDirection: model.user_id
+                                             === c_user_id ? "RightToLeft" : "LeftToRight"
+
+                            // Avatar
                             Rectangle {
-                                id: avatarContent
                                 width: 35
-                                height: 35
-                                radius: 1
-                                color: "transparent"
-                                border.color: "transparent"
-                                visible: model.user_id === c_user_id ? false : true
-                                anchors.bottom: parent.bottom
-                                anchors.bottomMargin: 2
-                                ImageRounded {
-                                    x: parent.width / 2 - r_width / 2
-                                    source: model.image
-                                    r_width: parent.width
-                                    r_height: parent.height
-                                }
-                            }
-                        }
-
-                        // Message contents
-                        Column {
-                            id: msgContent
-                            height: username.height + rectMessage.height
-
-                            // Username
-                            Rectangle {
-                                id: username
-                                width: rectMessage.width
-                                height: 20
+                                height: rectMessage.height
                                 color: "transparent"
                                 visible: model.user_id === c_user_id ? false : true
-
-                                Text {
-                                    text: model.sender
-                                    color: settings.txt_color
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 5
+                                Rectangle {
+                                    id: avatarContent
+                                    width: 35
+                                    height: 35
+                                    radius: 1
+                                    color: "transparent"
+                                    border.color: "transparent"
+                                    visible: model.user_id === c_user_id ? false : true
+                                    anchors.bottom: parent.bottom
+                                    anchors.bottomMargin: 2
+                                    ImageRounded {
+                                        x: parent.width / 2 - r_width / 2
+                                        source: model.image
+                                        r_width: parent.width
+                                        r_height: parent.height
+                                    }
                                 }
                             }
 
-                            // Message Box
-                            Rectangle {
-                                id: rectMessage
-                                width: Math.min(messageId.implicitWidth + 40,
-                                                500)
-                                height: messageId.implicitHeight + 20
-                                radius: 20
-                                color: model.user_id === c_user_id ? settings.messsagebox_chat_sender : settings.messsagebox_chat_receiver
+                            // Message contents
+                            Column {
+                                id: msgContent
+                                height: rectMessage.height
 
-                                Text {
-                                    id: messageId
-                                    text: model.message
-                                    color: model.user_id
-                                           === c_user_id ? "white" : settings.message_txt_sender
-                                    anchors.centerIn: rectMessage
-                                    wrapMode: Text.WordWrap
-                                    width: parent.width - 40
+                                // Message Box
+                                Rectangle {
+                                    id: rectMessage
+                                    width: usernameId.implicitWidth >= messageId.implicitWidth ? Math.min(usernameId.implicitWidth + 20, 500) : Math.min(messageId.implicitWidth + 20, 500)
+                                    height: messageId.implicitHeight + messageTimeId.implicitHeight
+                                            + 20 + ((usernameId.visible
+                                                     === false) ? 0 : usernameId.implicitHeight)
+                                    radius: 10
+                                    color: model.user_id === c_user_id ? settings.messsagebox_chat_sender : settings.messsagebox_chat_receiver
+
+                                    // Username
+                                    Text {
+                                        id: usernameId
+                                        text: model.sender
+                                        color: "#be0cc7"
+                                        font.bold: true
+                                        anchors.top: parent.top
+                                        anchors.topMargin: 5
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 10
+                                        visible: model.user_id === c_user_id ? false : true
+                                    }
+
+                                    // message content
+                                    Text {
+                                        id: messageId
+                                        text: model.message
+                                        color: model.user_id
+                                               === c_user_id ? "white" : settings.message_txt_sender
+                                        anchors.top: usernameId.visible
+                                                     == true ? usernameId.bottom : parent.top
+                                        anchors.topMargin: usernameId.visible == true ? 3 : 5
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 10
+                                        wrapMode: Text.WordWrap
+                                        width: parent.width - 20
+                                    }
+
+                                    // message created date
+                                    Text {
+                                        id: messageTimeId
+                                        text: model.created_at
+                                        color: model.user_id
+                                               === c_user_id ? "white" : settings.message_txt_sender
+                                        anchors.top: messageId.bottom
+                                        anchors.topMargin: 5
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 10
+                                        font.pixelSize: 10
+                                    }
                                 }
                             }
                         }
@@ -1070,10 +1093,22 @@ Rectangle {
                                 chatDuration.text = ChatServices.calculateDuration(
                                             data.expired_at)
                                 gr_owner_id = data.user_id
-
+                                // console.log(response)
                                 // Populate message list
                                 lsViewId.model.clear()
                                 for (var i = 0; i < data.messages.length; i++) {
+                                    var originalTime = new Date(data.messages[i].created_at)
+
+                                    var fetchedTime = new Date(originalTime.getTime(
+                                                                   ) + 7 * 60 * 60 * 1000)
+
+                                    // Format the time to "HH:mm"
+                                    var formattedTime = fetchedTime.getHours(
+                                                ).toString().padStart(
+                                                2,
+                                                '0') + ":" + fetchedTime.getMinutes(
+                                                ).toString().padStart(2, '0')
+
                                     lsViewId.model.append({
                                                               "ms_id": data.messages[i].id,
                                                               "sender": data.messages[i].user_name,
@@ -1081,7 +1116,8 @@ Rectangle {
                                                               "time": data.messages[i].created_at,
                                                               "image": "https://placehold.co/50x50",
                                                               "message_type": data.messages[i].message_type,
-                                                              "user_id": data.messages[i].user_id
+                                                              "user_id": data.messages[i].user_id,
+                                                              "created_at": formattedTime
                                                           })
                                 }
 

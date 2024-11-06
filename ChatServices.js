@@ -36,15 +36,12 @@ function fetchData(url, method, headers, callback, data = null) {
 //fn caculate duration
 function calculateDuration(durationInMinutes) {
     var now = new Date()
-    console.log("Date time now: " + now)
 
     var fetchedTime = new Date(new Date(durationInMinutes).getTime(
                                    ) + 7 * 60 * 60 * 1000)
 
-    console.log("FetchedTime time: " + fetchedTime)
-
     var diffMs = fetchedTime - now
-    console.log("Diff: " + diffMs)
+
     var diffMinutes = Math.floor(diffMs / 60000)
 
     return "Duration: " + diffMinutes + " minutes left"
