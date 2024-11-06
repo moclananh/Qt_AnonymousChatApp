@@ -2,6 +2,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include "cookieservice.h"
+#include "networkmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,16 +15,13 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    // Register the CookieService type
+    // Register the services
     qmlRegisterType<CookieService>("cookie.service", 1, 0, "Cookie");
+    qmlRegisterType<NetworkManager>("network.service", 1, 0, "NetworkManager");
 
-    // Create an instance of CookieService
     CookieService cookieService;
-
-    // Load the user_id using the loadData method
     QVariant user_id = cookieService.loadCookie("user_id");
 
-    // Check if user_id is available
     if (user_id.isNull() || user_id.toString().isEmpty()) {
         qDebug() << "No user_id found. Loading HomeScreen...";
         engine.loadFromModule("Project_AnonymousChat", "HomeScreen");

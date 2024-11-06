@@ -3,13 +3,8 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import cookie.service 1.0
-import "ChatServices.js" as ChatServices
+import network.service 1.0
 
-// ApplicationWindow {
-//     visible: true
-//     width: 900
-//     height: 500
-//     title: "Create Chat Room"
 Rectangle {
     id: createChatRoomId
     width: parent.width
@@ -17,10 +12,27 @@ Rectangle {
     color: "white"
     signal roomCreated
 
-
-    //Service
+    // services register
     Cookie {
         id: cookieId
+    }
+
+    NetworkManager {
+        id: networkManager
+        onDataReceived: function (response) {
+            var jsonData = JSON.parse(response)
+
+            // console.log("Response from API:", response)
+            if (jsonData.group_name) {
+                console.log("Group created successfully:", jsonData.group_name)
+                cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
+                cookieId.saveCookie("user_name", jsonData.username, 3600000)
+                cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
+
+                createChatRoomId.roomCreated()
+            }
+        }
+        onRequestError: console.log("Network error: " + error)
     }
 
     ColumnLayout {
@@ -158,34 +170,16 @@ Rectangle {
                                             "maximum_members": cbLimitMember.currentIndex === 3 ? 0 : parseInt(cbLimitMember.currentText),
                                             "username": txtName.text
                                         }
-                                        var handler = function (response) {
-                                            if (response) {
-                                                let resObject = JSON.parse(
-                                                        response)
-                                                console.log("Room created successfully:",
-                                                            resObject)
-                                                cookieId.saveCookie(
-                                                            "user_id",
-                                                            resObject.user_id,
-                                                            3600000)
-                                                cookieId.saveCookie(
-                                                            "user_name",
-                                                            resObject.user_name,
-                                                            3600000)
-                                                cookieId.saveCookie(
-                                                            "user_code",
-                                                            resObject.user_code,
-                                                            3600000)
-                                                createChatRoomId.roomCreated()
-                                            } else {
-                                                console.log("Failed to create room")
-                                            }
-                                        }
-                                        // API call using ChatServices.fetchData
-                                        ChatServices.fetchData(
-                                                    "http://127.0.0.1:8080/add-user-group",
-                                                    "POST", null, handler,
+
+                                        var jsonData = JSON.stringify(
                                                     requestData)
+
+                                        var headers = {}
+
+                                        // API call using ChatServices.fetchData
+                                        networkManager.fetchData(
+                                                    "http://127.0.0.1:8080/add-user-group",
+                                                    "POST", headers, jsonData)
                                     }
                                 }
                             }

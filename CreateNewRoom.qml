@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Universal
 import cookie.service 1.0
-import "ChatServices.js" as ChatServices
+import network.service 1.0
 
 Drawer {
     id: root
@@ -15,8 +15,24 @@ Drawer {
         color: settings.user_drawer
     }
 
+    // services register
     Cookie {
         id: cookieId
+    }
+
+    NetworkManager {
+        id: networkManager
+        onDataReceived: function (response) {
+            var jsonData = JSON.parse(response)
+
+            //console.log("Response from API:", response)
+            if (jsonData.group_name) {
+                console.log("Group created successfully:", jsonData.group_name)
+
+                root.close()
+            }
+        }
+        onRequestError: console.log("Network error: " + error)
     }
 
     Rectangle {
@@ -111,7 +127,7 @@ Drawer {
                             var user_name = cookieId.loadCookie("user_name")
                             var user_code = cookieId.loadCookie("user_code")
 
-                            let headers = null
+                            let headers = {}
                             if (user_code) {
                                 headers = {
                                     "x-user-code": `${user_code}`
@@ -130,19 +146,12 @@ Drawer {
                                 "username": user_name ? user_name : ""
                             }
 
-                            ChatServices.fetchData(
+                            var jsonData = JSON.stringify(requestData)
+
+                            // API call using ChatServices.fetchData
+                            networkManager.fetchData(
                                         "http://127.0.0.1:8080/add-user-group",
-                                        "POST", headers, function (response) {
-                                            if (response) {
-                                                let resObject = JSON.parse(
-                                                        response)
-                                                console.log("Room created successfully:",
-                                                            resObject)
-                                                root.close()
-                                            } else {
-                                                console.log("Failed to create room")
-                                            }
-                                        }, requestData)
+                                        "POST", headers, jsonData)
                         }
                     }
                 }

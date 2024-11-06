@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import cookie.service 1.0
-import "ChatServices.js" as ChatServices
+import network.service 1.0
 
 Rectangle {
     id: joinChatRoomId
@@ -16,8 +16,32 @@ Rectangle {
     height: parent.height
     color: "white"
 
+    // services register
     Cookie {
         id: cookieId
+    }
+
+    NetworkManager {
+        id: networkManager
+        onDataReceived: function (response) {
+            var jsonData = JSON.parse(response)
+
+            //   console.log("Response from API:", response)
+            if (jsonData.group_name) {
+                console.log("Join group successfully:", jsonData.group_name)
+                cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
+                cookieId.saveCookie("user_name", jsonData.username, 3600000)
+                cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
+
+                if (jsonData.is_waiting === true) {
+                    joinChatRoomId.roomWaiting()
+                } else {
+
+                    joinChatRoomId.roomJoined()
+                }
+            }
+        }
+        onRequestError: console.log("Network error: " + error)
     }
 
     ColumnLayout {
@@ -135,36 +159,15 @@ Rectangle {
                                         "message": txtMessage.text.trim(),
                                         "username": txtName.text.trim()
                                     }
-                                    ChatServices.fetchData(
-                                                "http://127.0.0.1:8080/join-group",
-                                                "POST", null,
-                                                function (response) {
-                                                    if (response) {
-                                                        let resObject = JSON.parse(
-                                                                response)
-                                                        cookieId.saveCookie(
-                                                                    "user_id",
-                                                                    resObject.user_id,
-                                                                    3600000)
-                                                        cookieId.saveCookie(
-                                                                    "user_code",
-                                                                    resObject.user_code,
-                                                                    3600000)
-                                                        cookieId.saveCookie(
-                                                                    "user_name",
-                                                                    resObject.user_name,
-                                                                    3600000)
-                                                        console.log("Join group success")
-                                                        if (resObject.is_waiting === true) {
-                                                            joinChatRoomId.roomWaiting()
-                                                        } else {
 
-                                                            joinChatRoomId.roomJoined()
-                                                        }
-                                                    } else {
-                                                        console.log("Failed to create room")
-                                                    }
-                                                }, requestData)
+                                    var jsonData = JSON.stringify(requestData)
+
+                                    var headers = {}
+
+                                    // API call using ChatServices.fetchData
+                                    networkManager.fetchData(
+                                                "http://127.0.0.1:8080/join-group",
+                                                "POST", headers, jsonData)
                                 }
                             }
                         }
