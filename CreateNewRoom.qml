@@ -7,32 +7,17 @@ import network.service 1.0
 
 Drawer {
     id: root
+
+    // properties init
     property QtObject settings
+    property string user_name: cookieId.loadCookie("user_name")
+    property string user_code: cookieId.loadCookie("user_code")
+
     width: 300
     height: parent.height
     edge: Qt.LeftEdge
     background: Rectangle {
         color: settings.user_drawer
-    }
-
-    // services register
-    Cookie {
-        id: cookieId
-    }
-
-    NetworkManager {
-        id: networkManager
-        onDataReceived: function (response) {
-            var jsonData = JSON.parse(response)
-
-            //console.log("Response from API:", response)
-            if (jsonData.group_name) {
-                console.log("Group created successfully:", jsonData.group_name)
-
-                root.close()
-            }
-        }
-        onRequestError: console.log("Network error: " + error)
     }
 
     Rectangle {
@@ -124,8 +109,6 @@ Drawer {
                             txtRoomCode.focus = true
                             txtRoomCode.placeholderText = "Room code is required!"
                         } else {
-                            var user_name = cookieId.loadCookie("user_name")
-                            var user_code = cookieId.loadCookie("user_code")
 
                             let headers = {}
                             if (user_code) {
@@ -157,5 +140,25 @@ Drawer {
                 }
             }
         }
+    }
+
+    // services register
+    Cookie {
+        id: cookieId
+    }
+
+    NetworkManager {
+        id: networkManager
+        onDataReceived: function (response) {
+            var jsonData = JSON.parse(response)
+
+            //console.log("Response from API:", response)
+            if (jsonData.group_name) {
+                console.log("Group created successfully:", jsonData.group_name)
+
+                root.close()
+            }
+        }
+        onRequestError: console.log("Network error: " + error)
     }
 }

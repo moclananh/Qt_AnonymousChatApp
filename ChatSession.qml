@@ -6,6 +6,7 @@ import QtQuick.Effects
 import QtQuick.Dialogs
 import "ChatServices.js" as ChatServices
 import cookie.service 1.0
+import network.service 1.0
 
 // Chat Section
 Rectangle {
@@ -15,6 +16,7 @@ Rectangle {
     property QtObject settings
     property QtObject drawer_settings
     signal chatSessionSelected(int groupId)
+    property string user_id: cookieId.loadCookie("user_id")
 
     Layout.minimumWidth: 0
     Layout.fillHeight: true
@@ -22,10 +24,6 @@ Rectangle {
     width: 300
     height: parent.height
     visible: parent.width > 800
-
-    Cookie {
-        id: cookieId
-    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -219,74 +217,51 @@ Rectangle {
             }
         }
 
+        // services register
+        Cookie {
+            id: cookieId
+        }
+
+        NetworkManager {
+            id: networkManager
+            onDataReceived: function (response) {
+                // console.log("Response from API:", response)
+                if (response) {
+                    var object = JSON.parse(response)
+                    object.list_gr.forEach(function (data) {
+                        var timeResult = ChatServices.formatTimeDifference(
+                                    data.created_at, data.latest_ms_content,
+                                    data.latest_ms_time)
+
+                        groupListModel.append({
+                                                  "group_id": data.group_id,
+                                                  "group_name": data.group_name,
+                                                  "group_id": data.group_id,
+                                                  "group_code": data.group_code,
+                                                  "expired_at": data.expired_at,
+                                                  "latest_ms_content": timeResult.latestMsContent,
+                                                  "latest_ms_time": timeResult.timeString
+                                              })
+                    })
+
+                    // Scroll to the bottom after adding new data
+                    if (groupListModel.count > 0) {
+                        listViewSessionId.currentIndex = groupListModel.count - 1
+                        listViewSessionId.positionViewAtIndex(
+                                    listViewSessionId.currentIndex,
+                                    ListView.End)
+                    }
+                } else {
+                    console.log("Failed to fetch data")
+                }
+            }
+            onRequestError: console.log("Network error: " + error)
+        }
+
         //fetch data
         Component.onCompleted: {
-            var user_id = cookieId.loadCookie("user_id")
-            ChatServices.fetchData(`http://127.0.0.1:8080/gr/list/${user_id}`,
-                                   "GET", null, function (response) {
-                                       if (response) {
-                                           var object = JSON.parse(response)
-                                           object.list_gr.forEach(
-                                                       function (data) {
-                                                           var fetchedTime
-                                                           var timeString
-
-                                                           if (data.latest_ms_content === "") {
-                                                               data.latest_ms_content
-                                                                       = "Group just created"
-                                                               fetchedTime = new Date(new Date(data.created_at).getTime() + 7 * 60 * 60 * 1000)
-                                                           } else {
-                                                               data.latest_ms_content
-                                                                       = data.latest_ms_content
-                                                               fetchedTime = new Date(new Date(data.latest_ms_time).getTime() + 7 * 60 * 60 * 1000)
-                                                           }
-
-                                                           var currentTime = new Date()
-
-                                                           var timeDifference = Math.floor(
-                                                                       (currentTime - fetchedTime)
-                                                                       / 1000)
-
-                                                           if (timeDifference < 60) {
-                                                               timeString = timeDifference
-                                                                       + " seconds ago"
-                                                           } else if (timeDifference < 3600) {
-                                                               timeString = Math.floor(
-                                                                           timeDifference / 60)
-                                                                       + " minutes ago"
-                                                           } else if (timeDifference < 86400) {
-                                                               timeString = Math.floor(
-                                                                           timeDifference / 3600)
-                                                                       + " hours ago"
-                                                           } else {
-                                                               timeString = Math.floor(
-                                                                           timeDifference / 86400)
-                                                                       + " days ago"
-                                                           }
-
-                                                           groupListModel.append({
-                                                                                     "group_id": data.group_id,
-                                                                                     "group_name": data.group_name,
-                                                                                     "group_id": data.group_id,
-                                                                                     "group_code": data.group_code,
-                                                                                     "expired_at": data.expired_at,
-                                                                                     "latest_ms_content": data.latest_ms_content,
-                                                                                     "latest_ms_time": timeString
-                                                                                 })
-                                                       })
-
-                                           // Scroll to the bottom after adding new data
-                                           if (groupListModel.count > 0) {
-                                               listViewSessionId.currentIndex
-                                                       = groupListModel.count - 1
-                                               listViewSessionId.positionViewAtIndex(
-                                                           listViewSessionId.currentIndex,
-                                                           ListView.End)
-                                           }
-                                       } else {
-                                           console.log("Failed to fetch data")
-                                       }
-                                   })
+            networkManager.fetchData(
+                        `http://127.0.0.1:8080/gr/list/${user_id}`, "GET")
         }
     }
 }

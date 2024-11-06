@@ -6,6 +6,7 @@ import QtQuick.Effects
 import QtQuick.Dialogs
 import "ChatServices.js" as ChatServices
 import cookie.service 1.0
+import network.service 1.0
 
 // Chat Content
 Rectangle {
@@ -24,12 +25,9 @@ Rectangle {
     Layout.fillHeight: true
     color: settings.bg_chatcontent_color
 
+    // signal connect to get groupId
     function loadGroupDataLayout() {
         chatContentLayout.loadGroupData()
-    }
-
-    Cookie {
-        id: cookieId
     }
 
     //containner
@@ -120,7 +118,7 @@ Rectangle {
                 }
 
                 onClicked: {
-                    drawerGroupSetting.loadGroupSetting()
+                    chatContentLayout.loadGroupSetting()
                     drawerGroupSetting.open()
                 }
             }
@@ -684,44 +682,6 @@ Rectangle {
                     }
                 }
             }
-
-            function loadGroupSetting() {
-                ChatServices.fetchData(
-                            `http://localhost:8080/group-detail/setting/${chatContent.groupId}/${chatContent.gr_owner_id}`,
-                            "GET", null, function (response) {
-                                // console.debug("loadGroupSetting: ", response)
-                                if (response) {
-                                    var respObject = JSON.parse(response)
-                                    var groupSettingRes = respObject.data
-                                    groupNameInSetting.text = groupSettingRes.group_name
-                                    maximum_mem = groupSettingRes.maximum_members
-                                    total_joined_member = groupSettingRes.total_joined_member
-                                    total_waiting_member = groupSettingRes.total_waiting_member
-
-                                    drawerMemberRequest.membersModel.clear()
-                                    for (var i = 0; i
-                                         < groupSettingRes.list_waiting_member.length; i++) {
-                                        drawerMemberRequest.membersModel.append(
-                                                    {
-                                                        "username": groupSettingRes.list_waiting_member[i].username,
-                                                        "image": "https://placehold.co/50x50"
-                                                    })
-                                    }
-
-                                    drawerManageMember.membersModel.clear()
-                                    for (var j = 0; j
-                                         < groupSettingRes.list_joined_member.length; j++) {
-                                        drawerManageMember.membersModel.append({
-                                                                                   "username": groupSettingRes.list_joined_member[j].username,
-                                                                                   "image": "https://placehold.co/50x50"
-                                                                               })
-                                    }
-                                } else {
-                                    console.error(
-                                                "Failed to fetch data from the API")
-                                }
-                            })
-            }
         }
 
         // Messages List
@@ -1079,60 +1039,102 @@ Rectangle {
             }
         }
 
-        //fetch api
+        //services register
+        Cookie {
+            id: cookieId
+        }
+
+        //fetch data for group details
+        NetworkManager {
+            id: networkManagerGroupDetails
+            onDataReceived: function (response) {
+                // console.log("Response from API:", response)
+                if (response) {
+                    var data = JSON.parse(response)
+                    chatGroupName.text = data.group_name
+                    chatDuration.text = ChatServices.calculateDuration(
+                                data.expired_at)
+                    gr_owner_id = data.user_id
+                    lsViewId.model.clear()
+                    for (var i = 0; i < data.messages.length; i++) {
+                        var formattedTime = ChatServices.formatTime(
+                                    data.messages[i].created_at)
+
+                        lsViewId.model.append({
+                                                  "ms_id": data.messages[i].id,
+                                                  "sender": data.messages[i].user_name,
+                                                  "message": data.messages[i].content,
+                                                  "time": data.messages[i].created_at,
+                                                  "image": "https://placehold.co/50x50",
+                                                  "message_type": data.messages[i].message_type,
+                                                  "user_id": data.messages[i].user_id,
+                                                  "created_at": formattedTime
+                                              })
+                    }
+
+                    // Scroll to the bottom after adding new data
+                    if (chatContentModel.count > 0) {
+                        lsViewId.currentIndex = chatContentModel.count - 1
+                        lsViewId.positionViewAtIndex(lsViewId.currentIndex,
+                                                     ListView.End)
+                    }
+                } else {
+                    console.error("Failed to fetch data from the API")
+                }
+            }
+            onRequestError: console.log("Network error")
+        }
+
+        //fetch data for group settings
+        NetworkManager {
+            id: networkManagerGroupSettings
+            onDataReceived: function (response) {
+                // console.log("Response from API:", response)
+                if (response) {
+                    var respObject = JSON.parse(response)
+                    var groupSettingRes = respObject.data
+                    groupNameInSetting.text = groupSettingRes.group_name
+                    maximum_mem = groupSettingRes.maximum_members
+                    total_joined_member = groupSettingRes.total_joined_member
+                    total_waiting_member = groupSettingRes.total_waiting_member
+
+                    drawerMemberRequest.membersModel.clear()
+                    for (var i = 0; i < groupSettingRes.list_waiting_member.length; i++) {
+                        drawerMemberRequest.membersModel.append({
+                                                                    "username": groupSettingRes.list_waiting_member[i].username,
+                                                                    "image": "https://placehold.co/50x50"
+                                                                })
+                    }
+
+                    drawerManageMember.membersModel.clear()
+                    for (var j = 0; j < groupSettingRes.list_joined_member.length; j++) {
+                        drawerManageMember.membersModel.append({
+                                                                   "username": groupSettingRes.list_joined_member[j].username,
+                                                                   "image": "https://placehold.co/50x50"
+                                                               })
+                    }
+                } else {
+                    console.error("Failed to fetch data from the API")
+                }
+            }
+            onRequestError: console.log("Network error: " + error)
+        }
+
+        // fn init
+        function loadGroupData() {
+            networkManagerGroupDetails.fetchData(
+                        `http://localhost:8080/group-detail/${chatContent.groupId}`,
+                        "GET")
+        }
+
+        function loadGroupSetting() {
+            networkManagerGroupSettings.fetchData(
+                        `http://localhost:8080/group-detail/setting/${chatContent.groupId}`,
+                        "GET")
+        }
+
         Component.onCompleted: {
             loadGroupData()
-        }
-        function loadGroupData() {
-            ChatServices.fetchData(
-                        `http://localhost:8080/group-detail/${chatContent.groupId}`,
-                        "GET", null, function (response) {
-                            if (response) {
-                                var data = JSON.parse(response)
-                                chatGroupName.text = data.group_name
-                                chatDuration.text = ChatServices.calculateDuration(
-                                            data.expired_at)
-                                gr_owner_id = data.user_id
-                                // console.log(response)
-                                // Populate message list
-                                lsViewId.model.clear()
-                                for (var i = 0; i < data.messages.length; i++) {
-                                    var originalTime = new Date(data.messages[i].created_at)
-
-                                    var fetchedTime = new Date(originalTime.getTime(
-                                                                   ) + 7 * 60 * 60 * 1000)
-
-                                    // Format the time to "HH:mm"
-                                    var formattedTime = fetchedTime.getHours(
-                                                ).toString().padStart(
-                                                2,
-                                                '0') + ":" + fetchedTime.getMinutes(
-                                                ).toString().padStart(2, '0')
-
-                                    lsViewId.model.append({
-                                                              "ms_id": data.messages[i].id,
-                                                              "sender": data.messages[i].user_name,
-                                                              "message": data.messages[i].content,
-                                                              "time": data.messages[i].created_at,
-                                                              "image": "https://placehold.co/50x50",
-                                                              "message_type": data.messages[i].message_type,
-                                                              "user_id": data.messages[i].user_id,
-                                                              "created_at": formattedTime
-                                                          })
-                                }
-
-                                // Scroll to the bottom after adding new data
-                                if (chatContentModel.count > 0) {
-                                    lsViewId.currentIndex = chatContentModel.count - 1
-                                    lsViewId.positionViewAtIndex(
-                                                lsViewId.currentIndex,
-                                                ListView.End)
-                                }
-                            } else {
-                                console.error(
-                                            "Failed to fetch data from the API")
-                            }
-                        })
         }
     }
 }

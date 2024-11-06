@@ -12,29 +12,6 @@ Rectangle {
     color: "white"
     signal roomCreated
 
-    // services register
-    Cookie {
-        id: cookieId
-    }
-
-    NetworkManager {
-        id: networkManager
-        onDataReceived: function (response) {
-            var jsonData = JSON.parse(response)
-
-            // console.log("Response from API:", response)
-            if (jsonData.group_name) {
-                console.log("Group created successfully:", jsonData.group_name)
-                cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
-                cookieId.saveCookie("user_name", jsonData.username, 3600000)
-                cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
-
-                createChatRoomId.roomCreated()
-            }
-        }
-        onRequestError: console.log("Network error: " + error)
-    }
-
     ColumnLayout {
         anchors.fill: parent
         width: parent.width
@@ -188,5 +165,28 @@ Rectangle {
                 }
             }
         }
+    }
+
+    // services register
+    Cookie {
+        id: cookieId
+    }
+
+    NetworkManager {
+        id: networkManager
+        onDataReceived: function (response) {
+            var jsonData = JSON.parse(response)
+
+            // console.log("Response from API:", response)
+            if (jsonData.group_name) {
+                console.log("Group created successfully:", jsonData.group_name)
+                cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
+                cookieId.saveCookie("user_name", jsonData.username, 3600000)
+                cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
+
+                createChatRoomId.roomCreated()
+            }
+        }
+        onRequestError: console.log("Network error: " + error)
     }
 }

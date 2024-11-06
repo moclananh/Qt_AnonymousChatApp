@@ -16,34 +16,6 @@ Rectangle {
     height: parent.height
     color: "white"
 
-    // services register
-    Cookie {
-        id: cookieId
-    }
-
-    NetworkManager {
-        id: networkManager
-        onDataReceived: function (response) {
-            var jsonData = JSON.parse(response)
-
-            //   console.log("Response from API:", response)
-            if (jsonData.group_name) {
-                console.log("Join group successfully:", jsonData.group_name)
-                cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
-                cookieId.saveCookie("user_name", jsonData.username, 3600000)
-                cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
-
-                if (jsonData.is_waiting === true) {
-                    joinChatRoomId.roomWaiting()
-                } else {
-
-                    joinChatRoomId.roomJoined()
-                }
-            }
-        }
-        onRequestError: console.log("Network error: " + error)
-    }
-
     ColumnLayout {
         anchors.fill: parent
         width: parent.width
@@ -175,5 +147,33 @@ Rectangle {
                 }
             }
         }
+    }
+
+    // services register
+    Cookie {
+        id: cookieId
+    }
+
+    NetworkManager {
+        id: networkManager
+        onDataReceived: function (response) {
+            var jsonData = JSON.parse(response)
+
+            //   console.log("Response from API:", response)
+            if (jsonData.group_name) {
+                console.log("Join group successfully:", jsonData.group_name)
+                cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
+                cookieId.saveCookie("user_name", jsonData.username, 3600000)
+                cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
+
+                if (jsonData.is_waiting === true) {
+                    joinChatRoomId.roomWaiting()
+                } else {
+
+                    joinChatRoomId.roomJoined()
+                }
+            }
+        }
+        onRequestError: console.log("Network error: " + error)
     }
 }

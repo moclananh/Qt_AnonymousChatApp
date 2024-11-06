@@ -15,25 +15,6 @@ Drawer {
         color: settings.user_drawer
     }
 
-    // services register
-    Cookie {
-        id: cookieId
-    }
-
-    NetworkManager {
-        id: networkManager
-        onDataReceived: function (response) {
-            var jsonData = JSON.parse(response)
-
-            // console.log("Response from API:", response)
-            if (jsonData.group_name) {
-                console.log("Join group successfully:", jsonData.group_name)
-                root.close()
-            }
-        }
-        onRequestError: console.log("Network error: " + error)
-    }
-
     Rectangle {
         id: rectJoinNewRoom
         width: parent.width * 0.85
@@ -121,5 +102,24 @@ Drawer {
                 }
             }
         }
+    }
+
+    // services register
+    Cookie {
+        id: cookieId
+    }
+
+    NetworkManager {
+        id: networkManager
+        onDataReceived: function (response) {
+            var jsonData = JSON.parse(response)
+
+            // console.log("Response from API:", response)
+            if (jsonData.group_name) {
+                console.log("Join group successfully:", jsonData.group_name)
+                root.close()
+            }
+        }
+        onRequestError: console.log("Network error: " + error)
     }
 }
