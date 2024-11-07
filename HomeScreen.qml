@@ -96,10 +96,10 @@ ApplicationWindow {
                                                         })
                     homePage.close()
                 }
-                onRoomWaiting: {
-                    var component = Qt.createComponent("LoadingPage.qml")
-                    var window = component.createObject()
-                }
+                // onRoomWaiting: {
+                //     var component = Qt.createComponent("LoadingPage.qml")
+                //     var window = component.createObject()
+                // }
             }
         }
     }
