@@ -13,6 +13,7 @@ Drawer {
     property string user_code: cookieId.loadCookie("user_code")
     property string user_name: cookieId.loadCookie("user_name")
     signal successSignal
+    signal groupIdSignal(int groupId)
 
     width: 300
     height: parent.height
@@ -96,7 +97,7 @@ Drawer {
     }
 
     CustomNotify {
-        id: joinRoomNotify
+        id: notifyMessageBoxId
         message: ""
     }
 
@@ -108,12 +109,15 @@ Drawer {
                 var jsonData = JSON.parse(response)
                 if (jsonData.is_waiting === true) {
                     console.log("request sended!, waiting for accpt")
-                    joinRoomNotify.message = "Request Sended, please wait for admin of group approve your request !"
-                    joinRoomNotify.open()
+                    notifyMessageBoxId.message = "Request Sended, please wait for admin of group approve your request !"
+                    notifyMessageBoxId.open()
                 } else {
                     console.log("Join group successfully:", jsonData.group_name)
+                    notifyMessageBoxId.message = "Join group successfully"
+                    notifyMessageBoxId.open()
                 }
                 app_state.successSignal()
+                app_state.groupIdSignal(jsonData.group_id)
                 txtNewRoomCode.text = ""
                 txtNewMessage.text = ""
                 root.close()
@@ -130,11 +134,11 @@ Drawer {
             var responseBody = errorParts.slice(1).join(": ")
 
             if (statusCode === 400) {
-                joinRoomNotify.message = responseBody
-                joinRoomNotify.open()
+                notifyMessageBoxId.message = responseBody
+                notifyMessageBoxId.open()
             } else {
-                joinRoomNotify.message = "Error from server"
-                joinRoomNotify.open()
+                notifyMessageBoxId.message = "Error from server"
+                notifyMessageBoxId.open()
             }
         }
     }
@@ -156,7 +160,6 @@ Drawer {
 
         var jsonData = JSON.stringify(requestData)
 
-        // API call using ChatServices.fetchData
         networkManager.fetchData("http://127.0.0.1:8080/join-group", "POST",
                                  headers, jsonData)
     }

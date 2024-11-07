@@ -139,6 +139,11 @@ Rectangle {
         id: cookieId
     }
 
+    CustomNotify {
+        id: notifyMessageBoxId
+        message: ""
+    }
+
     NetworkManager {
         id: networkManager
         onDataReceived: function (response) {
@@ -147,6 +152,8 @@ Rectangle {
             //   console.log("Response from API:", response)
             if (jsonData.group_name) {
                 console.log("Join group successfully:", jsonData.group_name)
+                notifyMessageBoxId.message = "Join group successfully"
+                notifyMessageBoxId.open()
                 cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
                 cookieId.saveCookie("user_name", jsonData.username, 3600000)
                 cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
@@ -159,7 +166,21 @@ Rectangle {
                 }
             }
         }
-        onRequestError: console.log("Network error: " + error)
+        onRequestError: function (error) {
+            console.log("Error from API:", error)
+
+            var errorParts = error.split(": ")
+            var statusCode = parseInt(errorParts[0], 10)
+            var responseBody = errorParts.slice(1).join(": ")
+
+            if (statusCode === 400) {
+                notifyMessageBoxId.message = responseBody
+                notifyMessageBoxId.open()
+            } else {
+                notifyMessageBoxId.message = "Error from server"
+                notifyMessageBoxId.open()
+            }
+        }
     }
 
     //fn create join chat room

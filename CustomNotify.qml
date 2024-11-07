@@ -6,14 +6,10 @@ MessageDialog {
     property string message: ""
     title: "Notice"
     text: message
-    buttons: MessageDialog.Ok | MessageDialog.Cancel
+    buttons: MessageDialog.Ok
 
     onAccepted: function () {
 
         console.log("Accepted")
-    }
-
-    onRejected: function () {
-        console.log("Cancelled")
     }
 }

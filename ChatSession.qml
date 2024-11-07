@@ -228,6 +228,8 @@ Rectangle {
     Cookie {
         id: cookieId
     }
+
+    //fetch data
     NetworkManager {
         id: networkManager
         onDataReceived: function (response) {
@@ -253,11 +255,9 @@ Rectangle {
                 console.log("Failed to fetch data")
             }
         }
-        onRequestError: console.log("Network error: " + error)
-    }
-    //fetch data
-    Component.onCompleted: {
-        loadDataChatSession()
+        onRequestError: function (error) {
+            console.log("Error from API:", error)
+        }
     }
 
     //fn load data chat section
@@ -265,5 +265,9 @@ Rectangle {
 
         networkManager.fetchData(`http://127.0.0.1:8080/gr/list/${user_id}`,
                                  "GET")
+    }
+
+    Component.onCompleted: {
+        loadDataChatSession()
     }
 }

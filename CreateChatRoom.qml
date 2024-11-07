@@ -152,6 +152,11 @@ Rectangle {
         id: cookieId
     }
 
+    CustomNotify {
+        id: notifyMessageBoxId
+        message: ""
+    }
+
     NetworkManager {
         id: networkManager
         onDataReceived: function (response) {
@@ -164,10 +169,27 @@ Rectangle {
                 cookieId.saveCookie("user_name", jsonData.username, 3600000)
                 cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
 
+                notifyMessageBoxId.message = "Create room successfully"
+                notifyMessageBoxId.open()
+
                 createChatRoomId.roomCreated()
             }
         }
-        onRequestError: console.log("Network error")
+        onRequestError: function (error) {
+            console.log("Error from API:", error)
+
+            var errorParts = error.split(": ")
+            var statusCode = parseInt(errorParts[0], 10)
+            var responseBody = errorParts.slice(1).join(": ")
+
+            if (statusCode === 400) {
+                notifyMessageBoxId.message = responseBody
+                notifyMessageBoxId.open()
+            } else {
+                notifyMessageBoxId.message = "Error from server"
+                notifyMessageBoxId.open()
+            }
+        }
     }
 
     // fn create new room

@@ -13,6 +13,7 @@ Drawer {
     property string user_name: cookieId.loadCookie("user_name")
     property string user_code: cookieId.loadCookie("user_code")
     signal successSignal
+    signal groupIdSignal(int groupId)
 
     width: 300
     height: parent.height
@@ -123,6 +124,11 @@ Drawer {
         id: cookieId
     }
 
+    CustomNotify {
+        id: notifyMessageBoxId
+        message: ""
+    }
+
     NetworkManager {
         id: networkManager
         onDataReceived: function (response) {
@@ -132,13 +138,28 @@ Drawer {
             if (jsonData.group_name) {
                 console.log("Group created successfully:", jsonData.group_name)
                 app_state.successSignal()
+                app_state.groupIdSignal(jsonData.group_id)
                 txtRoomName.text = ""
                 root.close()
             } else {
                 console.log("create room failed")
             }
         }
-        onRequestError: console.log("Network error: " + error)
+        onRequestError: function (error) {
+            console.log("Error from API:", error)
+
+            var errorParts = error.split(": ")
+            var statusCode = parseInt(errorParts[0], 10)
+            var responseBody = errorParts.slice(1).join(": ")
+
+            if (statusCode === 400) {
+                notifyMessageBoxId.message = responseBody
+                notifyMessageBoxId.open()
+            } else {
+                notifyMessageBoxId.message = "Error from server"
+                notifyMessageBoxId.open()
+            }
+        }
     }
 
     //fn create new room

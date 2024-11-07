@@ -9,6 +9,7 @@ public:
     AppState(QObject *parent = nullptr);
 signals:
     void successSignal();
+    void groupIdSignal(int groupId);
 };
 
 #endif // APPSTATE_H

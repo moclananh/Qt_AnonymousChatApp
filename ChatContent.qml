@@ -30,6 +30,14 @@ Rectangle {
         chatContentLayout.loadGroupData()
     }
 
+    Connections {
+        target: app_state
+        function onGroupIdSignal(groupId) {
+            console.log("Reloading chat details")
+            chatContent.groupId = groupId
+            chatContentLayout.loadGroupData()
+        }
+    }
     //containner
     Column {
         id: chatContentLayout
@@ -1010,6 +1018,11 @@ Rectangle {
             id: cookieId
         }
 
+        CustomNotify {
+            id: notifyMessageBoxId
+            message: ""
+        }
+
         //fetch data for group details
         NetworkManager {
             id: networkManagerGroupDetails
@@ -1048,7 +1061,9 @@ Rectangle {
                     console.error("Failed to fetch data from the API")
                 }
             }
-            onRequestError: console.log("Network error")
+            onRequestError: function (error) {
+                console.log("Error from API:", error)
+            }
         }
 
         //fetch data for group settings
@@ -1083,7 +1098,21 @@ Rectangle {
                     console.error("Failed to fetch data from the API")
                 }
             }
-            onRequestError: console.log("Network error: " + error)
+            onRequestError: function (error) {
+                console.log("Error from API:", error)
+
+                var errorParts = error.split(": ")
+                var statusCode = parseInt(errorParts[0], 10)
+                var responseBody = errorParts.slice(1).join(": ")
+
+                if (statusCode === 400) {
+                    notifyMessageBoxId.message = responseBody
+                    notifyMessageBoxId.open()
+                } else {
+                    notifyMessageBoxId.message = "Error from server"
+                    notifyMessageBoxId.open()
+                }
+            }
         }
 
         //fetch data for remove group
@@ -1095,8 +1124,26 @@ Rectangle {
                 if (dataRes.code === 0) {
                     drawerGroupSetting.close()
                     console.log("Group Deleted: " + dataRes.data.gr_id)
+                    notifyMessageBoxId.message = "Group deleted successfully!"
+                    notifyMessageBoxId.open()
                 } else {
                     console.log("Failed to delete group")
+                }
+            }
+
+            onRequestError: function (error) {
+                console.log("Error from API:", error)
+
+                var errorParts = error.split(": ")
+                var statusCode = parseInt(errorParts[0], 10)
+                var responseBody = errorParts.slice(1).join(": ")
+
+                if (statusCode === 400) {
+                    notifyMessageBoxId.message = responseBody
+                    notifyMessageBoxId.open()
+                } else {
+                    notifyMessageBoxId.message = "Error from server"
+                    notifyMessageBoxId.open()
                 }
             }
         }
@@ -1111,6 +1158,22 @@ Rectangle {
                     messageTextArena.text = ""
                 } else {
                     console.log("Failed to send message")
+                }
+            }
+
+            onRequestError: function (error) {
+                console.log("Error from API:", error)
+
+                var errorParts = error.split(": ")
+                var statusCode = parseInt(errorParts[0], 10)
+                var responseBody = errorParts.slice(1).join(": ")
+
+                if (statusCode === 400) {
+                    notifyMessageBoxId.message = responseBody
+                    notifyMessageBoxId.open()
+                } else {
+                    notifyMessageBoxId.message = "Error from server"
+                    notifyMessageBoxId.open()
                 }
             }
         }
