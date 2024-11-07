@@ -28,14 +28,10 @@ Rectangle {
     Layout.fillHeight: true
     color: settings.bg_chatcontent_color
 
-    // signal connect to get groupId
-    // function loadGroupDataLayout() {
-    //     chatContentLayout.loadGroupData()
-    // }
     Connections {
         target: app_state
         function onGroupIdSignal(groupId) {
-            console.log("Reloading chat details")
+            console.log("Received group_id: " + groupId)
             chatContent.groupId = groupId
             chatContentLayout.visible = true
             chatContentLayout.loadGroupData()
@@ -43,7 +39,7 @@ Rectangle {
 
         function onSuccessSignal() {
             console.log("Reloading chat content")
-            chatContent.groupId = 0
+
             chatContentLayout.loadGroupData()
         }
 
@@ -56,7 +52,6 @@ Rectangle {
 
         function onMessageSignal() {
             console.log("Reloading chat content")
-
             chatContentLayout.loadGroupData()
         }
 
@@ -784,7 +779,9 @@ Rectangle {
                                 // Message Box
                                 Rectangle {
                                     id: rectMessage
-                                    width: usernameId.implicitWidth >= messageId.implicitWidth ? Math.min(usernameId.implicitWidth + 20, 500) : Math.min(messageId.implicitWidth + 20, 500)
+                                    width: Math.max(
+                                               40,
+                                               usernameId.implicitWidth >= messageId.implicitWidth ? Math.min(usernameId.implicitWidth + 20, 500) : Math.min(messageId.implicitWidth + 20, 500))
                                     height: messageId.implicitHeight + messageTimeId.implicitHeight
                                             + 20 + ((usernameId.visible
                                                      === false) ? 0 : usernameId.implicitHeight)

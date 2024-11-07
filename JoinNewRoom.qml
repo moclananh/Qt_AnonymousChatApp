@@ -113,8 +113,6 @@ Drawer {
                     notifyMessageBoxId.open()
                 } else {
                     console.log("Join group successfully:", jsonData.group_name)
-                    notifyMessageBoxId.message = "Join group successfully"
-                    notifyMessageBoxId.open()
                 }
                 app_state.successSignal()
                 app_state.groupIdSignal(jsonData.group_id)
@@ -135,6 +133,9 @@ Drawer {
 
             if (statusCode === 400) {
                 notifyMessageBoxId.message = responseBody
+                notifyMessageBoxId.open()
+            } else if (statusCode === 404) {
+                notifyMessageBoxId.message = "Group not found, try again!"
                 notifyMessageBoxId.open()
             } else {
                 notifyMessageBoxId.message = "Error from server"

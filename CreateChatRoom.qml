@@ -10,7 +10,9 @@ Rectangle {
     width: parent.width
     height: parent.height
     color: "white"
-    signal roomCreated
+
+    //signal register
+    signal roomCreated(int groupId)
 
     ColumnLayout {
         anchors.fill: parent
@@ -172,7 +174,7 @@ Rectangle {
                 notifyMessageBoxId.message = "Create room successfully"
                 notifyMessageBoxId.open()
 
-                createChatRoomId.roomCreated()
+                createChatRoomId.roomCreated(jsonData.group_id)
             }
         }
         onRequestError: function (error) {

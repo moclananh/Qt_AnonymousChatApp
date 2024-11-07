@@ -78,18 +78,22 @@ ApplicationWindow {
             }
             CreateChatRoom {
                 id: item2
-                onRoomCreated: {
+                onRoomCreated: function (groupId) {
                     var component = Qt.createComponent("Main.qml")
-                    var window = component.createObject()
+                    var window = component.createObject(null, {
+                                                            "groupId": groupId
+                                                        })
                     homePage.close()
                 }
             }
 
             JoinChatRoom {
                 id: item3
-                onRoomJoined: {
+                onRoomJoined: function (groupId) {
                     var component = Qt.createComponent("Main.qml")
-                    var window = component.createObject()
+                    var window = component.createObject(null, {
+                                                            "groupId": groupId
+                                                        })
                     homePage.close()
                 }
                 onRoomWaiting: {

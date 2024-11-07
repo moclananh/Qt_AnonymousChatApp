@@ -23,11 +23,10 @@ ApplicationWindow {
         id: darkModeId
     }
 
-    property QtObject drawerRef: sidebar
+    //received groupId from signal in HomeScreen to pass for ChatContent
+    property int groupId: 0
 
-    function handleChatSessionSelected(groupId) {
-        chatContent.groupId = groupId
-    }
+    property QtObject drawerRef: sidebar
 
     Connections {
         target: app_state
@@ -36,6 +35,7 @@ ApplicationWindow {
         }
     }
 
+    // Chat menu
     Drawer {
         id: sidebar
         width: 300
@@ -283,18 +283,12 @@ ApplicationWindow {
                     id: chatSession
                     settings: sharedSettings
                     drawer_settings: drawerRef
-                    onChatSessionSelected: function (groupId) {
-                        handleChatSessionSelected(groupId)
-                    }
                 }
 
-                // ChatContent
+                // Chat Content
                 ChatContent {
                     id: chatContent
-
-                    // onGroupIdChanged: {
-                    //     chatContent.loadGroupDataLayout()
-                    // }
+                    groupId: rootId.groupId
                     settings: {
                         sharedSettings
                     }

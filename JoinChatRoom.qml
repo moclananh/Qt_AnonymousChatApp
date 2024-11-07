@@ -9,7 +9,7 @@ Rectangle {
     id: joinChatRoomId
 
     //signal init
-    signal roomJoined
+    signal roomJoined(int groupId)
     signal roomWaiting
 
     width: parent.width
@@ -148,23 +148,27 @@ Rectangle {
         id: networkManager
         onDataReceived: function (response) {
             var jsonData = JSON.parse(response)
-
-            //   console.log("Response from API:", response)
-            if (jsonData.group_name) {
-                console.log("Join group successfully:", jsonData.group_name)
-                notifyMessageBoxId.message = "Join group successfully"
-                notifyMessageBoxId.open()
-                cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
-                cookieId.saveCookie("user_name", jsonData.username, 3600000)
-                cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
-
+            if (response) {
+                console.log("Response from API:", response)
+                console.log("Status: " + jsonData.is_waiting)
                 if (jsonData.is_waiting === true) {
+                    notifyMessageBoxId.message
+                            = "Request is sended, please wait for admin to approve your request"
+                    notifyMessageBoxId.open()
                     joinChatRoomId.roomWaiting()
                 } else {
-
-                    joinChatRoomId.roomJoined()
+                    notifyMessageBoxId.message = "Join group successfully"
+                    notifyMessageBoxId.open()
+                    cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
+                    cookieId.saveCookie("user_name", jsonData.username, 3600000)
+                    cookieId.saveCookie("user_code",
+                                        jsonData.user_code, 3600000)
+                    console.log("signal send groupId from join room: " + jsonData.group_id)
+                    joinChatRoomId.roomJoined(jsonData.group_id)
+                    console.log("Join group successfully:", jsonData.group_name)
                 }
-            }
+            } else
+                console.log("Error fetch data")
         }
         onRequestError: function (error) {
             console.log("Error from API:", error)
@@ -175,6 +179,9 @@ Rectangle {
 
             if (statusCode === 400) {
                 notifyMessageBoxId.message = responseBody
+                notifyMessageBoxId.open()
+            } else if (statusCode === 404) {
+                notifyMessageBoxId.message = "Group not found, try again!"
                 notifyMessageBoxId.open()
             } else {
                 notifyMessageBoxId.message = "Error from server"
