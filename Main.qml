@@ -22,6 +22,7 @@ ApplicationWindow {
     property QtObject sharedSettings: ThemeSettings {
         id: darkModeId
     }
+    property string user_name: cookieId.loadCookie("user_name")
 
     //received groupId from signal in HomeScreen to pass for ChatContent
     property int groupId: 0
@@ -45,23 +46,36 @@ ApplicationWindow {
             color: sharedSettings.user_drawer
         }
 
-        Column {
-            anchors.fill: parent
-            anchors.topMargin: 50
-
-            // User avatar
-            Rectangle {
-                width: parent.width
-                height: 150
-                color: "transparent"
-
-                ImageRounded {
-                    x: parent.width / 2 - r_width / 2
-                    source: "https://placehold.co/100x100"
-                    r_width: 100
-                    r_height: 100
-                }
+        // User information
+        Rectangle {
+            width: parent.width
+            height: 140
+            color: "transparent"
+            anchors.top: parent.top
+            anchors.topMargin: 60
+            ImageRounded {
+                x: parent.width / 2 - r_width / 2
+                source: "https://placehold.co/100x100"
+                r_width: 100
+                r_height: 100
             }
+
+            Text {
+                id: username
+                text: rootId.user_name
+                font.bold: true
+                font.pixelSize: 20
+                color: sharedSettings.txt_color
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+        }
+
+        Rectangle {
+            width: parent.width
+            height: parent.height * 0.3
+            color: "transparent"
+            anchors.verticalCenter: parent.verticalCenter
 
             // Create new room button
             Rectangle {
@@ -69,34 +83,29 @@ ApplicationWindow {
                 width: parent.width
                 height: 50
                 color: "transparent"
+                anchors.top: parent.top
 
-                radius: 10
-                Row {
-                    anchors.fill: parent
-                    spacing: 10
-                    Rectangle {
-                        width: 20
-                        color: "transparent"
-                        height: parent.height
-                    }
-
-                    Image {
-                        source: "qrc:/images/audio_11781833.gif"
-                        height: 32
-                        width: 32
+                Image {
+                    id: createRoomIcon
+                    source: "qrc:/images/audio_11781833.gif"
+                    height: 32
+                    width: 32
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 20
+                }
+                Rectangle {
+                    height: parent.height
+                    color: "transparent"
+                    width: parent.width * 0.8
+                    anchors.left: createRoomIcon.right
+                    anchors.leftMargin: 10
+                    Text {
+                        id: txtCreateNewRoom
+                        text: "Create Room"
+                        color: sharedSettings.txt_color
+                        font.pixelSize: 18
                         anchors.verticalCenter: parent.verticalCenter
-                    }
-                    Rectangle {
-                        height: parent.height
-                        color: "transparent"
-                        width: parent.width * 0.8
-                        Text {
-                            id: txtCreateNewRoom
-                            text: "Create Room"
-                            color: sharedSettings.txt_color
-                            font.pixelSize: 18
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
                     }
                 }
 
@@ -124,35 +133,31 @@ ApplicationWindow {
                 width: parent.width
                 height: 50
                 color: "transparent"
-                radius: 10
 
-                Row {
-                    anchors.fill: parent
-                    spacing: 10
-                    Rectangle {
-                        width: 20
-                        color: "transparent"
-                        height: parent.height
-                    }
+                anchors.top: createNewRoom.bottom
 
-                    Image {
-                        source: "qrc:/images/comments_16903656.gif"
-                        height: 32
-                        width: 32
+                Image {
+                    id: joinNewRoomIcon
+                    source: "qrc:/images/comments_16903656.gif"
+                    height: 32
+                    width: 32
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 20
+                }
+
+                Rectangle {
+                    height: parent.height
+                    color: "transparent"
+                    width: parent.width * 0.8
+                    anchors.left: joinNewRoomIcon.right
+                    anchors.leftMargin: 10
+                    Text {
+                        id: txtJoinNewRoomBtn
+                        text: "Join Room"
+                        color: sharedSettings.txt_color
+                        font.pixelSize: 18
                         anchors.verticalCenter: parent.verticalCenter
-                    }
-
-                    Rectangle {
-                        height: parent.height
-                        color: "transparent"
-                        width: parent.width * 0.8
-                        Text {
-                            id: txtJoinNewRoomBtn
-                            text: "Join Room"
-                            color: sharedSettings.txt_color
-                            font.pixelSize: 18
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
                     }
                 }
 
@@ -180,34 +185,29 @@ ApplicationWindow {
                 width: parent.width
                 height: 50
                 color: "transparent"
-                radius: 10
+                anchors.top: joinNewRoomButton.bottom
 
-                Row {
-                    anchors.fill: parent
-                    spacing: 10
-                    Rectangle {
-                        width: 20
-                        color: "transparent"
-                        height: parent.height
-                    }
-
-                    Image {
-                        source: "qrc:/images/comments_16903656.gif"
-                        height: 32
-                        width: 32
+                Image {
+                    id: logoutIcon
+                    source: "qrc:/images/comments_16903656.gif"
+                    height: 32
+                    width: 32
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 20
+                }
+                Rectangle {
+                    height: parent.height
+                    color: "transparent"
+                    width: parent.width * 0.8
+                    anchors.left: logoutIcon.right
+                    anchors.leftMargin: 10
+                    Text {
+                        id: txtLogout
+                        text: "Logout"
+                        color: sharedSettings.txt_color
+                        font.pixelSize: 18
                         anchors.verticalCenter: parent.verticalCenter
-                    }
-                    Rectangle {
-                        height: parent.height
-                        color: "transparent"
-                        width: parent.width * 0.8
-                        Text {
-                            id: txtLogout
-                            text: "Logout"
-                            color: sharedSettings.txt_color
-                            font.pixelSize: 18
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
                     }
                 }
 

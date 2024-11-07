@@ -167,9 +167,9 @@ Rectangle {
             // console.log("Response from API:", response)
             if (jsonData.group_name) {
                 console.log("Group created successfully:", jsonData.group_name)
-                cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
-                cookieId.saveCookie("user_name", jsonData.username, 3600000)
-                cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
+                cookieId.saveCookie("user_id", jsonData.user_id, (3600000*24))
+                cookieId.saveCookie("user_name", jsonData.username, (3600000*24))
+                cookieId.saveCookie("user_code", jsonData.user_code, (3600000*24))
 
                 notifyMessageBoxId.message = "Create room successfully"
                 notifyMessageBoxId.open()

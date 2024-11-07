@@ -26,7 +26,7 @@ qt_add_qml_module(appProject_AnonymousChat
         QML_FILES CreateChatRoom.qml
         QML_FILES MyButton.qml
         QML_FILES JoinChatRoom.qml
-        QML_FILES LoadingPage.qml
+        QML_FILES
         QML_FILES HomeScreen.qml
         QML_FILES ChatSession.qml
         QML_FILES ChatContent.qml

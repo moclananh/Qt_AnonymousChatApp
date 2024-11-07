@@ -152,9 +152,11 @@ Rectangle {
                 console.log("Response from API:", response)
                 console.log("Status: " + jsonData.is_waiting)
                 notifyMessageBoxId.open()
-                cookieId.saveCookie("user_id", jsonData.user_id, 3600000)
-                cookieId.saveCookie("user_name", jsonData.username, 3600000)
-                cookieId.saveCookie("user_code", jsonData.user_code, 3600000)
+                cookieId.saveCookie("user_id", jsonData.user_id, (3600000 * 24))
+                cookieId.saveCookie("user_name", jsonData.username,
+                                    (3600000 * 24))
+                cookieId.saveCookie("user_code", jsonData.user_code,
+                                    (3600000 * 24))
                 if (jsonData.is_waiting === true) {
                     notifyMessageBoxId.message
                             = "Request is sended, please wait for admin to approve your request"
