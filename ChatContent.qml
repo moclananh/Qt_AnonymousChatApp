@@ -20,31 +20,61 @@ Rectangle {
     property int total_waiting_member: 0
     property int total_joined_member: 0
     property QtObject settings
+    signal successSignal
+    signal messageSignal(int groupId)
+    signal removeGroupSuccessSignal
 
     Layout.fillWidth: true
     Layout.fillHeight: true
     color: settings.bg_chatcontent_color
 
     // signal connect to get groupId
-    function loadGroupDataLayout() {
-        chatContentLayout.loadGroupData()
-    }
-
+    // function loadGroupDataLayout() {
+    //     chatContentLayout.loadGroupData()
+    // }
     Connections {
         target: app_state
         function onGroupIdSignal(groupId) {
             console.log("Reloading chat details")
             chatContent.groupId = groupId
+            chatContentLayout.visible = true
+            chatContentLayout.loadGroupData()
+        }
+
+        function onSuccessSignal() {
+            console.log("Reloading chat content")
+            chatContent.groupId = 0
+            chatContentLayout.loadGroupData()
+        }
+
+        function onRemoveGroupSuccessSignal() {
+            console.log("Reloading chat content")
+            chatContent.groupId = 0
+            chatContentLayout.visible = false
+            chatContentLayout.loadGroupData()
+        }
+
+        function onMessageSignal() {
+            console.log("Reloading chat content")
+
+            chatContentLayout.loadGroupData()
+        }
+
+        function onChatSessionSelected(groupId) {
+            console.log("Reloading chat content")
+            chatContent.groupId = groupId
+            chatContentLayout.visible = true
             chatContentLayout.loadGroupData()
         }
     }
+
     //containner
     Column {
         id: chatContentLayout
         anchors.fill: parent
         width: parent.width
         height: parent.height
-
+        visible: true
         // Chat Header
         Rectangle {
             id: chatContentHeader
@@ -1126,6 +1156,7 @@ Rectangle {
                     console.log("Group Deleted: " + dataRes.data.gr_id)
                     notifyMessageBoxId.message = "Group deleted successfully!"
                     notifyMessageBoxId.open()
+                    app_state.removeGroupSuccessSignal()
                 } else {
                     console.log("Failed to delete group")
                 }
@@ -1156,6 +1187,7 @@ Rectangle {
                     let resObject = JSON.parse(response)
                     console.log("Send message sucess!", resObject.data.content)
                     messageTextArena.text = ""
+                    app_state.messageSignal()
                 } else {
                     console.log("Failed to send message")
                 }

@@ -16,6 +16,7 @@ Rectangle {
     property QtObject settings
     property QtObject drawer_settings
     signal chatSessionSelected(int groupId)
+
     property string user_id: cookieId.loadCookie("user_id")
 
     Layout.minimumWidth: 0
@@ -27,6 +28,18 @@ Rectangle {
     Connections {
         target: app_state
         function onSuccessSignal() {
+            console.log("Reloading chat session")
+            groupListModel.clear()
+            chatSection.loadDataChatSession()
+        }
+
+        function onMessageSignal() {
+            console.log("Reloading chat session")
+            groupListModel.clear()
+            chatSection.loadDataChatSession()
+        }
+
+        function onRemoveGroupSuccessSignal() {
             console.log("Reloading chat session")
             groupListModel.clear()
             chatSection.loadDataChatSession()
@@ -202,7 +215,8 @@ Rectangle {
                                                 i).isSelected = false
                                 }
                                 isSelected = true
-                                chatSection.chatSessionSelected(model.group_id)
+                                //chatSection.chatSessionSelected(model.group_id)
+                                app_state.chatSessionSelected(model.group_id)
                             }
 
                             onEntered: isHovered = true

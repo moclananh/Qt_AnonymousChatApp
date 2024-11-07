@@ -10,6 +10,10 @@ public:
 signals:
     void successSignal();
     void groupIdSignal(int groupId);
+    void chatSessionSelected(int groupId);
+    //temp
+    void messageSignal();
+    void removeGroupSuccessSignal();
 };
 
 #endif // APPSTATE_H

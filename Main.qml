@@ -291,10 +291,10 @@ ApplicationWindow {
                 // ChatContent
                 ChatContent {
                     id: chatContent
-                    onGroupIdChanged: {
-                        chatContent.loadGroupDataLayout()
-                    }
 
+                    // onGroupIdChanged: {
+                    //     chatContent.loadGroupDataLayout()
+                    // }
                     settings: {
                         sharedSettings
                     }
