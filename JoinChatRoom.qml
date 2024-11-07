@@ -124,22 +124,7 @@ Rectangle {
                                     txtRoomCode.focus = true
                                     txtRoomCode.placeholderText = "Room code is required!"
                                 } else {
-
-                                    // Validation successful, proceed
-                                    var requestData = {
-                                        "group_code": txtRoomCode.text.trim(),
-                                        "message": txtMessage.text.trim(),
-                                        "username": txtName.text.trim()
-                                    }
-
-                                    var jsonData = JSON.stringify(requestData)
-
-                                    var headers = {}
-
-                                    // API call using ChatServices.fetchData
-                                    networkManager.fetchData(
-                                                "http://127.0.0.1:8080/join-group",
-                                                "POST", headers, jsonData)
+                                    joinChatRoomId.joinChatRoom()
                                 }
                             }
                         }
@@ -175,5 +160,23 @@ Rectangle {
             }
         }
         onRequestError: console.log("Network error: " + error)
+    }
+
+    //fn create join chat room
+    function joinChatRoom() {
+        // Validation successful, proceed
+        var requestData = {
+            "group_code": txtRoomCode.text.trim(),
+            "message": txtMessage.text.trim(),
+            "username": txtName.text.trim()
+        }
+
+        var jsonData = JSON.stringify(requestData)
+
+        var headers = {}
+
+        // API call using ChatServices.fetchData
+        networkManager.fetchData("http://127.0.0.1:8080/join-group", "POST",
+                                 headers, jsonData)
     }
 }

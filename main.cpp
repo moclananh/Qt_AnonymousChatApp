@@ -1,6 +1,8 @@
 #include <QDebug>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include "appstate.h"
 #include "cookieservice.h"
 #include "networkmanager.h"
 
@@ -14,11 +16,11 @@ int main(int argc, char *argv[])
     app.setApplicationName("Project_AnonymousChat");
 
     QQmlApplicationEngine engine;
-
+    AppState app_state(&app);
     // Register the services
     qmlRegisterType<CookieService>("cookie.service", 1, 0, "Cookie");
     qmlRegisterType<NetworkManager>("network.service", 1, 0, "NetworkManager");
-
+    engine.rootContext()->setContextProperty("app_state", &app_state);
     CookieService cookieService;
     QVariant user_id = cookieService.loadCookie("user_id");
 

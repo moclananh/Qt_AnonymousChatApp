@@ -129,7 +129,6 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: btnCreateRoom
                                 onClicked: {
-                                    // Validation logic
                                     if (txtName.text.trim() === "") {
                                         txtName.focus = true
                                         txtName.placeholderText = "Name is required!"
@@ -137,26 +136,7 @@ Rectangle {
                                         txtRoomCode.focus = true
                                         txtRoomCode.placeholderText = "Room code is required!"
                                     } else {
-                                        // Validation successful, proceed
-                                        var requestData = {
-                                            "approval_require": optinalId.checked,
-                                            "duration": cbDuration.currentIndex
-                                                        === 3 ? 0 : parseInt(
-                                                                    cbDuration.currentText),
-                                            "group_name": txtRoomCode.text,
-                                            "maximum_members": cbLimitMember.currentIndex === 3 ? 0 : parseInt(cbLimitMember.currentText),
-                                            "username": txtName.text
-                                        }
-
-                                        var jsonData = JSON.stringify(
-                                                    requestData)
-
-                                        var headers = {}
-
-                                        // API call using ChatServices.fetchData
-                                        networkManager.fetchData(
-                                                    "http://127.0.0.1:8080/add-user-group",
-                                                    "POST", headers, jsonData)
+                                        createChatRoomId.createChatRoom()
                                     }
                                 }
                             }
@@ -187,6 +167,28 @@ Rectangle {
                 createChatRoomId.roomCreated()
             }
         }
-        onRequestError: console.log("Network error: " + error)
+        onRequestError: console.log("Network error")
+    }
+
+    // fn create new room
+    function createChatRoom() {
+        // Validation successful, proceed
+        var requestData = {
+            "approval_require": optinalId.checked,
+            "duration": cbDuration.currentIndex === 3 ? 0 : parseInt(
+                                                            cbDuration.currentText),
+            "group_name": txtRoomCode.text,
+            "maximum_members": cbLimitMember.currentIndex === 3 ? 0 : parseInt(
+                                                                      cbLimitMember.currentText),
+            "username": txtName.text
+        }
+
+        var jsonData = JSON.stringify(requestData)
+
+        var headers = {}
+
+        // API call using ChatServices.fetchData
+        networkManager.fetchData("http://127.0.0.1:8080/add-user-group",
+                                 "POST", headers, jsonData)
     }
 }

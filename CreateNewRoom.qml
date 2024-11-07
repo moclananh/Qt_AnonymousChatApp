@@ -12,6 +12,7 @@ Drawer {
     property QtObject settings
     property string user_name: cookieId.loadCookie("user_name")
     property string user_code: cookieId.loadCookie("user_code")
+    signal successSignal
 
     width: 300
     height: parent.height
@@ -45,7 +46,7 @@ Drawer {
             }
 
             TextField {
-                id: txtRoomCode
+                id: txtRoomName
                 placeholderText: "Enter room name ..."
                 width: rectChatHeader.width
                 height: 40
@@ -105,36 +106,11 @@ Drawer {
                     anchors.fill: btnCreateRoom
                     onClicked: {
 
-                        if (txtRoomCode.text.trim() === "") {
-                            txtRoomCode.focus = true
-                            txtRoomCode.placeholderText = "Room code is required!"
+                        if (txtRoomName.text.trim() === "") {
+                            txtRoomName.focus = true
+                            txtRoomName.placeholderText = "Room code is required!"
                         } else {
-
-                            let headers = {}
-                            if (user_code) {
-                                headers = {
-                                    "x-user-code": `${user_code}`
-                                }
-                            }
-
-                            var requestData = {
-                                "approval_require": optinalId.checked,
-                                "duration": cbDuration.currentIndex
-                                            === 3 ? 0 : parseInt(
-                                                        cbDuration.currentText),
-                                "group_name": txtRoomCode.text,
-                                "maximum_members": cbLimitMember.currentIndex
-                                                   === 3 ? 0 : parseInt(
-                                                               cbLimitMember.currentText),
-                                "username": user_name ? user_name : ""
-                            }
-
-                            var jsonData = JSON.stringify(requestData)
-
-                            // API call using ChatServices.fetchData
-                            networkManager.fetchData(
-                                        "http://127.0.0.1:8080/add-user-group",
-                                        "POST", headers, jsonData)
+                            root.createNewRoom()
                         }
                     }
                 }
@@ -155,10 +131,39 @@ Drawer {
             //console.log("Response from API:", response)
             if (jsonData.group_name) {
                 console.log("Group created successfully:", jsonData.group_name)
-
+                app_state.successSignal()
+                txtRoomName.text = ""
                 root.close()
+            } else {
+                console.log("create room failed")
             }
         }
         onRequestError: console.log("Network error: " + error)
+    }
+
+    //fn create new room
+    function createNewRoom() {
+        let headers = {}
+        if (user_code) {
+            headers = {
+                "x-user-code": `${user_code}`
+            }
+        }
+
+        var requestData = {
+            "approval_require": optinalId.checked,
+            "duration": cbDuration.currentIndex === 3 ? 0 : parseInt(
+                                                            cbDuration.currentText),
+            "group_name": txtRoomName.text,
+            "maximum_members": cbLimitMember.currentIndex === 3 ? 0 : parseInt(
+                                                                      cbLimitMember.currentText),
+            "username": user_name ? user_name : ""
+        }
+
+        var jsonData = JSON.stringify(requestData)
+
+        // API call using ChatServices.fetchData
+        networkManager.fetchData("http://127.0.0.1:8080/add-user-group",
+                                 "POST", headers, jsonData)
     }
 }

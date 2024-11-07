@@ -24,7 +24,14 @@ Rectangle {
     width: 300
     height: parent.height
     visible: parent.width > 800
-
+    Connections {
+        target: app_state
+        function onSuccessSignal() {
+            console.log("Reloading chat session")
+            groupListModel.clear()
+            chatSection.loadDataChatSession()
+        }
+    }
     ColumnLayout {
         anchors.fill: parent
         width: parent.width
@@ -99,7 +106,7 @@ Rectangle {
                     id: groupListModel
                 }
                 delegate: Item {
-                    width: parent.width
+                    width: parent ? parent.width : 0
                     height: 70
                     property bool isSelected: false
                     property bool isHovered: false
@@ -216,52 +223,47 @@ Rectangle {
                 anchors.margins: 5
             }
         }
+    }
+    // services register
+    Cookie {
+        id: cookieId
+    }
+    NetworkManager {
+        id: networkManager
+        onDataReceived: function (response) {
+            //console.log("Response from API:", response)
+            if (response) {
+                var object = JSON.parse(response)
+                object.list_gr.forEach(function (data) {
+                    var timeResult = ChatServices.formatTimeDifference(
+                                data.created_at, data.latest_ms_content,
+                                data.latest_ms_time)
 
-        // services register
-        Cookie {
-            id: cookieId
-        }
-
-        NetworkManager {
-            id: networkManager
-            onDataReceived: function (response) {
-                // console.log("Response from API:", response)
-                if (response) {
-                    var object = JSON.parse(response)
-                    object.list_gr.forEach(function (data) {
-                        var timeResult = ChatServices.formatTimeDifference(
-                                    data.created_at, data.latest_ms_content,
-                                    data.latest_ms_time)
-
-                        groupListModel.append({
-                                                  "group_id": data.group_id,
-                                                  "group_name": data.group_name,
-                                                  "group_id": data.group_id,
-                                                  "group_code": data.group_code,
-                                                  "expired_at": data.expired_at,
-                                                  "latest_ms_content": timeResult.latestMsContent,
-                                                  "latest_ms_time": timeResult.timeString
-                                              })
-                    })
-
-                    // Scroll to the bottom after adding new data
-                    if (groupListModel.count > 0) {
-                        listViewSessionId.currentIndex = groupListModel.count - 1
-                        listViewSessionId.positionViewAtIndex(
-                                    listViewSessionId.currentIndex,
-                                    ListView.End)
-                    }
-                } else {
-                    console.log("Failed to fetch data")
-                }
+                    groupListModel.append({
+                                              "group_id": data.group_id,
+                                              "group_name": data.group_name,
+                                              "group_id": data.group_id,
+                                              "group_code": data.group_code,
+                                              "expired_at": data.expired_at,
+                                              "latest_ms_content": timeResult.latestMsContent,
+                                              "latest_ms_time": timeResult.timeString
+                                          })
+                })
+            } else {
+                console.log("Failed to fetch data")
             }
-            onRequestError: console.log("Network error: " + error)
         }
+        onRequestError: console.log("Network error: " + error)
+    }
+    //fetch data
+    Component.onCompleted: {
+        loadDataChatSession()
+    }
 
-        //fetch data
-        Component.onCompleted: {
-            networkManager.fetchData(
-                        `http://127.0.0.1:8080/gr/list/${user_id}`, "GET")
-        }
+    //fn load data chat section
+    function loadDataChatSession() {
+
+        networkManager.fetchData(`http://127.0.0.1:8080/gr/list/${user_id}`,
+                                 "GET")
     }
 }

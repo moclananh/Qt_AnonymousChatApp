@@ -38,6 +38,8 @@ qt_add_qml_module(appProject_AnonymousChat
         SOURCES cookieservice.h cookieservice.cpp
         QML_FILES
         SOURCES networkmanager.h networkmanager.cpp
+        SOURCES appstate.h appstate.cpp
+        QML_FILES CustomNotify.qml
 
 
 

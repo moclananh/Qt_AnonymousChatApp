@@ -7,7 +7,13 @@ import network.service 1.0
 
 Drawer {
     id: root
+
+    //properties init
     property QtObject settings
+    property string user_code: cookieId.loadCookie("user_code")
+    property string user_name: cookieId.loadCookie("user_name")
+    signal successSignal
+
     width: 300
     height: parent.height
     edge: Qt.LeftEdge
@@ -77,27 +83,7 @@ Drawer {
                         txtNewRoomCode.focus = true
                         txtNewRoomCode.placeholderText = "Room code is required!"
                     } else {
-                        var user_name = cookieId.loadCookie("user_name")
-                        var user_code = cookieId.loadCookie("user_code")
-                        let headers = null
-                        if (user_code) {
-                            headers = {
-                                "x-user-code": `${user_code}`
-                            }
-                        }
-
-                        var requestData = {
-                            "group_code": txtNewRoomCode.text.trim(),
-                            "message": txtNewMessage.text.trim(),
-                            "username": user_name ? user_name : ""
-                        }
-
-                        var jsonData = JSON.stringify(requestData)
-
-                        // API call using ChatServices.fetchData
-                        networkManager.fetchData(
-                                    "http://127.0.0.1:8080/join-group", "POST",
-                                    headers, jsonData)
+                        root.joinNewRoom()
                     }
                 }
             }
@@ -109,17 +95,69 @@ Drawer {
         id: cookieId
     }
 
+    CustomNotify {
+        id: joinRoomNotify
+        message: ""
+    }
+
     NetworkManager {
         id: networkManager
         onDataReceived: function (response) {
-            var jsonData = JSON.parse(response)
-
-            // console.log("Response from API:", response)
-            if (jsonData.group_name) {
-                console.log("Join group successfully:", jsonData.group_name)
+            console.log("Response from API:", response)
+            if (response) {
+                var jsonData = JSON.parse(response)
+                if (jsonData.is_waiting === true) {
+                    console.log("request sended!, waiting for accpt")
+                    joinRoomNotify.message = "Request Sended, please wait for admin of group approve your request !"
+                    joinRoomNotify.open()
+                } else {
+                    console.log("Join group successfully:", jsonData.group_name)
+                }
+                app_state.successSignal()
+                txtNewRoomCode.text = ""
+                txtNewMessage.text = ""
                 root.close()
+            } else {
+                console.log("Failed to fetch apis")
             }
         }
-        onRequestError: console.log("Network error: " + error)
+
+        onRequestError: function (error) {
+            console.log("Error from API:", error)
+
+            var errorParts = error.split(": ")
+            var statusCode = parseInt(errorParts[0], 10)
+            var responseBody = errorParts.slice(1).join(": ")
+
+            if (statusCode === 400) {
+                joinRoomNotify.message = responseBody
+                joinRoomNotify.open()
+            } else {
+                joinRoomNotify.message = "Error from server"
+                joinRoomNotify.open()
+            }
+        }
+    }
+
+    //fn join new room
+    function joinNewRoom() {
+        let headers = null
+        if (user_code) {
+            headers = {
+                "x-user-code": `${user_code}`
+            }
+        }
+
+        var requestData = {
+            "group_code": txtNewRoomCode.text.trim(),
+            "message": txtNewMessage.text.trim(),
+            "username": user_name ? user_name : ""
+        }
+
+        var jsonData = JSON.stringify(requestData)
+
+        // API call using ChatServices.fetchData
+        networkManager.fetchData("http://127.0.0.1:8080/join-group", "POST",
+                                 headers, jsonData)
     }
 }

@@ -29,6 +29,13 @@ ApplicationWindow {
         chatContent.groupId = groupId
     }
 
+    Connections {
+        target: app_state
+        function onSuccessSignal() {
+            sidebar.close()
+        }
+    }
+
     Drawer {
         id: sidebar
         width: 300

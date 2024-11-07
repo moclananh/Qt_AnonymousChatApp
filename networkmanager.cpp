@@ -44,15 +44,18 @@ void NetworkManager::fetchData(const QString &url,
 
 void NetworkManager::onResult(QNetworkReply *reply)
 {
+    QByteArray responseData = reply->readAll();
+
     if (reply->error() == QNetworkReply::NoError) {
-        QByteArray responseData = reply->readAll();
         QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData);
         if (jsonDoc.isObject()) {
-            QJsonObject jsonObj = jsonDoc.object();
-            emit dataReceived(QString::fromUtf8(responseData)); // Emit raw data for parsing in QML
+            emit dataReceived(QString::fromUtf8(responseData));
         }
     } else {
-        emit requestError("Error: " + reply->errorString());
+        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Emit both the status code and the response body for parsing in QML
+        emit requestError(QString::number(statusCode) + ": " + QString::fromUtf8(responseData));
     }
     reply->deleteLater();
 }

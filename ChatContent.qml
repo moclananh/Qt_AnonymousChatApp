@@ -46,7 +46,7 @@ Rectangle {
             color: "transparent"
             Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
-
+            visible: chatContent.groupId !== 0 ? true : false
             RowLayout {
                 spacing: 15
                 anchors.verticalCenter: parent.verticalCenter
@@ -70,7 +70,7 @@ Rectangle {
                 Column {
                     Text {
                         id: chatGroupName
-                        text: "Group Name"
+                        text: ""
                         font.pixelSize: 20
                         font.bold: true
                         color: settings.txt_color
@@ -78,7 +78,7 @@ Rectangle {
                     }
                     Text {
                         id: chatDuration
-                        text: "Duration"
+                        text: ""
                         font.pixelSize: 10
                         opacity: 0.8
                         color: settings.txt_color
@@ -169,7 +169,7 @@ Rectangle {
                             Text {
                                 id: groupNameInSetting
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                text: "Group Name"
+                                text: ""
                                 font.pixelSize: 16
                                 font.bold: true
                                 horizontalAlignment: Text.AlignHCenter
@@ -619,27 +619,9 @@ Rectangle {
                         buttons: MessageDialog.Ok | MessageDialog.Cancel
 
                         onAccepted: function () {
-                            var url = "http://localhost:8080/del-gr"
-                            var method = "POST"
-                            var data = {
-                                "gr_id": groupId,
-                                "u_id": gr_owner_id
-                            }
 
-                            ChatServices.fetchData(url, method, null,
-                                                   function (responseText) {
-                                                       if (responseText) {
-                                                           var response = JSON.parse(
-                                                                       responseText)
-                                                           if (response.code === 0) {
-                                                               console.log("Group Deleted")
-                                                           } else {
-                                                               console.log("Failed to delete group")
-                                                           }
-                                                       } else {
-                                                           console.log("Failed to delete group due to an error.")
-                                                       }
-                                                   }, data)
+                            chatContentLayout.removeGroup()
+                            console.log("remove clicked!")
                         }
 
                         onRejected: function () {
@@ -791,8 +773,8 @@ Rectangle {
                                         color: model.user_id
                                                === c_user_id ? "white" : settings.message_txt_sender
                                         anchors.top: usernameId.visible
-                                                     == true ? usernameId.bottom : parent.top
-                                        anchors.topMargin: usernameId.visible == true ? 3 : 5
+                                                     === true ? usernameId.bottom : parent.top
+                                        anchors.topMargin: usernameId.visible === true ? 3 : 5
                                         anchors.left: parent.left
                                         anchors.leftMargin: 10
                                         wrapMode: Text.WordWrap
@@ -849,7 +831,7 @@ Rectangle {
             color: "transparent"
             width: parent.width
             Layout.fillWidth: true
-
+            visible: chatContent.groupId !== 0 ? true : false
             Row {
                 id: sendMessageId
                 height: editMessageContainer.height
@@ -1011,28 +993,12 @@ Rectangle {
                     }
 
                     onClicked: {
+
                         if (messageTextArena.text.trim().length > 0) {
-                            var requestData = {
-                                "user_id": c_user_id,
-                                "group_id": chatContent.groupId,
-                                "content": messageTextArena.text,
-                                "message_type": "string"
-                            }
-
-                            var handler = function (response) {
-                                if (response) {
-                                    let resObject = JSON.parse(response)
-                                    console.log("Send message sucess!",
-                                                resObject)
-                                    messageTextArena.text = ""
-                                } else {
-                                    console.log("Failed to send message")
-                                }
-                            }
-
-                            ChatServices.fetchData(
-                                        "http://localhost:8080/send-msg",
-                                        "POST", null, handler, requestData)
+                            chatContentLayout.sendMessage()
+                        } else {
+                            messageTextArena.focus = true
+                            messageTextArena.placeholderText = "Message required!"
                         }
                     }
                 }
@@ -1120,17 +1086,75 @@ Rectangle {
             onRequestError: console.log("Network error: " + error)
         }
 
-        // fn init
+        //fetch data for remove group
+        NetworkManager {
+            id: networkManagerRemoveGroup
+            onDataReceived: function (response) {
+
+                var dataRes = JSON.parse(response)
+                if (dataRes.code === 0) {
+                    drawerGroupSetting.close()
+                    console.log("Group Deleted: " + dataRes.data.gr_id)
+                } else {
+                    console.log("Failed to delete group")
+                }
+            }
+        }
+
+        //fetch data for send message
+        NetworkManager {
+            id: networkManagerSendMessage
+            onDataReceived: function (response) {
+                if (response) {
+                    let resObject = JSON.parse(response)
+                    console.log("Send message sucess!", resObject.data.content)
+                    messageTextArena.text = ""
+                } else {
+                    console.log("Failed to send message")
+                }
+            }
+        }
+
+        // fn load group details
         function loadGroupData() {
             networkManagerGroupDetails.fetchData(
                         `http://localhost:8080/group-detail/${chatContent.groupId}`,
                         "GET")
         }
 
+        //fn load group settings
         function loadGroupSetting() {
             networkManagerGroupSettings.fetchData(
                         `http://localhost:8080/group-detail/setting/${chatContent.groupId}`,
                         "GET")
+        }
+
+        //fn remove group
+        function removeGroup() {
+            var headers = {}
+            var requestData = {
+                "gr_id": groupId,
+                "u_id": gr_owner_id
+            }
+            var jsonData = JSON.stringify(requestData)
+            networkManagerRemoveGroup.fetchData('http://localhost:8080/del-gr',
+                                                "POST", headers, jsonData)
+        }
+
+        //fn send message
+        function sendMessage() {
+            var headers = {}
+            var requestData = {
+                "user_id": c_user_id,
+                "group_id": chatContent.groupId,
+                "content": messageTextArena.text,
+                "message_type": "string"
+            }
+            var jsonData = JSON.stringify(requestData)
+
+            networkManagerSendMessage.fetchData(
+                        `http://localhost:8080/send-msg`, "POST",
+                        headers, jsonData)
         }
 
         Component.onCompleted: {
