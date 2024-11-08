@@ -668,7 +668,9 @@ Rectangle {
                         control_handle: false
                         lableText: "Member (" + total_joined_member + "/" + maximum_mem + ")"
                         d_settings: settings
+                        isAdmin: c_user_id === gr_owner_id ? true : false
                         membersModel: ListModel {}
+                        owner_gr_id: 0
                     }
 
                     // Drawer for member request
@@ -677,6 +679,7 @@ Rectangle {
                         control_handle: true
                         lableText: "Request (" + total_waiting_member + ")"
                         d_settings: settings
+                        isAdmin: c_user_id === gr_owner_id ? true : false
                         membersModel: ListModel {}
                     }
 
@@ -1073,7 +1076,7 @@ Rectangle {
                                                   "time": data.messages[i].created_at,
                                                   "image": "https://placehold.co/50x50",
                                                   "message_type": data.messages[i].message_type,
-                                                  "user_id": data.messages[i].user_id,
+                                                  "gr_owner": data.messages[i].user_id,
                                                   "created_at": formattedTime
                                               })
                     }
@@ -1105,10 +1108,12 @@ Rectangle {
                     maximum_mem = groupSettingRes.maximum_members
                     total_joined_member = groupSettingRes.total_joined_member
                     total_waiting_member = groupSettingRes.total_waiting_member
+                    drawerManageMember.owner_gr_id = groupSettingRes.owner_id
 
                     drawerMemberRequest.membersModel.clear()
                     for (var i = 0; i < groupSettingRes.list_waiting_member.length; i++) {
                         drawerMemberRequest.membersModel.append({
+                                                                    "user_id": groupSettingRes.list_waiting_member[i].user_id,
                                                                     "username": groupSettingRes.list_waiting_member[i].username,
                                                                     "image": "https://placehold.co/50x50"
                                                                 })
@@ -1117,6 +1122,7 @@ Rectangle {
                     drawerManageMember.membersModel.clear()
                     for (var j = 0; j < groupSettingRes.list_joined_member.length; j++) {
                         drawerManageMember.membersModel.append({
+                                                                   "user_id": groupSettingRes.list_joined_member[j].user_id,
                                                                    "username": groupSettingRes.list_joined_member[j].username,
                                                                    "image": "https://placehold.co/50x50"
                                                                })

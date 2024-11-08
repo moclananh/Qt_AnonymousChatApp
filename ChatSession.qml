@@ -306,6 +306,7 @@ Rectangle {
                                             Text {
                                                 text: model.latest_ms_time
                                                 color: settings.txt_color
+                                                font.pixelSize: 11
                                             }
                                         }
                                     }
