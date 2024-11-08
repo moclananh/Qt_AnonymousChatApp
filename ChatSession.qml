@@ -50,6 +50,12 @@ Rectangle {
             groupListWaitingModel.clear()
             chatSection.loadDataChatSession()
         }
+
+        function onLeaveGroupSuccessSignal() {
+            groupListModel.clear()
+            groupListWaitingModel.clear()
+            chatSection.loadDataChatSession()
+        }
     }
 
     ColumnLayout {

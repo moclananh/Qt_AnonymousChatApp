@@ -23,6 +23,7 @@ Rectangle {
     signal successSignal
     signal messageSignal(int groupId)
     signal removeGroupSuccessSignal
+    signal leaveGroupSuccessSignal
 
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -58,6 +59,12 @@ Rectangle {
 
         function onRemoveMemberSucessSignal() {
             chatContentLayout.loadGroupSetting()
+        }
+
+        function onLeaveGroupSuccessSignal() {
+            chatContent.groupId = 0
+            chatContentLayout.visible = false
+            drawerGroupSetting.close()
         }
     }
 
@@ -493,7 +500,7 @@ Rectangle {
                         height: rectGroupOpLable.height + rectLeaveGroup.height
                         color: "transparent"
                         anchors.horizontalCenter: parent.horizontalCenter
-
+                        visible: chatContent.c_user_id !== chatContent.gr_owner_id ? true : false
                         Rectangle {
                             id: rectGroupOpLable
                             width: parent.width
@@ -691,6 +698,7 @@ Rectangle {
 
                         onAccepted: function () {
                             console.log("Accepted")
+                            chatContentLayout.leaveGroup()
                         }
 
                         onRejected: function () {
@@ -1213,6 +1221,36 @@ Rectangle {
             }
         }
 
+        //fetch data for leave group
+        NetworkManager {
+            id: networkManagerLeaveGroup
+            onDataReceived: function (response) {
+                if (response) {
+                    let resObject = JSON.parse(response)
+                    console.log("Leave group sucess!")
+                    app_state.leaveGroupSuccessSignal()
+                } else {
+                    console.log("Failed to leave group")
+                }
+            }
+
+            onRequestError: function (error) {
+                console.log("Error from API:", error)
+
+                var errorParts = error.split(": ")
+                var statusCode = parseInt(errorParts[0], 10)
+                var responseBody = errorParts.slice(1).join(": ")
+
+                if (statusCode === 400) {
+                    notifyMessageBoxId.message = responseBody
+                    notifyMessageBoxId.open()
+                } else {
+                    notifyMessageBoxId.message = "Error from server"
+                    notifyMessageBoxId.open()
+                }
+            }
+        }
+
         // fn load group details
         function loadGroupData() {
             networkManagerGroupDetails.fetchData(
@@ -1252,6 +1290,20 @@ Rectangle {
 
             networkManagerSendMessage.fetchData(
                         `http://localhost:8080/send-msg`, "POST",
+                        headers, jsonData)
+        }
+
+        //fn leave group
+        function leaveGroup() {
+            var headers = {}
+            var requestData = {
+                "gr_id": chatContent.groupId,
+                "u_id": chatContent.c_user_id
+            }
+            var jsonData = JSON.stringify(requestData)
+
+            networkManagerLeaveGroup.fetchData(
+                        `http://localhost:8080/leave-gr`, "POST",
                         headers, jsonData)
         }
 

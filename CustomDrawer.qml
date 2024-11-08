@@ -191,7 +191,7 @@ Drawer {
 
                 app_state.removeMemberSucessSignal()
             } else {
-                console.log("Failed to send message")
+                console.log("Failed to remove member")
             }
         }
 
