@@ -12,6 +12,7 @@ signals:
     void groupIdSignal(int groupId);
     void chatSessionSelected(int groupId);
     void removeGroupSuccessSignal();
+    void removeMemberSucessSignal();
     //temp
     void messageSignal();
 };

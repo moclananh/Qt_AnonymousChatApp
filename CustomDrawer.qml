@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Basic
 import cookie.service 1.0
+import network.service 1.0
 
 Drawer {
     id: drawerRoot
@@ -11,10 +12,12 @@ Drawer {
 
     property bool isAdmin: false
     property bool control_handle: false
+    property int groupId: 0
     property int owner_gr_id: 0
     property string lableText
     property QtObject d_settings
     property ListModel membersModel
+    signal removeMemberSucessSignal
 
     background: Rectangle {
         anchors.fill: parent
@@ -29,7 +32,6 @@ Drawer {
     // Manage member header
     Column {
         spacing: 10
-        padding: 10
         width: parent.width
         height: parent.height
         anchors.fill: parent
@@ -162,7 +164,9 @@ Drawer {
                                     onEntered: rectRejectId.color = d_settings.hover_color
                                     onExited: rectRejectId.color = "transparent"
                                     onClicked: {
-                                        console.log("Reject button clicked")
+                                        console.log("Remove button clicked -> userId: "
+                                                    + model.user_id)
+                                        drawerRoot.removeMember(model.user_id)
                                     }
                                 }
                             }
@@ -171,5 +175,55 @@ Drawer {
                 }
             }
         }
+    }
+
+    CustomNotify {
+        id: notifyMessageBoxId
+        message: ""
+    }
+    //fetch data for remove member from group
+    NetworkManager {
+        id: networkManagerRemoveMember
+        onDataReceived: function (response) {
+            if (response) {
+                let resObject = JSON.parse(response)
+                console.log("Remove member success!")
+
+                app_state.removeMemberSucessSignal()
+            } else {
+                console.log("Failed to send message")
+            }
+        }
+
+        onRequestError: function (error) {
+            console.log("Error from API:", error)
+
+            var errorParts = error.split(": ")
+            var statusCode = parseInt(errorParts[0], 10)
+            var responseBody = errorParts.slice(1).join(": ")
+
+            if (statusCode === 400) {
+                notifyMessageBoxId.message = responseBody
+                notifyMessageBoxId.open()
+            } else {
+                notifyMessageBoxId.message = "Error from server"
+                notifyMessageBoxId.open()
+            }
+        }
+    }
+
+    //fn remove member from group
+    function removeMember(memberId) {
+        var headers = {}
+        var requestData = {
+            "gr_id": drawerRoot.groupId,
+            "gr_owner_id": drawerRoot.owner_gr_id,
+            "rm_user_id": memberId
+        }
+        var jsonData = JSON.stringify(requestData)
+
+        networkManagerRemoveMember.fetchData(
+                    `http://localhost:8080/rm-u-from-gr`, "POST",
+                    headers, jsonData)
     }
 }

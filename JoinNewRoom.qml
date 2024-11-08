@@ -113,9 +113,10 @@ Drawer {
                     notifyMessageBoxId.open()
                 } else {
                     console.log("Join group successfully:", jsonData.group_name)
+                    app_state.groupIdSignal(jsonData.group_id)
                 }
                 app_state.successSignal()
-                app_state.groupIdSignal(jsonData.group_id)
+
                 txtNewRoomCode.text = ""
                 txtNewMessage.text = ""
                 root.close()

@@ -31,35 +31,33 @@ Rectangle {
     Connections {
         target: app_state
         function onGroupIdSignal(groupId) {
-            console.log("Received group_id: " + groupId)
             chatContent.groupId = groupId
             chatContentLayout.visible = true
             chatContentLayout.loadGroupData()
         }
 
         function onSuccessSignal() {
-            console.log("Reloading chat content")
-
             chatContentLayout.loadGroupData()
         }
 
         function onRemoveGroupSuccessSignal() {
-            console.log("Reloading chat content")
             chatContent.groupId = 0
             chatContentLayout.visible = false
             chatContentLayout.loadGroupData()
         }
 
         function onMessageSignal() {
-            console.log("Reloading chat content")
             chatContentLayout.loadGroupData()
         }
 
         function onChatSessionSelected(groupId) {
-            console.log("Reloading chat content")
             chatContent.groupId = groupId
             chatContentLayout.visible = true
             chatContentLayout.loadGroupData()
+        }
+
+        function onRemoveMemberSucessSignal() {
+            chatContentLayout.loadGroupSetting()
         }
     }
 
@@ -671,6 +669,7 @@ Rectangle {
                         isAdmin: c_user_id === gr_owner_id ? true : false
                         membersModel: ListModel {}
                         owner_gr_id: 0
+                        groupId: 0
                     }
 
                     // Drawer for member request
@@ -1076,7 +1075,7 @@ Rectangle {
                                                   "time": data.messages[i].created_at,
                                                   "image": "https://placehold.co/50x50",
                                                   "message_type": data.messages[i].message_type,
-                                                  "gr_owner": data.messages[i].user_id,
+                                                  "user_id": data.messages[i].user_id,
                                                   "created_at": formattedTime
                                               })
                     }
@@ -1109,7 +1108,8 @@ Rectangle {
                     total_joined_member = groupSettingRes.total_joined_member
                     total_waiting_member = groupSettingRes.total_waiting_member
                     drawerManageMember.owner_gr_id = groupSettingRes.owner_id
-
+                    drawerManageMember.groupId = groupSettingRes.group_id
+                    console.log("GroupId sended: " + groupSettingRes.group_id)
                     drawerMemberRequest.membersModel.clear()
                     for (var i = 0; i < groupSettingRes.list_waiting_member.length; i++) {
                         drawerMemberRequest.membersModel.append({
