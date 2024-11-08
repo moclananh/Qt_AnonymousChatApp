@@ -93,7 +93,7 @@ Rectangle {
 
                     ImageRounded {
                         x: parent.width / 2 - r_width / 2
-                        source: "https://placehold.co/50x50"
+                        source: "https://placehold.co/50X50?text=Group"
                         r_width: 50
                         r_height: 50
                     }
@@ -193,7 +193,7 @@ Rectangle {
 
                             Image {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                source: "https://placehold.co/50x50"
+                                source: "https://placehold.co/50X50?text=Group"
                                 width: 50
                                 height: 50
                                 fillMode: Image.PreserveAspectFit
