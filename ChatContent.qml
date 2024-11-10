@@ -19,6 +19,9 @@ Rectangle {
     property int gr_owner_id: 0
     property int total_waiting_member: 0
     property int total_joined_member: 0
+    property string groupDuration: ""
+    property string gr_expired: ""
+    property string gr_created: ""
     property QtObject settings
     signal successSignal
     signal messageSignal(int groupId)
@@ -116,7 +119,7 @@ Rectangle {
                     }
                     Text {
                         id: chatDuration
-                        text: ""
+                        text: chatContent.groupDuration
                         font.pixelSize: 10
                         opacity: 0.8
                         color: settings.txt_color
@@ -182,36 +185,131 @@ Rectangle {
                 border.width: 1
 
                 Column {
+                    id: groupSettingLayout
                     width: parent.width
 
                     //chat detail header
                     Rectangle {
-                        width: parent.width
-                        height: 150
+                        width: groupSettingLayout.width
+                        height: 200
                         color: "transparent"
                         border.color: settings.border_color
-
                         anchors.horizontalCenter: parent.horizontalCenter
-                        Column {
-                            anchors.centerIn: parent
-                            spacing: 10
 
-                            Image {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                source: "https://placehold.co/50X50?text=Group"
-                                width: 50
-                                height: 50
-                                fillMode: Image.PreserveAspectFit
+                        //setting lable
+                        Rectangle {
+                            id: rectGroupSettingLb
+                            width: parent.width
+                            height: 40
+                            color: "transparent"
+                            border.width: 1
+                            border.color: settings.border_color
+                            Text {
+                                text: "Group Settings"
+                                color: settings.txt_color
+                                font.pixelSize: 16
+                                anchors.left: parent.left
+                                anchors.leftMargin: 10
+                                font.bold: true
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        //header details data
+                        Rectangle {
+                            width: parent.width
+                            height: 160
+                            color: "transparent"
+                            anchors.top: rectGroupSettingLb.bottom
+
+                            //group avatar
+                            Rectangle {
+                                id: rectGroupAvatarId
+                                width: 70
+                                height: 70
+                                color: "transparent"
+                                anchors.left: parent.left
+                                anchors.leftMargin: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                                ImageRounded {
+                                    source: "https://placehold.co/50X50?text=Group"
+                                    r_width: parent.width
+                                    r_height: parent.height
+                                }
                             }
 
-                            Text {
-                                id: groupNameInSetting
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: ""
-                                font.pixelSize: 16
-                                font.bold: true
-                                horizontalAlignment: Text.AlignHCenter
-                                color: settings.txt_color
+                            //group data
+                            Rectangle {
+                                width: parent.width * 0.65
+                                height: groupNameInSetting.implicitHeight
+                                        + groupCreated.implicitHeight + groupExpire.implicitHeight
+                                        + durationLeft.implicitHeight
+                                        + durationProgressBar.implicitHeight + 5
+                                color: "transparent"
+                                anchors.left: rectGroupAvatarId.right
+                                anchors.leftMargin: 10
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                // group name
+                                Text {
+                                    id: groupNameInSetting
+                                    text: "GroupName"
+                                    font.pixelSize: 16
+                                    font.bold: true
+                                    color: settings.txt_color
+                                    wrapMode: Text.WordWrap
+                                    width: parent.width
+                                }
+
+                                //created time
+                                Text {
+                                    id: groupCreated
+                                    text: "Create at: " + gr_created
+                                    anchors.top: groupNameInSetting.bottom
+                                    color: settings.txt_color
+                                    wrapMode: Text.WordWrap
+                                    width: parent.width
+                                }
+
+                                //expired time
+                                Text {
+                                    id: groupExpire
+                                    text: "Expired at: " + gr_expired
+                                    anchors.top: groupCreated.bottom
+                                    color: settings.txt_color
+                                    wrapMode: Text.WordWrap
+                                    width: parent.width
+                                }
+
+                                //expired time
+                                Text {
+                                    id: durationLeft
+                                    text: "duration left"
+                                    anchors.top: groupExpire.bottom
+                                    color: "red"
+                                    wrapMode: Text.WordWrap
+                                    width: parent.width
+                                }
+
+                                // progress bar
+                                ProgressBar {
+                                    id: durationProgressBar
+                                    anchors.top: durationLeft.bottom
+                                    anchors.topMargin: 5
+                                    width: parent.width
+                                    value: calculateRemainingDuration()
+
+                                    function calculateRemainingDuration() {
+                                        let currentTime = Date.now()
+                                        let createdTime = new Date(gr_created).getTime()
+                                        let expiredTime = new Date(gr_expired).getTime()
+                                        let totalDuration = expiredTime - createdTime
+                                        let timeLeft = Math.max(
+                                                0, expiredTime - currentTime)
+
+                                        return timeLeft / totalDuration
+                                    }
+                                }
                             }
                         }
                     }
@@ -1068,7 +1166,7 @@ Rectangle {
                 if (response) {
                     var data = JSON.parse(response)
                     chatGroupName.text = data.group_name
-                    chatDuration.text = ChatServices.calculateDuration(
+                    chatContent.groupDuration = ChatServices.calculateDuration(
                                 data.expired_at)
                     gr_owner_id = data.user_id
                     lsViewId.model.clear()
@@ -1117,7 +1215,12 @@ Rectangle {
                     total_waiting_member = groupSettingRes.total_waiting_member
                     drawerManageMember.owner_gr_id = groupSettingRes.owner_id
                     drawerManageMember.groupId = groupSettingRes.group_id
-                    console.log("GroupId sended: " + groupSettingRes.group_id)
+                    gr_expired = ChatServices.convertToGMT7(
+                                groupSettingRes.expired_at)
+                    gr_created = ChatServices.convertToGMT7(
+                                groupSettingRes.created_at)
+                    durationLeft.text = "(" + ChatServices.calculateDuration(
+                                groupSettingRes.expired_at) + ")"
                     drawerMemberRequest.membersModel.clear()
                     for (var i = 0; i < groupSettingRes.list_waiting_member.length; i++) {
                         drawerMemberRequest.membersModel.append({

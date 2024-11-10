@@ -1,15 +1,22 @@
-//fn caculate duration left
 function calculateDuration(durationInMinutes) {
     var now = new Date()
-
-    var fetchedTime = new Date(new Date(durationInMinutes).getTime(
-                                   ) + 7 * 60 * 60 * 1000)
-
+    var fetchedTime = convertToGMT7(durationInMinutes)
     var diffMs = fetchedTime - now
+    var diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    var diffHours = Math.floor(
+                (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    var diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
 
-    var diffMinutes = Math.floor(diffMs / 60000)
+    // Build the result string conditionally
+    var result = "Expires in: "
+    if (diffDays > 0)
+        result += diffDays + " days "
+    if (diffHours > 0)
+        result += diffHours + " hours "
+    if (diffMinutes > 0 || result === "Expires in: ")
+        result += diffMinutes + " minutes"
 
-    return "Duration: " + diffMinutes + " minutes left"
+    return result.trim() + " left"
 }
 
 // fn caculate time display
@@ -19,11 +26,9 @@ function formatTimeDifference(createdAt, latestMsContent, latestMsTime) {
 
     if (latestMsContent === "") {
         latestMsContent = "Group just created"
-        fetchedTime = new Date(new Date(createdAt).getTime(
-                                   ) + 7 * 60 * 60 * 1000)
+        fetchedTime = convertToGMT7(createdAt)
     } else {
-        fetchedTime = new Date(new Date(latestMsTime).getTime(
-                                   ) + 7 * 60 * 60 * 1000)
+        fetchedTime = convertToGMT7(latestMsTime)
     }
 
     var currentTime = new Date()
@@ -47,13 +52,19 @@ function formatTimeDifference(createdAt, latestMsContent, latestMsTime) {
 
 // fn convert into short time HH:MM
 function formatTime(originalTimeString) {
-    var originalTime = new Date(originalTimeString)
-    var fetchedTime = new Date(originalTime.getTime() + 7 * 60 * 60 * 1000)
-
+    var fetchedTime = convertToGMT7(originalTimeString)
     // Format the time to "HH:mm"
     var formattedTime = fetchedTime.getHours().toString().padStart(
                 2, '0') + ":" + fetchedTime.getMinutes().toString(
                 ).padStart(2, '0')
 
     return formattedTime
+}
+
+//function convert time to GMT+7
+function convertToGMT7(time) {
+    var originalTime = new Date(time)
+    var fetchedTime = new Date(originalTime.getTime() + 7 * 60 * 60 * 1000)
+
+    return fetchedTime
 }
