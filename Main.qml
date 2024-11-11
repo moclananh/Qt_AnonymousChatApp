@@ -85,7 +85,7 @@ ApplicationWindow {
                 color: "transparent"
                 anchors.top: parent.top
 
-                Image {
+                AnimatedImage {
                     id: createRoomIcon
                     source: "qrc:/images/audio_11781833.gif"
                     height: 32
@@ -93,6 +93,7 @@ ApplicationWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 20
+                    paused: true
                 }
                 Rectangle {
                     height: parent.height
@@ -115,9 +116,10 @@ ApplicationWindow {
                     onEntered: {
                         createNewRoom.color = sharedSettings.hover_color
                         txtCreateNewRoom.color = sharedSettings.txt_color
+                        createRoomIcon.paused = false
                     }
                     onExited: {
-
+                        createRoomIcon.paused = true
                         createNewRoom.color = "transparent"
                         txtCreateNewRoom.color = sharedSettings.txt_color
                     }
@@ -136,7 +138,7 @@ ApplicationWindow {
 
                 anchors.top: createNewRoom.bottom
 
-                Image {
+                AnimatedImage {
                     id: joinNewRoomIcon
                     source: "qrc:/images/comments_16903656.gif"
                     height: 32
@@ -144,6 +146,7 @@ ApplicationWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 20
+                    paused: true
                 }
 
                 Rectangle {
@@ -165,11 +168,12 @@ ApplicationWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: {
+                        joinNewRoomIcon.paused = false
                         joinNewRoomButton.color = sharedSettings.hover_color
                         txtJoinNewRoomBtn.color = sharedSettings.txt_color
                     }
                     onExited: {
-
+                        joinNewRoomIcon.paused = true
                         joinNewRoomButton.color = "transparent"
                         txtJoinNewRoomBtn.color = sharedSettings.txt_color
                     }
@@ -187,14 +191,15 @@ ApplicationWindow {
                 color: "transparent"
                 anchors.top: joinNewRoomButton.bottom
 
-                Image {
+                AnimatedImage {
                     id: logoutIcon
-                    source: "qrc:/images/comments_16903656.gif"
+                    source: "qrc:/images/logout.gif"
                     height: 32
                     width: 32
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 20
+                    paused: true
                 }
                 Rectangle {
                     height: parent.height
@@ -215,11 +220,12 @@ ApplicationWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: {
+                        logoutIcon.paused = false
                         logoutBtn.color = sharedSettings.hover_color
                         txtLogout.color = sharedSettings.txt_color
                     }
                     onExited: {
-
+                        logoutIcon.paused = true
                         logoutBtn.color = "transparent"
                         txtLogout.color = sharedSettings.txt_color
                     }

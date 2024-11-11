@@ -100,7 +100,7 @@ Rectangle {
                             id: cbDuration
                             height: 35
                             width: parent.width * 0.5
-                            model: ["15 minutes", "30 minutes", "60 minutes"]
+                            model: ["30 minutes", "60 minutes", "120 minutes", "360 minutes"]
                         }
 
                         // Maximum member
@@ -112,7 +112,7 @@ Rectangle {
                             id: cbLimitMember
                             height: 35
                             width: parent.width * 0.5
-                            model: ["10 members", "20 members", "30 members"]
+                            model: ["10 members", "20 members", "30 members", "60 members"]
                         }
 
                         //Check box
@@ -167,9 +167,11 @@ Rectangle {
             // console.log("Response from API:", response)
             if (jsonData.group_name) {
                 console.log("Group created successfully:", jsonData.group_name)
-                cookieId.saveCookie("user_id", jsonData.user_id, (3600000*24))
-                cookieId.saveCookie("user_name", jsonData.username, (3600000*24))
-                cookieId.saveCookie("user_code", jsonData.user_code, (3600000*24))
+                cookieId.saveCookie("user_id", jsonData.user_id, (3600000 * 24))
+                cookieId.saveCookie("user_name", jsonData.username,
+                                    (3600000 * 24))
+                cookieId.saveCookie("user_code", jsonData.user_code,
+                                    (3600000 * 24))
 
                 notifyMessageBoxId.message = "Create room successfully"
                 notifyMessageBoxId.open()
@@ -199,10 +201,10 @@ Rectangle {
         // Validation successful, proceed
         var requestData = {
             "approval_require": optinalId.checked,
-            "duration": cbDuration.currentIndex === 3 ? 0 : parseInt(
+            "duration": cbDuration.currentIndex === 4 ? 0 : parseInt(
                                                             cbDuration.currentText),
             "group_name": txtRoomCode.text,
-            "maximum_members": cbLimitMember.currentIndex === 3 ? 0 : parseInt(
+            "maximum_members": cbLimitMember.currentIndex === 4 ? 0 : parseInt(
                                                                       cbLimitMember.currentText),
             "username": txtName.text
         }

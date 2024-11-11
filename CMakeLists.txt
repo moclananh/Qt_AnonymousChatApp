@@ -40,6 +40,8 @@ qt_add_qml_module(appProject_AnonymousChat
         SOURCES networkmanager.h networkmanager.cpp
         SOURCES appstate.h appstate.cpp
         QML_FILES CustomNotify.qml
+        SOURCES
+        SOURCES clipboardheader.h
 
 
 

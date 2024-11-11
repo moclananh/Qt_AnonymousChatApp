@@ -7,6 +7,7 @@ import QtQuick.Dialogs
 import "ChatServices.js" as ChatServices
 import cookie.service 1.0
 import network.service 1.0
+import Helpers 1.0
 
 // Chat Content
 Rectangle {
@@ -22,6 +23,7 @@ Rectangle {
     property string groupDuration: ""
     property string gr_expired: ""
     property string gr_created: ""
+    property string gr_code: ""
     property QtObject settings
     signal successSignal
     signal messageSignal(int groupId)
@@ -31,6 +33,10 @@ Rectangle {
     Layout.fillWidth: true
     Layout.fillHeight: true
     color: settings.bg_chatcontent_color
+
+    ClipboardHelper {
+        id: clipboardHelper
+    }
 
     Connections {
         target: app_state
@@ -178,6 +184,7 @@ Rectangle {
             }
 
             Rectangle {
+
                 width: parent.width
                 height: parent.height
                 color: "transparent"
@@ -242,8 +249,8 @@ Rectangle {
                             Rectangle {
                                 width: parent.width * 0.65
                                 height: groupNameInSetting.implicitHeight
-                                        + groupCreated.implicitHeight + groupExpire.implicitHeight
-                                        + durationLeft.implicitHeight
+                                        + groupMemberLimited.implicitHeight
+                                        + groupExpire.implicitHeight + durationLeft.implicitHeight
                                         + durationProgressBar.implicitHeight + 5
                                 color: "transparent"
                                 anchors.left: rectGroupAvatarId.right
@@ -261,10 +268,10 @@ Rectangle {
                                     width: parent.width
                                 }
 
-                                //created time
+                                //maximum member
                                 Text {
-                                    id: groupCreated
-                                    text: "Create at: " + gr_created
+                                    id: groupMemberLimited
+                                    text: "Maximum members: " + maximum_mem
                                     anchors.top: groupNameInSetting.bottom
                                     color: settings.txt_color
                                     wrapMode: Text.WordWrap
@@ -275,7 +282,7 @@ Rectangle {
                                 Text {
                                     id: groupExpire
                                     text: "Expired at: " + gr_expired
-                                    anchors.top: groupCreated.bottom
+                                    anchors.top: groupMemberLimited.bottom
                                     color: settings.txt_color
                                     wrapMode: Text.WordWrap
                                     width: parent.width
@@ -316,6 +323,7 @@ Rectangle {
 
                     //btn option
                     Rectangle {
+
                         width: parent.width
                         height: 50
                         color: "transparent"
@@ -325,7 +333,6 @@ Rectangle {
                         Row {
                             spacing: 30
                             anchors.centerIn: parent
-
                             //btn notify
                             Rectangle {
                                 width: 40
@@ -348,7 +355,7 @@ Rectangle {
                                 }
                             }
 
-                            //btn pin
+                            //btn copy group code
                             Rectangle {
                                 width: 40
                                 height: 40
@@ -356,18 +363,49 @@ Rectangle {
                                 property bool hovered: false
                                 radius: 5
                                 anchors.verticalCenter: parent.verticalCenter
+
                                 Image {
                                     anchors.centerIn: parent
-                                    source: settings.darkMode ? "qrc:/images/pin2.png" : "qrc:/images/pin.png"
+                                    source: settings.darkMode ? "qrc:/images/copy2.png" : "qrc:/images/copy.png"
                                     width: 24
                                     height: 24
+                                }
+
+                                // Display the group code as alt text
+                                Text {
+                                    id: altGroupCode
+                                    text: chatContent.gr_code
+                                    color: settings.darkMode ? "white" : "black"
+                                    font.pixelSize: 12
+                                    visible: parent.hovered
+                                    anchors.bottom: parent.top
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    padding: 4
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        color: "gray"
+                                        radius: 3
+                                        opacity: 0.5
+                                        visible: parent.visible
+                                    }
                                 }
 
                                 MouseArea {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     onEntered: parent.hovered = true
-                                    onExited: parent.hovered = false
+                                    onExited: {
+                                        parent.hovered = false
+                                        altGroupCode.text = chatContent.gr_code
+                                    }
+
+                                    onClicked: {
+                                        clipboardHelper.setText(
+                                                    chatContent.gr_code)
+                                        altGroupCode.text = "Code copied"
+                                        console.log("Group code was copied into clipboard: "
+                                                    + chatContent.gr_code)
+                                    }
                                 }
                             }
 
@@ -1221,6 +1259,7 @@ Rectangle {
                                 groupSettingRes.created_at)
                     durationLeft.text = "(" + ChatServices.calculateDuration(
                                 groupSettingRes.expired_at) + ")"
+                    gr_code = groupSettingRes.group_code
                     drawerMemberRequest.membersModel.clear()
                     for (var i = 0; i < groupSettingRes.list_waiting_member.length; i++) {
                         drawerMemberRequest.membersModel.append({

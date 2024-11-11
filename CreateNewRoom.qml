@@ -63,7 +63,7 @@ Drawer {
                 id: cbDuration
                 height: 35
                 width: rectChatHeader.width * 0.5
-                model: ["15 minutes", "30 minutes", "60 minutes"]
+                model: ["30 minutes", "60 minutes", "120 minutes", "360 minutes"]
             }
 
             // maximum member
@@ -76,7 +76,7 @@ Drawer {
                 id: cbLimitMember
                 height: 35
                 width: rectChatHeader.width * 0.5
-                model: ["10 members", "20 members", "30 members"]
+                model: ["10 members", "20 members", "30 members", "60 members"]
             }
 
             // group approve checking
@@ -173,10 +173,10 @@ Drawer {
 
         var requestData = {
             "approval_require": optinalId.checked,
-            "duration": cbDuration.currentIndex === 3 ? 0 : parseInt(
+            "duration": cbDuration.currentIndex === 4 ? 0 : parseInt(
                                                             cbDuration.currentText),
             "group_name": txtRoomName.text,
-            "maximum_members": cbLimitMember.currentIndex === 3 ? 0 : parseInt(
+            "maximum_members": cbLimitMember.currentIndex === 4 ? 0 : parseInt(
                                                                       cbLimitMember.currentText),
             "username": user_name ? user_name : ""
         }

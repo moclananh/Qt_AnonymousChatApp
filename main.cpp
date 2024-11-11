@@ -3,6 +3,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "appstate.h"
+#include "clipboardheader.h"
 #include "cookieservice.h"
 #include "networkmanager.h"
 
@@ -20,6 +21,8 @@ int main(int argc, char *argv[])
     // Register the services
     qmlRegisterType<CookieService>("cookie.service", 1, 0, "Cookie");
     qmlRegisterType<NetworkManager>("network.service", 1, 0, "NetworkManager");
+    qmlRegisterType<ClipboardHelper>("Helpers", 1, 0, "ClipboardHelper");
+
     engine.rootContext()->setContextProperty("app_state", &app_state);
     CookieService cookieService;
     QVariant user_id = cookieService.loadCookie("user_id");
