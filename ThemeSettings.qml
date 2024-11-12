@@ -19,5 +19,6 @@ QtObject {
     property color user_name: darkMode ? "#a69ba8" : "#5a006d"
     property color chat_user_name: darkMode ? "#a69ba8" : "#5a006d"
     property color highlight_text: darkMode ? "#f8e8ff" : "#5a006d"
+    property color icon_bg: darkMode ? "#f5f5f5" : "#f5f5f5"
     property color chat_theme: darkMode ? "transparent" : "transparent" //handle gradient color later
 }

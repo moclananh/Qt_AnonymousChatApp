@@ -380,7 +380,6 @@ Rectangle {
                                     visible: parent.hovered
                                     anchors.bottom: parent.top
                                     anchors.horizontalCenter: parent.horizontalCenter
-                                    padding: 4
                                     Rectangle {
                                         anchors.fill: parent
                                         color: "gray"
@@ -869,7 +868,7 @@ Rectangle {
                     Rectangle {
 
                         color: "transparent"
-                        width: parent ? parent.width - 30 : 0
+                        width: parent ? parent.width - 35 : 0
 
                         Component.onCompleted: {
                             if (parent)
@@ -933,7 +932,8 @@ Rectangle {
                                                      === false) ? 0 : usernameId.implicitHeight)
                                     radius: 10
                                     color: model.user_id === c_user_id ? settings.messsagebox_chat_sender : settings.messsagebox_chat_receiver
-
+                                    property bool rightClicked: false
+                                    property bool ishovered: false
                                     // Username
                                     Text {
                                         id: usernameId
@@ -947,7 +947,7 @@ Rectangle {
                                         visible: model.user_id === c_user_id ? false : true
                                     }
 
-                                    // message content
+                                    // Message content
                                     Text {
                                         id: messageId
                                         text: model.message
@@ -962,7 +962,7 @@ Rectangle {
                                         width: parent.width - 20
                                     }
 
-                                    // message created date
+                                    // Message created date
                                     Text {
                                         id: messageTimeId
                                         text: model.created_at
@@ -973,6 +973,37 @@ Rectangle {
                                         anchors.right: parent.right
                                         anchors.rightMargin: 10
                                         font.pixelSize: 10
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                        onClicked: function (mouse) {
+                                            if (mouse.button === Qt.RightButton) {
+                                                rectMessage.rightClicked = true
+                                                messageOption.visible = true
+                                            } else {
+                                                rectMessage.rightClicked = false
+                                                messageOption.visible = false
+                                            }
+                                        }
+
+                                        hoverEnabled: true
+                                        onEntered: rectMessage.ishovered = true
+                                    }
+                                    // Message option popup
+                                    MessageReactPopup {
+                                        id: messageOption
+                                        width: 210
+                                        height: 200
+                                        visible: rectMessage.rightClicked
+                                        focus: true
+                                        x: model.user_id !== c_user_id ? rectMessage.width / 2 - width / 2 + 75 : rectMessage.width - width
+                                        y: model.user_id
+                                           !== chatContent.c_user_id ? (-height + 60) : (-height)
+
+                                        modal: true
+                                        onClosed: rectMessage.rightClicked = false
                                     }
                                 }
                             }
