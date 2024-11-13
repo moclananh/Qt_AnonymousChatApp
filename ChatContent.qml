@@ -84,89 +84,97 @@ Rectangle {
         width: parent.width
         height: parent.height
         visible: true
+
         // Chat Header
         Rectangle {
             id: chatContentHeader
-            width: parent.width - 20
-            anchors.horizontalCenter: parent.horizontalCenter
-            height: 60
-            color: "transparent"
+            width: parent.width
+
+            height: 65
+            color: settings.chat_header_color
             Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
             visible: chatContent.groupId !== 0 ? true : false
-            RowLayout {
-                spacing: 15
-                anchors.verticalCenter: parent.verticalCenter
 
-                //Group Avatar
-                Rectangle {
-                    width: 50
-                    height: 50
-                    radius: 25
-                    border.color: "transparent"
+            Rectangle {
+                width: parent.width - 20
+                anchors.horizontalCenter: parent.horizontalCenter
+                height: parent.height
+                color: "transparent"
+                RowLayout {
+                    spacing: 15
+                    anchors.verticalCenter: parent.verticalCenter
 
-                    ImageRounded {
-                        x: parent.width / 2 - r_width / 2
-                        source: "https://placehold.co/50X50?text=Group"
-                        r_width: 50
-                        r_height: 50
+                    //Group Avatar
+                    Rectangle {
+                        width: 50
+                        height: 50
+                        radius: 25
+                        border.color: "transparent"
+
+                        ImageRounded {
+                            x: parent.width / 2 - r_width / 2
+                            source: "https://placehold.co/50X50?text=Group"
+                            r_width: 50
+                            r_height: 50
+                        }
+                    }
+
+                    //Group name and memmer
+                    Column {
+                        Text {
+                            id: chatGroupName
+                            text: ""
+                            font.pixelSize: 20
+                            font.bold: true
+                            color: settings.txt_color
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        Text {
+                            id: chatDuration
+                            text: chatContent.groupDuration
+                            font.pixelSize: 10
+                            opacity: 0.8
+                            color: settings.txt_color
+                            verticalAlignment: Text.AlignVCenter
+                        }
                     }
                 }
 
-                //Group name and memmer
-                Column {
-                    Text {
-                        id: chatGroupName
-                        text: ""
-                        font.pixelSize: 20
-                        font.bold: true
-                        color: settings.txt_color
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    Text {
-                        id: chatDuration
-                        text: chatContent.groupDuration
-                        font.pixelSize: 10
-                        opacity: 0.8
-                        color: settings.txt_color
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                }
-            }
-
-            // Button group setting
-            Button {
-                id: btnGroupSetting
-                width: 40
-                height: 40
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                background: Rectangle {
-                    id: btnBackgroundGroupSetting
-                    color: "transparent" // Default background color
-                    anchors.fill: parent
-
-                    radius: 5
-                    Image {
-                        source: settings.darkMode ? "qrc:/images/sequence2.png" : "qrc:/images/sequence.png"
-                        width: 30
-                        height: 30
-                        smooth: true
-                        anchors.centerIn: parent
-                    }
-
-                    MouseArea {
+                // Button group setting
+                Button {
+                    id: btnGroupSetting
+                    width: 40
+                    height: 40
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    background: Rectangle {
+                        id: btnBackgroundGroupSetting
+                        color: "transparent" // Default background color
                         anchors.fill: parent
-                        hoverEnabled: true
 
-                        onEntered: btnBackgroundGroupSetting.color = settings.hover_color
-                        onExited: btnBackgroundGroupSetting.color = "transparent"
+                        radius: 5
+                        Image {
+                            source: settings.darkMode ? "qrc:/images/sequence2.png" : "qrc:/images/sequence.png"
+                            width: 30
+                            height: 30
+                            smooth: true
+                            anchors.centerIn: parent
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+
+                            onEntered: btnBackgroundGroupSetting.color = settings.hover_color
+                            onExited: btnBackgroundGroupSetting.color = "transparent"
+                        }
                     }
-                }
 
-                onClicked: {
-                    chatContentLayout.loadGroupSetting()
-                    drawerGroupSetting.open()
+                    onClicked: {
+                        chatContentLayout.loadGroupSetting()
+                        drawerGroupSetting.open()
+                    }
                 }
             }
         }
@@ -866,7 +874,6 @@ Rectangle {
                     width: parent ? parent.width : 0
                     height: positionId.height
                     Rectangle {
-
                         color: "transparent"
                         width: parent ? parent.width - 35 : 0
 
@@ -934,6 +941,7 @@ Rectangle {
                                     color: model.user_id === c_user_id ? settings.messsagebox_chat_sender : settings.messsagebox_chat_receiver
                                     property bool rightClicked: false
                                     property bool ishovered: false
+
                                     // Username
                                     Text {
                                         id: usernameId
@@ -991,6 +999,7 @@ Rectangle {
                                         hoverEnabled: true
                                         onEntered: rectMessage.ishovered = true
                                     }
+
                                     // Message option popup
                                     MessageReactPopup {
                                         id: messageOption
@@ -1010,17 +1019,17 @@ Rectangle {
                         }
                     }
                 }
-            }
 
-            // Customized scroll bar
-            ScrollBar.vertical: ScrollBar {
-                id: customScrollBar
-                width: 5
-                height: parent.height
-                policy: ScrollBar.AsNeeded
+                // Customized scroll bar
+                ScrollBar.vertical: ScrollBar {
+                    id: customScrollBar
+                    width: 5
+                    height: parent.height
+                    policy: ScrollBar.AsNeeded
 
-                anchors.right: parent.right
-                anchors.margins: 5
+                    anchors.right: parent.right
+                    anchors.margins: 5
+                }
             }
         }
 
@@ -1046,22 +1055,33 @@ Rectangle {
             visible: chatContent.groupId !== 0 ? true : false
             Row {
                 id: sendMessageId
-                height: editMessageContainer.height
+                height: editMessageContainer.height + 5 // Add 20 pixels here for initial height
                 spacing: 4
                 Component.onCompleted: {
                     sendMessageId.anchors.right = parent.right
+                    // Set initial height values
+                    messageTextArena.height += 5
+                    scrollText.height = messageTextArena.height
+                    messRectId.height = messageTextArena.height
+                    sendMessageId.height = messageTextArena.height
                 }
                 Rectangle {
                     id: editMessageContainer
                     color: "transparent"
-                    width: messRectId.width - btnOpenFile.width - btnSend.width - 10
+                    width: messRectId.width - btnOpenFile.width - btnSend.width - 15
                     height: messageTextArena.height
                     ScrollView {
                         id: scrollText
                         width: parent.width
                         TextArea {
                             id: messageTextArena
-                            textMargin: 0
+                            width: parent.width
+                            height: font.pixelSize + padding * 2 + 5
+                            placeholderText: "Type a message..."
+                            color: settings.txt_color
+                            font.pixelSize: 14
+                            wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
+
                             background: Rectangle {
                                 width: parent.width
                                 height: parent.height
@@ -1070,48 +1090,46 @@ Rectangle {
                                 border.color: settings.border_color
                                 border.width: 1
                             }
-                            color: settings.txt_color
 
-                            width: parent.width
-                            height: font.pixelSize + padding * 2
-                            placeholderText: "Type a message..."
-                            font.pixelSize: 14
-                            wrapMode: "WrapAtWordBoundaryOrAnywhere"
-                            property int intial_size: font.pixelSize + padding * 2
+                            property int initial_size: font.pixelSize + padding * 2 + 5
+                            property int max_lines: 5
+                            property int line_height: 19
+
                             onTextChanged: {
-
                                 var content = text
+                                var line_count = content.length === 0 ? 1 : content.split(
+                                                                            "\n").length
+                                var new_height = Math.min(
+                                            line_count,
+                                            max_lines) * line_height + 17
+                                height = new_height
 
-                                if (content.length === 0
-                                        || content.length === undefined) {
+                                // Update the heights of related components
+                                scrollText.height = height
+                                messRectId.height = height
+                                sendMessageId.height = height
+                            }
 
-                                    messageTextArena.height = messageTextArena.intial_size
-                                    scrollText.height = messageTextArena.height
-                                    messRectId.height = messageTextArena.height
-                                    sendMessageId.height = messageTextArena.height
-                                    return
-                                }
-
-                                var count = 1
-                                for (var i = 0; i < content.length; i++) {
-                                    if (content[i] === "\n") {
-                                        count++
+                            Keys.onPressed: function (event) {
+                                if (event.key === Qt.Key_Return
+                                        || event.key === Qt.Key_Enter) {
+                                    if (event.modifiers & Qt.ShiftModifier) {
+                                        // Shift+Enter: Insert a new line at the cursor position
+                                        messageTextArena.insert(
+                                                    messageTextArena.cursorPosition,
+                                                    "\n")
+                                    } else {
+                                        // Enter: Send the message if not empty
+                                        if (messageTextArena.text.trim(
+                                                    ).length > 0) {
+                                            chatContentLayout.sendMessage()
+                                            messageTextArena.text = ""
+                                        } else {
+                                            messageTextArena.focus = true
+                                            messageTextArena.placeholderText = "Message required!"
+                                        }
                                     }
-                                }
-
-                                var new_height = count * 19 + 12 + 5
-                                if (count > 5) {
-                                    messageTextArena.height = 5 * 19 + 12 + 5
-                                    scrollText.height = messageTextArena.height
-                                    messRectId.height = messageTextArena.height
-                                    sendMessageId.height = messageTextArena.height
-                                    return
-                                } else {
-
-                                    messageTextArena.height = new_height
-                                    scrollText.height = messageTextArena.height
-                                    messRectId.height = messageTextArena.height
-                                    sendMessageId.height = messageTextArena.height
+                                    event.accepted = true
                                 }
                             }
                         }

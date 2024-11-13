@@ -275,42 +275,36 @@ ApplicationWindow {
         height: parent.height
         color: sharedSettings.mainbg
 
-        ColumnLayout {
-            anchors.fill: parent
+        RowLayout {
             width: parent.width
             height: parent.height
+            spacing: 1
+            // Chat Session
+            ChatSession {
+                id: chatSession
+                settings: sharedSettings
+                drawer_settings: drawerRef
+            }
 
-            RowLayout {
-                width: parent.width
-                height: parent.height
-
-                // Chat Session
-                ChatSession {
-                    id: chatSession
-                    settings: sharedSettings
-                    drawer_settings: drawerRef
+            // Chat Content
+            ChatContent {
+                id: chatContent
+                groupId: rootId.groupId
+                settings: {
+                    sharedSettings
                 }
+            }
 
-                // Chat Content
-                ChatContent {
-                    id: chatContent
-                    groupId: rootId.groupId
-                    settings: {
-                        sharedSettings
-                    }
-                }
+            //drawer for join new room
+            JoinNewRoom {
+                id: joinNewRoomId
+                settings: sharedSettings
+            }
 
-                //drawer for join new room
-                JoinNewRoom {
-                    id: joinNewRoomId
-                    settings: sharedSettings
-                }
-
-                //drawer for create new room
-                CreateNewRoom {
-                    id: createNewRoomId
-                    settings: sharedSettings
-                }
+            //drawer for create new room
+            CreateNewRoom {
+                id: createNewRoomId
+                settings: sharedSettings
             }
         }
     }

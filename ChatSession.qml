@@ -87,7 +87,7 @@ Rectangle {
                     anchors.leftMargin: 5
 
                     Image {
-                        source: settings.darkMode ? "qrc:/images/menu_2.png" : "qrc:/images/menu_1.png"
+                        source: settings.darkMode ? "qrc:/images/mn2.png" : "qrc:/images/mn1.png"
                         width: 30
                         height: 30
                         anchors.centerIn: parent

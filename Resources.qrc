@@ -30,10 +30,10 @@
         <file>images/search2.png</file>
         <file>images/trash2.png</file>
         <file>images/attach_file_2.png</file>
-        <file>images/menu_2.png</file>
-        <file>images/menu_1.png</file>
         <file>images/logout.gif</file>
         <file>images/copy.png</file>
         <file>images/copy2.png</file>
+        <file>images/mn1.png</file>
+        <file>images/mn2.png</file>
     </qresource>
 </RCC>
