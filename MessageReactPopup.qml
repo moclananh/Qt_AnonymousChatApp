@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import Helpers 1.0
 
 Popup {
     id: messageOption
@@ -10,6 +11,9 @@ Popup {
         color: "transparent"
     }
 
+    ClipboardHelper {
+        id: clipboardHelper
+    }
     // Reaction Popup
     Rectangle {
         id: rect_reaction
@@ -184,6 +188,7 @@ Popup {
                     color: "transparent"
 
                     Text {
+                        id: p_copy_txt
                         text: "  Copy text"
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -191,7 +196,9 @@ Popup {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            console.log("Copy clicked")
+                            clipboardHelper.setText(model.message)
+                            console.log("Group code was copied into clipboard: " + model.message)
+
                             messageOption.close()
                         }
                         hoverEnabled: true
