@@ -53,11 +53,18 @@ ApplicationWindow {
             color: "transparent"
             anchors.top: parent.top
             anchors.topMargin: 60
-            ImageRounded {
-                x: parent.width / 2 - r_width / 2
-                source: "https://placehold.co/100x100"
-                r_width: 100
-                r_height: 100
+            Rectangle {
+                width: 100
+                height: 100
+                color: "white"
+                radius: width
+                anchors.horizontalCenter: parent.horizontalCenter
+                ImageRounded {
+                    x: parent.width / 2 - r_width / 2
+                    source: "https://placehold.co/100x100"
+                    r_width: parent.width
+                    r_height: parent.height
+                }
             }
 
             Text {

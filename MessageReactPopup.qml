@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls
 
 Popup {
@@ -158,124 +159,141 @@ Popup {
     Rectangle {
         id: rect_messageOption
         width: 150
-        height: model.user_id === chatContent.c_user_id ? 133 : 79
+        radius: 5
+        height: model.user_id === chatContent.c_user_id ? 150 : 90
         color: settings.icon_bg
         anchors.top: rect_reaction.bottom
         anchors.topMargin: 10
         anchors.horizontalCenter: parent.horizontalCenter
 
-        Column {
-            anchors.fill: parent
-            spacing: 2
-            Rectangle {
-                id: p_copy
-                width: parent.width
-                height: 25
-                color: "transparent"
+        Rectangle {
+            width: parent.width - 4
+            anchors.centerIn: parent
+            height: parent.height - 4
+            color: "transparent"
 
-                Text {
-                    text: "  Copy text"
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+            ColumnLayout {
+                spacing: 5
+                anchors.fill: parent
+                Rectangle {
+                    id: p_copy
+                    width: parent.width
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("Copy clicked")
-                        messageOption.close()
+                    height: 25
+                    radius: 5
+                    color: "transparent"
+
+                    Text {
+                        text: "  Copy text"
+                        anchors.verticalCenter: parent.verticalCenter
                     }
-                    hoverEnabled: true
-                    onEntered: p_copy.color = "#e5e7eb"
-                    onExited: p_copy.color = "transparent"
-                }
-            }
-            Rectangle {
-                id: p_reply
-                width: parent.width
-                height: 25
-                color: "transparent"
 
-                Text {
-                    text: "  Reply"
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("Reply clicked")
-                        messageOption.close()
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("Copy clicked")
+                            messageOption.close()
+                        }
+                        hoverEnabled: true
+                        onEntered: p_copy.color = "#e5e7eb"
+                        onExited: p_copy.color = "transparent"
                     }
-                    hoverEnabled: true
-                    onEntered: p_reply.color = "#e5e7eb"
-                    onExited: p_reply.color = "transparent"
                 }
-            }
 
-            Rectangle {
-                id: p_edit
-                width: parent.width
-                height: 25
-                color: "transparent"
+                Rectangle {
+                    id: p_reply
+                    width: parent.width
 
-                visible: model.user_id === c_user_id
-                Text {
-                    text: "  Edit"
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("Edit clicked")
-                        messageOption.close()
+                    height: 25
+                    color: "transparent"
+                    radius: 5
+                    Text {
+                        text: "  Reply"
+                        anchors.verticalCenter: parent.verticalCenter
                     }
-                    hoverEnabled: true
-                    onEntered: p_edit.color = "#e5e7eb"
-                    onExited: p_edit.color = "transparent"
-                }
-            }
-            Rectangle {
-                id: p_pin
-                width: parent.width
-                height: 25
-                color: "transparent"
-
-                Text {
-                    text: "  Pin message"
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("Pin clicked")
-                        messageOption.close()
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("Reply clicked")
+                            messageOption.close()
+                        }
+                        hoverEnabled: true
+                        onEntered: p_reply.color = "#e5e7eb"
+                        onExited: p_reply.color = "transparent"
                     }
-                    hoverEnabled: true
-                    onEntered: p_pin.color = "#e5e7eb"
-                    onExited: p_pin.color = "transparent"
                 }
-            }
 
-            Rectangle {
-                id: p_delete
-                width: parent.width
-                height: 25
-                color: "transparent"
+                Rectangle {
+                    id: p_edit
+                    width: parent.width
 
-                visible: model.user_id === c_user_id
-                Text {
-                    text: "  Delete message"
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: "red"
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("Delete message clicked")
-                        messageOption.close()
+                    height: 25
+                    color: "transparent"
+                    radius: 5
+                    visible: model.user_id === c_user_id
+                    Text {
+                        text: "  Edit"
+                        anchors.verticalCenter: parent.verticalCenter
                     }
-                    hoverEnabled: true
-                    onEntered: p_delete.color = "#e5e7eb"
-                    onExited: p_delete.color = "transparent"
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("Edit clicked")
+                            messageOption.close()
+                        }
+                        hoverEnabled: true
+                        onEntered: p_edit.color = "#e5e7eb"
+                        onExited: p_edit.color = "transparent"
+                    }
+                }
+
+                Rectangle {
+                    id: p_pin
+                    width: parent.width
+
+                    height: 25
+                    color: "transparent"
+                    radius: 5
+                    Text {
+                        text: "  Pin message"
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("Pin clicked")
+                            messageOption.close()
+                        }
+                        hoverEnabled: true
+                        onEntered: p_pin.color = "#e5e7eb"
+                        onExited: p_pin.color = "transparent"
+                    }
+                }
+
+                Rectangle {
+                    id: p_delete
+                    width: parent.width
+
+                    height: 25
+                    radius: 5
+                    color: "transparent"
+
+                    visible: model.user_id === c_user_id
+                    Text {
+                        text: "  Delete message"
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: "red"
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("Delete message clicked")
+                            messageOption.close()
+                        }
+                        hoverEnabled: true
+                        onEntered: p_delete.color = "#e5e7eb"
+                        onExited: p_delete.color = "transparent"
+                    }
                 }
             }
         }

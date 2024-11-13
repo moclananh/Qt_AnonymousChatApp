@@ -109,7 +109,8 @@ Rectangle {
                     Rectangle {
                         width: 50
                         height: 50
-                        radius: 25
+                        radius: width
+                        color: "white"
                         border.color: "transparent"
 
                         ImageRounded {
@@ -242,7 +243,8 @@ Rectangle {
                                 id: rectGroupAvatarId
                                 width: 70
                                 height: 70
-                                color: "transparent"
+                                color: "white"
+                                radius: width
                                 anchors.left: parent.left
                                 anchors.leftMargin: 10
                                 anchors.verticalCenter: parent.verticalCenter
@@ -908,8 +910,8 @@ Rectangle {
                                     id: avatarContent
                                     width: 35
                                     height: 35
-                                    radius: 1
-                                    color: "transparent"
+                                    radius: width
+                                    color: "white"
                                     border.color: "transparent"
                                     visible: model.user_id === c_user_id ? false : true
                                     anchors.bottom: parent.bottom

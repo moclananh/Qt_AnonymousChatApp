@@ -4,8 +4,8 @@ import QtQuick.Controls
 QtObject {
     property bool darkMode: false
     property color mainbg: darkMode ? "#1e001f" : "#e5e7eb"
-    property color bg_chatcontent_color: darkMode ? "#271932" : "#edeff0"
-    property color bg_chatsession_color: darkMode ? "#271932" : "#ffffff"
+    property color bg_chatcontent_color: darkMode ? "#160025" : "#d6d8d9"
+    property color bg_chatsession_color: darkMode ? "#1a0b26" : "#ffffff"
     property color txt_color: darkMode ? "#f8ebfa" : "#232323"
     property color messsagebox_chat_receiver: darkMode ? "#dddddd" : "white"
     property color messsagebox_chat_sender: darkMode ? "#9b4ad5" : "#c86dd7"
@@ -20,6 +20,6 @@ QtObject {
     property color chat_user_name: darkMode ? "#a69ba8" : "#5a006d"
     property color highlight_text: darkMode ? "#f8e8ff" : "#5a006d"
     property color icon_bg: darkMode ? "#f5f5f5" : "#f5f5f5"
-    property color chat_header_color: darkMode ? "#271932" : "#ffffff"
+    property color chat_header_color: darkMode ? "#1a0b26" : "#ffffff"
     property color chat_theme: darkMode ? "transparent" : "transparent" //handle gradient color later
 }
