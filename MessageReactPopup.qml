@@ -2,8 +2,15 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Helpers 1.0
+import network.service 1.0
+import cookie.service 1.0
 
 Popup {
+
+    property int c_user_id: cookieId.loadCookie("user_id")
+    property string c_user_code: cookieId.loadCookie("user_code")
+    signal messageSignal(int groupId)
+
     id: messageOption
     background: Rectangle {
         width: parent.width
@@ -11,9 +18,20 @@ Popup {
         color: "transparent"
     }
 
+    //services register
+    Cookie {
+        id: cookieId
+    }
+
     ClipboardHelper {
         id: clipboardHelper
     }
+
+    CustomNotify {
+        id: notifyMessageBoxId
+        message: ""
+    }
+
     // Reaction Popup
     Rectangle {
         id: rect_reaction
@@ -294,7 +312,8 @@ Popup {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            console.log("Delete message clicked")
+                            console.log("Delete message clicked on message_id: " + model.ms_id)
+                            deleteMessage(model.ms_id)
                             messageOption.close()
                         }
                         hoverEnabled: true
@@ -304,5 +323,49 @@ Popup {
                 }
             }
         }
+    }
+
+    NetworkManager {
+        id: networkManager
+        onStatusCodeReceived: function (response) {
+            var jsonData = JSON.parse(response)
+
+            console.log("Data received: " + jsonData)
+            // if (response) {
+            var statusCode = parseInt(jsonData)
+            console.log("Status code received: " + statusCode)
+
+            console.log("Message deleted!")
+            app_state.messageSignal()
+            //}
+        }
+        onRequestError: function (error) {
+            console.log("Error from API:", error)
+
+            var errorParts = error.split(": ")
+            var statusCode = parseInt(errorParts[0], 10)
+            var responseBody = errorParts.slice(1).join(": ")
+
+            if (statusCode === 400) {
+                notifyMessageBoxId.message = responseBody
+                notifyMessageBoxId.open()
+            } else {
+                notifyMessageBoxId.message = "Error from server"
+                notifyMessageBoxId.open()
+            }
+        }
+    }
+
+    // fn create new room
+    function deleteMessage(message_id) {
+
+        var headers = {
+            "x-user-code": c_user_code
+        }
+
+        // API call using ChatServices.fetchData
+        networkManager.fetchData(
+                    `http://127.0.0.1:8080/messages/${message_id}`,
+                    "DELETE", headers)
     }
 }

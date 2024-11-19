@@ -5,7 +5,7 @@ project(Project_AnonymousChat VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Quick WebSockets)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -43,6 +43,7 @@ qt_add_qml_module(appProject_AnonymousChat
         SOURCES
         SOURCES clipboardheader.h
         QML_FILES MessageReactPopup.qml
+        SOURCES websocketclient.h websocketclient.cpp
 
 
 
@@ -60,8 +61,10 @@ set_target_properties(appProject_AnonymousChat PROPERTIES
 )
 
 target_link_libraries(appProject_AnonymousChat
-    PRIVATE Qt6::Quick
+    PRIVATE Qt6::Quick Qt6::WebSockets
 )
+
+
 
 include(GNUInstallDirs)
 install(TARGETS appProject_AnonymousChat

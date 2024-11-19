@@ -20,6 +20,7 @@ public:
 
 signals:
     void dataReceived(const QString &response);
+    void statusCodeReceived(const QString &statusCode);
     void requestError(const QString &error);
 
 private slots:

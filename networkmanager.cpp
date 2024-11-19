@@ -48,7 +48,11 @@ void NetworkManager::onResult(QNetworkReply *reply)
 
     if (reply->error() == QNetworkReply::NoError) {
         QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData);
+        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
         if (jsonDoc.isObject()) {
+            // Emit both the status code and the response body for parsing in QML
+            //emit statusCodeReceived(QString::number(statusCode));
             emit dataReceived(QString::fromUtf8(responseData));
         }
     } else {

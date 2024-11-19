@@ -15,6 +15,7 @@ Rectangle {
 
     //property init
     property int c_user_id: cookieId.loadCookie("user_id")
+    property string c_user_code: cookieId.loadCookie("user_code")
     property int groupId: 0
     property int maximum_mem: 0
     property int gr_owner_id: 0
@@ -25,6 +26,7 @@ Rectangle {
     property string gr_created: ""
     property string gr_code: ""
     property QtObject settings
+    property int currentPage: 1
     signal successSignal
     signal messageSignal(int groupId)
     signal removeGroupSuccessSignal
@@ -44,6 +46,7 @@ Rectangle {
             chatContent.groupId = groupId
             chatContentLayout.visible = true
             chatContentLayout.loadGroupData()
+            chatContentLayout.loadMessage()
         }
 
         function onSuccessSignal() {
@@ -56,14 +59,16 @@ Rectangle {
             chatContentLayout.loadGroupData()
         }
 
-        function onMessageSignal() {
-            chatContentLayout.loadGroupData()
-        }
-
         function onChatSessionSelected(groupId) {
+            console.log("Session selected: " + groupId)
+
             chatContent.groupId = groupId
             chatContentLayout.visible = true
+
             chatContentLayout.loadGroupData()
+
+            // lsViewId.model.clear()
+            chatContentLayout.loadMessage()
         }
 
         function onRemoveMemberSucessSignal() {
@@ -132,8 +137,8 @@ Rectangle {
                             verticalAlignment: Text.AlignVCenter
                         }
                         Text {
-                            id: chatDuration
-                            text: chatContent.groupDuration
+                            id: chatMembers
+                            text: ""
                             font.pixelSize: 10
                             opacity: 0.8
                             color: settings.txt_color
@@ -1022,6 +1027,14 @@ Rectangle {
                     }
                 }
 
+                onMovementEnded: function (loading) {
+                    // Check if the user has scrolled to the top
+                    if (contentY <= 0 && !loading) {
+                        console.log("Loading more 15 messages")
+                        chatContentLayout.loadMessage()
+                    }
+                }
+
                 // Customized scroll bar
                 ScrollBar.vertical: ScrollBar {
                     id: customScrollBar
@@ -1034,7 +1047,6 @@ Rectangle {
                 }
             }
         }
-
         // File attached display
         Text {
             id: txtId
@@ -1247,40 +1259,29 @@ Rectangle {
             message: ""
         }
 
-        //fetch data for group details
+        // fn load group details
+        function loadGroupData() {
+            let headers = {}
+            if (c_user_code) {
+                headers = {
+                    "x-user-code": c_user_code
+                }
+            }
+
+            networkManagerGroupDetails.fetchData(
+                        `http://localhost:8080/group-detail/${chatContent.groupId}`,
+                        "GET", headers)
+        }
+
         NetworkManager {
             id: networkManagerGroupDetails
             onDataReceived: function (response) {
-                // console.log("Response from API:", response)
+                //console.log("Response from API:", response)
                 if (response) {
                     var data = JSON.parse(response)
                     chatGroupName.text = data.group_name
-                    chatContent.groupDuration = ChatServices.calculateDuration(
-                                data.expired_at)
+                    chatMembers.text = "Members: " + data.joined_member
                     gr_owner_id = data.user_id
-                    lsViewId.model.clear()
-                    for (var i = 0; i < data.messages.length; i++) {
-                        var formattedTime = ChatServices.formatTime(
-                                    data.messages[i].created_at)
-
-                        lsViewId.model.append({
-                                                  "ms_id": data.messages[i].id,
-                                                  "sender": data.messages[i].user_name,
-                                                  "message": data.messages[i].content,
-                                                  "time": data.messages[i].created_at,
-                                                  "image": "https://placehold.co/50x50",
-                                                  "message_type": data.messages[i].message_type,
-                                                  "user_id": data.messages[i].user_id,
-                                                  "created_at": formattedTime
-                                              })
-                    }
-
-                    // Scroll to the bottom after adding new data
-                    if (chatContentModel.count > 0) {
-                        lsViewId.currentIndex = chatContentModel.count - 1
-                        lsViewId.positionViewAtIndex(lsViewId.currentIndex,
-                                                     ListView.End)
-                    }
                 } else {
                     console.error("Failed to fetch data from the API")
                 }
@@ -1290,7 +1291,44 @@ Rectangle {
             }
         }
 
-        //fetch data for group settings
+        // Reload data when received new message
+        Connections {
+            target: websocket
+            function onReceivedMessage(message) {
+                console.log("onReceivedMessage: ", message)
+                var mesageObjectReponse = JSON.parse(message)
+                if (mesageObjectReponse.Receive !== undefined) {
+                    var messageObject = mesageObjectReponse.Receive
+                    var formattedTime = ChatServices.formatTime(
+                                messageObject.created_at)
+                    app_state.messageSignal()
+                    lsViewId.model.append({
+                                              "ms_id": messageObject.message_id,
+                                              "ms_uuid": messageObject.message_uuid,
+                                              "sender": messageObject.username,
+                                              "message": messageObject.content,
+                                              "image": "https://placehold.co/50x50",
+                                              "message_type": messageObject.message_type,
+                                              "user_id": messageObject.user_id,
+                                              "created_at": formattedTime
+                                          })
+                    // Scroll to the bottom after adding new data
+                    if (chatContentModel.count > 0) {
+                        lsViewId.currentIndex = chatContentModel.count - 1
+                        lsViewId.positionViewAtIndex(lsViewId.currentIndex,
+                                                     ListView.End)
+                    }
+                }
+            }
+        }
+
+        //fn load group settings
+        function loadGroupSetting() {
+            networkManagerGroupSettings.fetchData(
+                        `http://localhost:8080/group-detail/setting/${chatContent.groupId}`,
+                        "GET")
+        }
+
         NetworkManager {
             id: networkManagerGroupSettings
             onDataReceived: function (response) {
@@ -1349,7 +1387,18 @@ Rectangle {
             }
         }
 
-        //fetch data for remove group
+        //fn remove group
+        function removeGroup() {
+            var headers = {}
+            var requestData = {
+                "gr_id": groupId,
+                "u_id": gr_owner_id
+            }
+            var jsonData = JSON.stringify(requestData)
+            networkManagerRemoveGroup.fetchData('http://localhost:8080/del-gr',
+                                                "POST", headers, jsonData)
+        }
+
         NetworkManager {
             id: networkManagerRemoveGroup
             onDataReceived: function (response) {
@@ -1383,38 +1432,38 @@ Rectangle {
             }
         }
 
-        //fetch data for send message
-        NetworkManager {
-            id: networkManagerSendMessage
-            onDataReceived: function (response) {
-                if (response) {
-                    let resObject = JSON.parse(response)
-                    console.log("Send message sucess!", resObject.data.content)
-                    messageTextArena.text = ""
-                    app_state.messageSignal()
-                } else {
-                    console.log("Failed to send message")
+        //fn to send a message
+        function sendMessage() {
+
+            var requestData = {
+                "Send": {
+                    "message_uuid": ChatServices.uuidv4(),
+                    "group_id": chatContent.groupId,
+                    "message_type": "TEXT",
+                    "content": messageTextArena.text
                 }
             }
 
-            onRequestError: function (error) {
-                console.log("Error from API:", error)
+            var jsonData = JSON.stringify(requestData)
 
-                var errorParts = error.split(": ")
-                var statusCode = parseInt(errorParts[0], 10)
-                var responseBody = errorParts.slice(1).join(": ")
-
-                if (statusCode === 400) {
-                    notifyMessageBoxId.message = responseBody
-                    notifyMessageBoxId.open()
-                } else {
-                    notifyMessageBoxId.message = "Error from server"
-                    notifyMessageBoxId.open()
-                }
-            }
+            // Send the message through the WebSocket
+            websocket.sendMessage(jsonData)
         }
 
-        //fetch data for leave group
+        //fn leave group
+        function leaveGroup() {
+            var headers = {}
+            var requestData = {
+                "gr_id": chatContent.groupId,
+                "u_id": chatContent.c_user_id
+            }
+            var jsonData = JSON.stringify(requestData)
+
+            networkManagerLeaveGroup.fetchData(
+                        `http://localhost:8080/leave-gr`, "POST",
+                        headers, jsonData)
+        }
+
         NetworkManager {
             id: networkManagerLeaveGroup
             onDataReceived: function (response) {
@@ -1444,64 +1493,74 @@ Rectangle {
             }
         }
 
-        // fn load group details
-        function loadGroupData() {
-            networkManagerGroupDetails.fetchData(
-                        `http://localhost:8080/group-detail/${chatContent.groupId}`,
-                        "GET")
-        }
-
-        //fn load group settings
-        function loadGroupSetting() {
-            networkManagerGroupSettings.fetchData(
-                        `http://localhost:8080/group-detail/setting/${chatContent.groupId}`,
-                        "GET")
-        }
-
-        //fn remove group
-        function removeGroup() {
-            var headers = {}
-            var requestData = {
-                "gr_id": groupId,
-                "u_id": gr_owner_id
+        //fn load group message
+        function loadMessage() {
+            let headers = {}
+            if (c_user_code) {
+                headers = {
+                    "x-user-code": c_user_code
+                }
             }
-            var jsonData = JSON.stringify(requestData)
-            networkManagerRemoveGroup.fetchData('http://localhost:8080/del-gr',
-                                                "POST", headers, jsonData)
+
+            console.log("Group Id received: " + chatContent.groupId)
+
+            var requestUrl = `http://127.0.0.1:8080/groups/${chatContent.groupId}/messages?page=${chatContent.currentPage}&limit=15&created_at_sort=DESC`
+            networkManagerLoadMessage.fetchData(requestUrl, "GET", headers)
         }
 
-        //fn send message
-        function sendMessage() {
-            var headers = {}
-            var requestData = {
-                "user_id": c_user_id,
-                "group_id": chatContent.groupId,
-                "content": messageTextArena.text,
-                "message_type": "string"
+        NetworkManager {
+            id: networkManagerLoadMessage
+            onDataReceived: function (response) {
+
+                var data = JSON.parse(response)
+                if (data) {
+
+                    for (var i = 0; i < data.objects.length; i++) {
+                        var formattedTime = ChatServices.formatTime(
+                                    data.objects[i].created_at)
+
+                        lsViewId.model.insert(0, {
+                                                  "ms_id": data.objects[i].id,
+                                                  "sender": data.objects[i].user_name,
+                                                  "message": data.objects[i].content,
+                                                  "time": data.objects[i].created_at,
+                                                  "image": "https://placehold.co/50x50",
+                                                  "message_type": data.objects[i].message_type,
+                                                  "user_id": data.objects[i].user_id,
+                                                  "created_at": formattedTime
+                                                  // "updated_at": data.objects[i].updated_at
+                                              })
+                    }
+                    if (chatContent.currentPage <= data.total_pages) {
+                        chatContent.currentPage++
+                    }
+                }
+                //Scroll to the bottom after adding new data
+                if (chatContentModel.count > 0
+                        && chatContent.currentPage == 2) {
+                    lsViewId.currentIndex = chatContentModel.count - 1
+                    lsViewId.positionViewAtIndex(lsViewId.currentIndex,
+                                                 ListView.End)
+                } else {
+                    lsViewId.positionViewAtIndex(data.count, ListView.Beginning)
+                }
             }
-            var jsonData = JSON.stringify(requestData)
 
-            networkManagerSendMessage.fetchData(
-                        `http://localhost:8080/send-msg`, "POST",
-                        headers, jsonData)
-        }
+            onRequestError: function (error) {
+                console.log("Error from API:", error)
 
-        //fn leave group
-        function leaveGroup() {
-            var headers = {}
-            var requestData = {
-                "gr_id": chatContent.groupId,
-                "u_id": chatContent.c_user_id
+                var errorParts = error.split(": ")
+                var statusCode = parseInt(errorParts[0], 10)
+                var responseBody = errorParts.slice(1).join(": ")
+
+                if (statusCode === 400) {
+                    notifyMessageBoxId.message = responseBody
+                    notifyMessageBoxId.open()
+                } else {
+                    notifyMessageBoxId.message = "Error from server"
+                    notifyMessageBoxId.open()
+                }
             }
-            var jsonData = JSON.stringify(requestData)
-
-            networkManagerLeaveGroup.fetchData(
-                        `http://localhost:8080/leave-gr`, "POST",
-                        headers, jsonData)
-        }
-
-        Component.onCompleted: {
-            loadGroupData()
         }
     }
 }

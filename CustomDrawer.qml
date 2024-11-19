@@ -14,6 +14,7 @@ Drawer {
     property bool control_handle: false
     property int groupId: 0
     property int owner_gr_id: 0
+    property int c_user_id: cookieId.loadCookie("user_id")
     property string lableText
     property QtObject d_settings
     property ListModel membersModel
@@ -99,7 +100,16 @@ Drawer {
 
                             Text {
                                 text: {
-                                    drawerRoot.owner_gr_id === model.user_id ? model.username + " (Owner)" : model.username
+                                    if (drawerRoot.owner_gr_id === model.user_id
+                                            && drawerRoot.c_user_id === model.user_id) {
+                                        return "You (Owner)"
+                                    } else if (drawerRoot.owner_gr_id === model.user_id) {
+                                        return model.username + " (Owner)"
+                                    } else if (drawerRoot.c_user_id === model.user_id) {
+                                        return "You"
+                                    } else {
+                                        return model.username
+                                    }
                                 }
 
                                 font.pixelSize: 16

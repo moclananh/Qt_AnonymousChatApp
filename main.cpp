@@ -6,6 +6,7 @@
 #include "clipboardheader.h"
 #include "cookieservice.h"
 #include "networkmanager.h"
+#include "websocketclient.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,19 +19,26 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     AppState app_state(&app);
+
     // Register the services
     qmlRegisterType<CookieService>("cookie.service", 1, 0, "Cookie");
     qmlRegisterType<NetworkManager>("network.service", 1, 0, "NetworkManager");
     qmlRegisterType<ClipboardHelper>("Helpers", 1, 0, "ClipboardHelper");
 
+    WebSocketClient socketClient(QUrl("ws://127.0.0.1:8080/ws"));
     engine.rootContext()->setContextProperty("app_state", &app_state);
+    engine.rootContext()->setContextProperty("websocket", &socketClient);
+
     CookieService cookieService;
     QVariant user_id = cookieService.loadCookie("user_id");
+    QVariant user_code = cookieService.loadCookie("user_code");
 
     if (user_id.isNull() || user_id.toString().isEmpty()) {
         qDebug() << "No user_id found. Loading HomeScreen...";
         engine.loadFromModule("Project_AnonymousChat", "HomeScreen");
     } else {
+        socketClient.setUserCode(user_code.toString());
+        socketClient.open();
         qDebug() << "user_id found:" << user_id.toString() << ". Loading Main...";
         engine.loadFromModule("Project_AnonymousChat", "Main");
     }

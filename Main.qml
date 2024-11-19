@@ -23,6 +23,7 @@ ApplicationWindow {
         id: darkModeId
     }
     property string user_name: cookieId.loadCookie("user_name")
+    property string user_code: cookieId.loadCookie("user_code")
 
     //received groupId from signal in HomeScreen to pass for ChatContent
     property int groupId: 0
@@ -35,6 +36,12 @@ ApplicationWindow {
             sidebar.close()
         }
     }
+    Component.onCompleted: {
+        websocket.setUserCode(user_code)
+        websocket.open()
+    }
+
+
 
     // Chat menu
     Drawer {

@@ -488,7 +488,7 @@ Rectangle {
     NetworkManager {
         id: networkManager
         onDataReceived: function (response) {
-            // console.log("Response from API:", response)
+            //console.log("Response from API:", response)
             if (response) {
                 var object = JSON.parse(response)
 
@@ -502,7 +502,6 @@ Rectangle {
                                               "group_id": data.group_id,
                                               "avatar": "https://placehold.co/50X50?text=Group",
                                               "group_name": data.group_name,
-                                              "group_id": data.group_id,
                                               "group_code": data.group_code,
                                               "expired_at": data.expired_at,
                                               "created_at": data.created_at,
