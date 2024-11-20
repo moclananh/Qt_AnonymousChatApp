@@ -44,6 +44,10 @@ qt_add_qml_module(appProject_AnonymousChat
         SOURCES clipboardheader.h
         QML_FILES MessageReactPopup.qml
         SOURCES websocketclient.h websocketclient.cpp
+        QML_FILES
+        SOURCES message.h message.cpp
+        SOURCES groupdata.h groupdata.cpp
+        SOURCES groupmessagemanager.h groupmessagemanager.cpp
 
 
 

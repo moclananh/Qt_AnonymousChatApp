@@ -8,6 +8,7 @@ import "ChatServices.js" as ChatServices
 import cookie.service 1.0
 import network.service 1.0
 import Helpers 1.0
+import group.message
 
 // Chat Content
 Rectangle {
@@ -39,6 +40,12 @@ Rectangle {
     ClipboardHelper {
         id: clipboardHelper
     }
+    GroupMessageManager {
+        id: groupMessagesManager
+        onGroupMessagesChanged: function () {
+            console.log("Group message change")
+        }
+    }
 
     Connections {
         target: app_state
@@ -66,9 +73,16 @@ Rectangle {
             chatContentLayout.visible = true
 
             chatContentLayout.loadGroupData()
+            chatContent.currentPage = groupMessagesManager.getCurrentPage(
+                        groupId)
+            console.log(`Current page of group ${groupId} is ${currentPage}`)
+            if (chatContent.currentPage === 1) {
+                chatContentLayout.loadMessage()
+            } else {
+                chatContent.loadMessagesToListModel()
+            }
 
-            // lsViewId.model.clear()
-            chatContentLayout.loadMessage()
+            // if it is not the first time selecting to the group we have to load first page
         }
 
         function onRemoveMemberSucessSignal() {
@@ -80,6 +94,28 @@ Rectangle {
             chatContentLayout.visible = false
             drawerGroupSetting.close()
         }
+    }
+    function loadMessagesToListModel() {
+        var messagesList = groupMessagesManager.getMessages(chatContent.groupId)
+        console.log("loadMessagesToListModel: ", messagesList.length)
+        lsViewId.model.clear()
+        for (const message of messagesList) {
+
+            lsViewId.model.insert(0, {
+                                      "ms_id": message.ms_id,
+                                      "sender": message.sender,
+                                      "message": message.message,
+                                      "time": message.time,
+                                      "image": message.image,
+                                      "message_type": message.message_type,
+                                      "user_id": message.user_id,
+                                      "created_at": message.created_at
+                                  })
+        }
+        var targetIndex = groupMessagesManager.getCurrentPage(
+                    chatContent.groupId)
+        lsViewId.contentY = groupMessagesManager.getCurrentScrollIndex(
+                    chatContent.groupId)
     }
 
     //containner
@@ -871,6 +907,14 @@ Rectangle {
                 width: parent.width
                 height: parent.height
                 clip: true
+                onContentYChanged: {
+                    if (lsViewId.contentY > 0) {
+                        console.debug("oncontentYchange: y: ",
+                                      lsViewId.contentY)
+                        groupMessagesManager.setCurrentScrollIndex(
+                                    chatContent.groupId, lsViewId.contentY)
+                    }
+                }
 
                 model: ListModel {
                     id: chatContentModel
@@ -1302,16 +1346,26 @@ Rectangle {
                     var formattedTime = ChatServices.formatTime(
                                 messageObject.created_at)
                     app_state.messageSignal()
-                    lsViewId.model.append({
-                                              "ms_id": messageObject.message_id,
-                                              "ms_uuid": messageObject.message_uuid,
-                                              "sender": messageObject.username,
-                                              "message": messageObject.content,
-                                              "image": "https://placehold.co/50x50",
-                                              "message_type": messageObject.message_type,
-                                              "user_id": messageObject.user_id,
-                                              "created_at": formattedTime
-                                          })
+                    // lsViewId.model.append({
+                    //                           "ms_id": messageObject.message_id,
+                    //                           "ms_uuid": messageObject.message_uuid,
+                    //                           "sender": messageObject.username,
+                    //                           "message": messageObject.content,
+                    //                           "image": "https://placehold.co/50x50",
+                    //                           "message_type": messageObject.message_type,
+                    //                           "user_id": messageObject.user_id,
+                    //                           "created_at": formattedTime
+                    //                       })
+                    console.log("websocket received message from group_id: ",
+                                messageObject.group_id)
+                    groupMessagesManager.pushFrontMessage(
+                                messageObject.group_id,
+                                messageObject.message_id,
+                                messageObject.username, messageObject.content,
+                                messageObject.created_at,
+                                messageObject.message_type,
+                                messageObject.user_id, formattedTime)
+                    chatContent.loadMessagesToListModel()
                     // Scroll to the bottom after adding new data
                     if (chatContentModel.count > 0) {
                         lsViewId.currentIndex = chatContentModel.count - 1
@@ -1504,6 +1558,7 @@ Rectangle {
 
             console.log("Group Id received: " + chatContent.groupId)
 
+            // Fetch messages for the specific group
             var requestUrl = `http://127.0.0.1:8080/groups/${chatContent.groupId}/messages?page=${chatContent.currentPage}&limit=15&created_at_sort=DESC`
             networkManagerLoadMessage.fetchData(requestUrl, "GET", headers)
         }
@@ -1511,38 +1566,40 @@ Rectangle {
         NetworkManager {
             id: networkManagerLoadMessage
             onDataReceived: function (response) {
-
                 var data = JSON.parse(response)
                 if (data) {
-
+                    const groupId = chatContent.groupId
+                    console.log("message response objects size: ", data.count)
                     for (var i = 0; i < data.objects.length; i++) {
-                        var formattedTime = ChatServices.formatTime(
-                                    data.objects[i].created_at)
+                        const message = data.objects[i]
+                        const formattedTime = ChatServices.formatTime(
+                                                message.created_at)
 
-                        lsViewId.model.insert(0, {
-                                                  "ms_id": data.objects[i].id,
-                                                  "sender": data.objects[i].user_name,
-                                                  "message": data.objects[i].content,
-                                                  "time": data.objects[i].created_at,
-                                                  "image": "https://placehold.co/50x50",
-                                                  "message_type": data.objects[i].message_type,
-                                                  "user_id": data.objects[i].user_id,
-                                                  "created_at": formattedTime
-                                                  // "updated_at": data.objects[i].updated_at
-                                              })
+                        console.log("chatContent.groupId: ",
+                                    chatContent.groupId)
+                        groupMessagesManager.addMessage(chatContent.groupId,
+                                                        message.id,
+                                                        message.user_name,
+                                                        message.content,
+                                                        message.created_at,
+                                                        message.message_type,
+                                                        message.user_id,
+                                                        formattedTime)
                     }
+                    chatContent.loadMessagesToListModel()
+                    if (groupMessagesManager.getCurrentPage(
+                                chatContent.groupId) === 1) {
+                        lsViewId.currentIndex = data.count - 1
+                        console.log("current_index: ", lsViewId.currentIndex)
+                        lsViewId.positionViewAtIndex(lsViewId.currentIndex,
+                                                     ListView.Beginning)
+                    }
+                    // Update the current page for the group
                     if (chatContent.currentPage <= data.total_pages) {
                         chatContent.currentPage++
                     }
-                }
-                //Scroll to the bottom after adding new data
-                if (chatContentModel.count > 0
-                        && chatContent.currentPage == 2) {
-                    lsViewId.currentIndex = chatContentModel.count - 1
-                    lsViewId.positionViewAtIndex(lsViewId.currentIndex,
-                                                 ListView.End)
-                } else {
-                    lsViewId.positionViewAtIndex(data.count, ListView.Beginning)
+                    groupMessagesManager.setCurrentPage(chatContent.groupId,
+                                                        chatContent.currentPage)
                 }
             }
 
@@ -1559,6 +1616,28 @@ Rectangle {
                 } else {
                     notifyMessageBoxId.message = "Error from server"
                     notifyMessageBoxId.open()
+                }
+            }
+        }
+
+        // Function to refresh ListView for a specific group
+        function refreshMessagesForGroup(groupId) {
+            if (groupMessages[groupId]) {
+                const messages = groupMessages[groupId].messages
+
+                // Clear current ListView
+                lsViewId.model.clear()
+
+                // Populate ListView with messages for the current group
+                for (var i = 0; i < messages.length; i++) {
+                    lsViewId.model.append(messages[i])
+                }
+
+                // Scroll to the latest message if available
+                if (messages.length > 0) {
+                    lsViewId.currentIndex = messages.length - 1
+                    lsViewId.positionViewAtIndex(lsViewId.currentIndex,
+                                                 ListView.End)
                 }
             }
         }

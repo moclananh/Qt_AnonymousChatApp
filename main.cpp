@@ -5,6 +5,8 @@
 #include "appstate.h"
 #include "clipboardheader.h"
 #include "cookieservice.h"
+#include "groupmessagemanager.h"
+#include "message.h"
 #include "networkmanager.h"
 #include "websocketclient.h"
 
@@ -24,6 +26,9 @@ int main(int argc, char *argv[])
     qmlRegisterType<CookieService>("cookie.service", 1, 0, "Cookie");
     qmlRegisterType<NetworkManager>("network.service", 1, 0, "NetworkManager");
     qmlRegisterType<ClipboardHelper>("Helpers", 1, 0, "ClipboardHelper");
+
+    qmlRegisterType<GroupMessageManager>("group.message", 1, 0, "GroupMessageManager");
+    qmlRegisterType<Message>("group.message", 1, 0, "Message");
 
     WebSocketClient socketClient(QUrl("ws://127.0.0.1:8080/ws"));
     engine.rootContext()->setContextProperty("app_state", &app_state);
