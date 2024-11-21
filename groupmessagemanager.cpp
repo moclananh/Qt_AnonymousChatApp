@@ -30,9 +30,9 @@ void GroupMessageManager::addMessage(int groupId,
     newMessage->setCreatedAt(createdAt);
 
     m_groupMessages[groupId]->messages().append(newMessage);
-    qDebug() << "void GroupMessageManager::addMessage: groupId: " << groupId;
-    qDebug() << "void GroupMessageManager::addMessage: group messages: "
-             << m_groupMessages[groupId]->messages().size();
+    // qDebug() << "void GroupMessageManager::addMessage: groupId: " << groupId;
+    // qDebug() << "void GroupMessageManager::addMessage: group messages: "
+    //          << m_groupMessages[groupId]->messages().size();
     emit groupMessagesChanged();
 }
 

@@ -26,6 +26,7 @@ Rectangle {
     property string gr_expired: ""
     property string gr_created: ""
     property string gr_code: ""
+    property bool is_loading: true
     property QtObject settings
     property int currentPage: 1
     signal successSignal
@@ -42,9 +43,6 @@ Rectangle {
     }
     GroupMessageManager {
         id: groupMessagesManager
-        onGroupMessagesChanged: function () {
-            console.log("Group message change")
-        }
     }
 
     Connections {
@@ -75,14 +73,14 @@ Rectangle {
             chatContentLayout.loadGroupData()
             chatContent.currentPage = groupMessagesManager.getCurrentPage(
                         groupId)
-            console.log(`Current page of group ${groupId} is ${currentPage}`)
+
+            //  console.log(`Current page of group ${groupId} is ${currentPage}`)
             if (chatContent.currentPage === 1) {
+                console.log("first click group ")
                 chatContentLayout.loadMessage()
             } else {
                 chatContent.loadMessagesToListModel()
             }
-
-            // if it is not the first time selecting to the group we have to load first page
         }
 
         function onRemoveMemberSucessSignal() {
@@ -95,12 +93,22 @@ Rectangle {
             drawerGroupSetting.close()
         }
     }
+
+    Timer {
+        id: timer
+    }
+
+    function delay(delayTime, cb) {
+        timer.interval = delayTime
+        timer.repeat = false
+        timer.triggered.connect(cb)
+        timer.start()
+    }
     function loadMessagesToListModel() {
         var messagesList = groupMessagesManager.getMessages(chatContent.groupId)
         console.log("loadMessagesToListModel: ", messagesList.length)
         lsViewId.model.clear()
         for (const message of messagesList) {
-
             lsViewId.model.insert(0, {
                                       "ms_id": message.ms_id,
                                       "sender": message.sender,
@@ -114,8 +122,13 @@ Rectangle {
         }
         var targetIndex = groupMessagesManager.getCurrentPage(
                     chatContent.groupId)
-        lsViewId.contentY = groupMessagesManager.getCurrentScrollIndex(
-                    chatContent.groupId)
+
+        delay(1000, function () {
+            var scrollIndex = groupMessagesManager.getCurrentScrollIndex(
+                        chatContent.groupId)
+            //  console.debug("restore list view to previous scroll index: ",scrollIndex)
+            lsViewId.contentY = scrollIndex
+        })
     }
 
     //containner
@@ -908,9 +921,11 @@ Rectangle {
                 height: parent.height
                 clip: true
                 onContentYChanged: {
-                    if (lsViewId.contentY > 0) {
-                        console.debug("oncontentYchange: y: ",
-                                      lsViewId.contentY)
+
+                    var scrollIndex = groupMessagesManager.getCurrentScrollIndex(
+                                chatContent.groupId)
+                    if (contentY > 0 && scrollIndex !== contentY) {
+                        //  console.debug("update scroll current index: ", contentY)
                         groupMessagesManager.setCurrentScrollIndex(
                                     chatContent.groupId, lsViewId.contentY)
                     }
@@ -982,9 +997,15 @@ Rectangle {
                                 // Message Box
                                 Rectangle {
                                     id: rectMessage
-                                    width: Math.max(
-                                               40,
-                                               usernameId.implicitWidth >= messageId.implicitWidth ? Math.min(usernameId.implicitWidth + 20, 500) : Math.min(messageId.implicitWidth + 20, 500))
+                                    property int padding: 20
+                                    property int maxBoxWidth: 500
+                                    width: Math.min(
+                                               Math.max(
+                                                   40, Math.max(
+                                                       usernameId.implicitWidth,
+                                                       messageId.implicitWidth) + padding),
+                                               maxBoxWidth)
+
                                     height: messageId.implicitHeight + messageTimeId.implicitHeight
                                             + 20 + ((usernameId.visible
                                                      === false) ? 0 : usernameId.implicitHeight)
@@ -1071,6 +1092,10 @@ Rectangle {
                     }
                 }
 
+                onFlickingChanged: function () {
+                    console.log("flick: ", flicking)
+                }
+
                 onMovementEnded: function (loading) {
                     // Check if the user has scrolled to the top
                     if (contentY <= 0 && !loading) {
@@ -1078,17 +1103,16 @@ Rectangle {
                         chatContentLayout.loadMessage()
                     }
                 }
+            }
+            // Customized scroll bar
+            ScrollBar.vertical: ScrollBar {
+                id: customScrollBar
+                width: 5
+                height: parent.height
+                policy: ScrollBar.AsNeeded
 
-                // Customized scroll bar
-                ScrollBar.vertical: ScrollBar {
-                    id: customScrollBar
-                    width: 5
-                    height: parent.height
-                    policy: ScrollBar.AsNeeded
-
-                    anchors.right: parent.right
-                    anchors.margins: 5
-                }
+                anchors.right: parent.right
+                anchors.margins: 5
             }
         }
         // File attached display
@@ -1346,16 +1370,7 @@ Rectangle {
                     var formattedTime = ChatServices.formatTime(
                                 messageObject.created_at)
                     app_state.messageSignal()
-                    // lsViewId.model.append({
-                    //                           "ms_id": messageObject.message_id,
-                    //                           "ms_uuid": messageObject.message_uuid,
-                    //                           "sender": messageObject.username,
-                    //                           "message": messageObject.content,
-                    //                           "image": "https://placehold.co/50x50",
-                    //                           "message_type": messageObject.message_type,
-                    //                           "user_id": messageObject.user_id,
-                    //                           "created_at": formattedTime
-                    //                       })
+
                     console.log("websocket received message from group_id: ",
                                 messageObject.group_id)
                     groupMessagesManager.pushFrontMessage(
@@ -1570,13 +1585,11 @@ Rectangle {
                 if (data) {
                     const groupId = chatContent.groupId
                     console.log("message response objects size: ", data.count)
+
                     for (var i = 0; i < data.objects.length; i++) {
                         const message = data.objects[i]
                         const formattedTime = ChatServices.formatTime(
                                                 message.created_at)
-
-                        console.log("chatContent.groupId: ",
-                                    chatContent.groupId)
                         groupMessagesManager.addMessage(chatContent.groupId,
                                                         message.id,
                                                         message.user_name,
@@ -1587,13 +1600,18 @@ Rectangle {
                                                         formattedTime)
                     }
                     chatContent.loadMessagesToListModel()
-                    if (groupMessagesManager.getCurrentPage(
-                                chatContent.groupId) === 1) {
+
+                    //Scroll to the bottom after adding new data
+                    if (chatContentModel.count > 0
+                            && chatContent.currentPage == 1) {
                         lsViewId.currentIndex = data.count - 1
-                        console.log("current_index: ", lsViewId.currentIndex)
                         lsViewId.positionViewAtIndex(lsViewId.currentIndex,
+                                                     ListView.End)
+                    } else {
+                        lsViewId.positionViewAtIndex(data.count,
                                                      ListView.Beginning)
                     }
+
                     // Update the current page for the group
                     if (chatContent.currentPage <= data.total_pages) {
                         chatContent.currentPage++
@@ -1616,28 +1634,6 @@ Rectangle {
                 } else {
                     notifyMessageBoxId.message = "Error from server"
                     notifyMessageBoxId.open()
-                }
-            }
-        }
-
-        // Function to refresh ListView for a specific group
-        function refreshMessagesForGroup(groupId) {
-            if (groupMessages[groupId]) {
-                const messages = groupMessages[groupId].messages
-
-                // Clear current ListView
-                lsViewId.model.clear()
-
-                // Populate ListView with messages for the current group
-                for (var i = 0; i < messages.length; i++) {
-                    lsViewId.model.append(messages[i])
-                }
-
-                // Scroll to the latest message if available
-                if (messages.length > 0) {
-                    lsViewId.currentIndex = messages.length - 1
-                    lsViewId.positionViewAtIndex(lsViewId.currentIndex,
-                                                 ListView.End)
                 }
             }
         }
