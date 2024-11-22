@@ -41,6 +41,7 @@ Rectangle {
     ClipboardHelper {
         id: clipboardHelper
     }
+
     GroupMessageManager {
         id: groupMessagesManager
     }
@@ -1359,16 +1360,38 @@ Rectangle {
             }
         }
 
+        //fn to send a message
+        function sendMessage() {
+
+            var requestData = {
+                "Send": {
+                    "message_uuid": ChatServices.uuidv4(),
+                    "group_id": chatContent.groupId,
+                    "message_type": "TEXT",
+                    "content": messageTextArena.text
+                }
+            }
+
+            var jsonData = JSON.stringify(requestData)
+
+            // Send the message through the WebSocket
+            websocket.sendMessage(jsonData)
+        }
+
         // Reload data when received new message
         Connections {
             target: websocket
             function onReceivedMessage(message) {
                 console.log("onReceivedMessage: ", message)
-                var mesageObjectReponse = JSON.parse(message)
-                if (mesageObjectReponse.Receive !== undefined) {
-                    var messageObject = mesageObjectReponse.Receive
-                    var formattedTime = ChatServices.formatTime(
-                                messageObject.created_at)
+                var messageObjectResponse = JSON.parse(message)
+
+                // Handle new messages
+                if (messageObjectResponse.Receive !== undefined) {
+                    var messageObject = messageObjectResponse.Receive
+                    let formattedTime1 = ChatServices.formatTime(
+                            messageObject.created_at)
+                    console.log("Time api received: " + messageObject.created_at)
+                    console.log("Time websocket received: " + formattedTime1)
                     app_state.messageSignal()
 
                     console.log("websocket received message from group_id: ",
@@ -1379,13 +1402,45 @@ Rectangle {
                                 messageObject.username, messageObject.content,
                                 messageObject.created_at,
                                 messageObject.message_type,
-                                messageObject.user_id, formattedTime)
+                                messageObject.user_id, formattedTime1)
                     chatContent.loadMessagesToListModel()
+
                     // Scroll to the bottom after adding new data
                     if (chatContentModel.count > 0) {
                         lsViewId.currentIndex = chatContentModel.count - 1
                         lsViewId.positionViewAtIndex(lsViewId.currentIndex,
                                                      ListView.End)
+                    }
+                }
+
+                // Handle delete message event
+                if (messageObjectResponse.DeleteMessageEvent !== undefined) {
+                    var deleteEvent = messageObjectResponse.DeleteMessageEvent
+                    console.log("DeleteMessageEvent for group_id: ",
+                                deleteEvent.group_id)
+                    groupMessagesManager.removeMessage(deleteEvent.group_id,
+                                                       deleteEvent.message_ids)
+                    app_state.messageSignal()
+                    // Reload the ListView after modification
+                    chatContent.loadMessagesToListModel()
+
+                    // Scroll to the bottom after adding new data
+                    if (chatContentModel.count > 0) {
+                        lsViewId.currentIndex = chatContentModel.count - 1
+                        lsViewId.positionViewAtIndex(lsViewId.currentIndex,
+                                                     ListView.End)
+                    }
+                }
+
+                // Handle delete message response (optional for error handling)
+                if (messageObjectResponse.DeleteMessageResponse !== undefined) {
+                    var deleteResponse = messageObjectResponse.DeleteMessageResponse
+                    console.log("DeleteMessageResponse: ",
+                                deleteResponse.message)
+
+                    if (deleteResponse.status_code !== 0) {
+                        console.error("Failed to delete messages: ",
+                                      deleteResponse.message)
                     }
                 }
             }
@@ -1411,9 +1466,9 @@ Rectangle {
                     total_waiting_member = groupSettingRes.total_waiting_member
                     drawerManageMember.owner_gr_id = groupSettingRes.owner_id
                     drawerManageMember.groupId = groupSettingRes.group_id
-                    gr_expired = ChatServices.convertToGMT7(
+                    gr_expired = ChatServices.convertLocalTime(
                                 groupSettingRes.expired_at)
-                    gr_created = ChatServices.convertToGMT7(
+                    gr_created = ChatServices.convertLocalTime(
                                 groupSettingRes.created_at)
                     durationLeft.text = "(" + ChatServices.calculateDuration(
                                 groupSettingRes.expired_at) + ")"
@@ -1499,24 +1554,6 @@ Rectangle {
                     notifyMessageBoxId.open()
                 }
             }
-        }
-
-        //fn to send a message
-        function sendMessage() {
-
-            var requestData = {
-                "Send": {
-                    "message_uuid": ChatServices.uuidv4(),
-                    "group_id": chatContent.groupId,
-                    "message_type": "TEXT",
-                    "content": messageTextArena.text
-                }
-            }
-
-            var jsonData = JSON.stringify(requestData)
-
-            // Send the message through the WebSocket
-            websocket.sendMessage(jsonData)
         }
 
         //fn leave group

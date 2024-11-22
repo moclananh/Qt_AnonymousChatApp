@@ -313,7 +313,7 @@ Popup {
                         anchors.fill: parent
                         onClicked: {
                             console.log("Delete message clicked on message_id: " + model.ms_id)
-                            deleteMessage(model.ms_id)
+                            deleteMessages(model.ms_id)
                             messageOption.close()
                         }
                         hoverEnabled: true
@@ -356,16 +356,35 @@ Popup {
         }
     }
 
-    // fn create new room
-    function deleteMessage(message_id) {
+    // fn fetch api delete message
+    // function deleteMessage(message_id) {
 
-        var headers = {
-            "x-user-code": c_user_code
+    //     var headers = {
+    //         "x-user-code": c_user_code
+    //     }
+
+    //     // API call using ChatServices.fetchData
+    //     networkManager.fetchData(
+    //                 `http://127.0.0.1:8080/messages/${message_id}`,
+    //                 "DELETE", headers)
+    // }
+
+    // Function to delete messages
+    function deleteMessages(message_id) {
+        console.log("Delete message called with group id: "
+                    + chatContent.groupId + ", message id: " + message_id)
+        var deleteRequest = {
+            "DeleteMessage": {
+                "group_id": chatContent.groupId,
+                "message_ids": [message_id]
+            }
         }
 
-        // API call using ChatServices.fetchData
-        networkManager.fetchData(
-                    `http://127.0.0.1:8080/messages/${message_id}`,
-                    "DELETE", headers)
+        var jsonData = JSON.stringify(deleteRequest)
+
+        // Send the delete request through WebSocket
+        websocket.sendMessage(jsonData)
     }
+
+
 }

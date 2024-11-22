@@ -16,6 +16,21 @@ bool WebSocketClient::sendMessage(const QString &body)
     return sentBytes > 0 ? true : false;
 }
 
+bool WebSocketClient::deleteMessage(int groupId, const QList<int> &messageIds)
+{
+    QJsonObject deleteMessage;
+    QJsonArray jsonMessageIds;
+    for (int id : messageIds) {
+        jsonMessageIds.append(id);
+    }
+
+    deleteMessage["DeleteMessage"] = QJsonObject{{"group_id", groupId},
+                                                 {"message_ids", jsonMessageIds}};
+
+    QString requestBody = QJsonDocument(deleteMessage).toJson(QJsonDocument::Compact);
+    return sendMessage(requestBody);
+}
+
 void WebSocketClient::onConnected()
 {
     QTextStream(stdout) << "WebSocket connected!" << Qt::endl;
@@ -42,11 +57,22 @@ void WebSocketClient::onTextMessageReceived(const QString &message)
 {
     QTextStream(stdout) << "Received message: " << message << Qt::endl;
 
-    // Example of checking for a specific message or cookie
-    if (message.contains("Set-Cookie")) {
-        QTextStream(stdout) << "Received cookie in message: " << message << Qt::endl;
+    // Parse the message
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(message.toUtf8());
+    if (!jsonDoc.isObject()) {
+        qWarning() << "Invalid JSON received:" << message;
+        return;
     }
-    emit receivedMessage(message);
+    QJsonObject messageObj = jsonDoc.object();
+
+    // Emit signals based on the type of message
+    if (messageObj.contains("DeleteMessageResponse")) {
+        emit receivedMessage(message); // Pass to QML for error handling or logging
+    } else if (messageObj.contains("DeleteMessageEvent")) {
+        emit receivedMessage(message); // Pass to QML to update the UI
+    } else {
+        emit receivedMessage(message); // Handle other messages (like Receive)
+    }
 }
 
 void WebSocketClient::onDisconnected()

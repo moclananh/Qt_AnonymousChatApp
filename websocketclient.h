@@ -15,8 +15,8 @@ class WebSocketClient : public QObject
 public:
     WebSocketClient(const QUrl &url, QObject *parent = nullptr);
     Q_INVOKABLE bool sendMessage(const QString &body);
+    Q_INVOKABLE bool deleteMessage(int groupId, const QList<int> &messageIds);
     Q_INVOKABLE void open();
-
     Q_INVOKABLE void setUserCode(const QString &user_code);
 private slots:
     void onConnected();

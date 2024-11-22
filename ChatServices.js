@@ -1,6 +1,6 @@
 function calculateDuration(durationInMinutes) {
     var now = new Date()
-    var fetchedTime = convertToGMT7(durationInMinutes)
+    var fetchedTime = convertLocalTime(durationInMinutes)
     var diffMs = fetchedTime - now
     var diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
     var diffHours = Math.floor(
@@ -26,9 +26,9 @@ function formatTimeDifference(createdAt, latestMsContent, latestMsTime) {
 
     if (latestMsContent === "") {
         latestMsContent = "Group just created"
-        fetchedTime = convertToGMT7(createdAt)
+        fetchedTime = convertLocalTime(createdAt)
     } else {
-        fetchedTime = convertToGMT7(latestMsTime)
+        fetchedTime = convertLocalTime(latestMsTime)
     }
 
     var currentTime = new Date()
@@ -52,21 +52,18 @@ function formatTimeDifference(createdAt, latestMsContent, latestMsTime) {
 
 // fn convert into short time HH:MM
 function formatTime(originalTimeString) {
-    var fetchedTime = convertToGMT7(originalTimeString)
+    let fetchedTime = convertLocalTime(originalTimeString)
     // Format the time to "HH:mm"
-    var formattedTime = fetchedTime.getHours().toString().padStart(
-                2, '0') + ":" + fetchedTime.getMinutes().toString(
-                ).padStart(2, '0')
+    let formattedTime = fetchedTime.getHours().toString().padStart(
+            2, '0') + ":" + fetchedTime.getMinutes().toString().padStart(2, '0')
 
     return formattedTime
 }
 
 //function convert time to GMT+7
-function convertToGMT7(time) {
-    var originalTime = new Date(time)
-    var fetchedTime = new Date(originalTime.getTime() + 7 * 60 * 60 * 1000)
-
-    return fetchedTime
+function convertLocalTime(time_utc) {
+    let originalTime = new Date(time_utc)
+    return originalTime
 }
 
 //fn generate uuid
@@ -79,4 +76,3 @@ function uuidv4() {
                                                                           16)
                                                           })
 }
-
