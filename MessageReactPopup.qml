@@ -265,6 +265,7 @@ Popup {
                         onClicked: {
                             console.log("Edit clicked")
                             messageOption.close()
+                            messageTextArena.text = messageId.text
                         }
                         hoverEnabled: true
                         onEntered: p_edit.color = "#e5e7eb"
@@ -385,6 +386,4 @@ Popup {
         // Send the delete request through WebSocket
         websocket.sendMessage(jsonData)
     }
-
-
 }

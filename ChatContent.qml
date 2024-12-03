@@ -915,12 +915,12 @@ Rectangle {
             width: parent.width
             height: parent.height - messRectId.height - chatContentHeader.height - 10
             clip: true
-
             ListView {
                 id: lsViewId
                 width: parent.width
                 height: parent.height
                 clip: true
+
                 onContentYChanged: {
 
                     var scrollIndex = groupMessagesManager.getCurrentScrollIndex(
@@ -1378,7 +1378,7 @@ Rectangle {
             websocket.sendMessage(jsonData)
         }
 
-        // Reload data when received new message
+        // Reload data socket
         Connections {
             target: websocket
             function onReceivedMessage(message) {
@@ -1390,8 +1390,6 @@ Rectangle {
                     var messageObject = messageObjectResponse.Receive
                     let formattedTime1 = ChatServices.formatTime(
                             messageObject.created_at)
-                    console.log("Time api received: " + messageObject.created_at)
-                    console.log("Time websocket received: " + formattedTime1)
                     app_state.messageSignal()
 
                     console.log("websocket received message from group_id: ",
